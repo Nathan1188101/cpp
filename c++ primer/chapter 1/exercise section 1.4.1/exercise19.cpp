@@ -14,7 +14,7 @@ int count(){
         ++count;
     }
     
-    cout << "count: " << sum << endl;
+    cout << "count: " << sum << endl; //sum = 3825
 
     return sum;
 }
