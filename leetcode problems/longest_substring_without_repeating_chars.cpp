@@ -51,9 +51,16 @@ int lengthOfLongestSubstring(string s) {
     string substring; 
     string final_substring; 
 
-        
+    // if given is empty quit out right away 
+    if(given.empty())
+    {
+        return 0; 
+    }
+    
     // loop through string
     for(int i = 0; i <= given.length() - 1; i++){
+
+        right = i; // update right with each iteration 
 
         // each interation keep left where it it unless a dupe is found and increment right by 1 
         char current_char = given[i];
@@ -62,24 +69,49 @@ int lengthOfLongestSubstring(string s) {
 
             // add it to the hash
             hash[current_char] = i; // add key value pair to the hashmap 
-            right = i; // update right with each iteration 
+
+            // record substring 
+            int distance = (right - left) + 1; 
+            substring = given.substr(left, distance);
+            if(substring.length() > final_substring.length())
+            {                    
+                final_substring = substring; 
+            }
+
 
         }else if(hash.find(current_char) != hash.end()){
             //if char has been seen 
 
+            // need to get to and past where last dupe was seen (NEED TO MAKE SURE TO NOW ALLOW LEFT TO MOVE BACKWARDS)
+            // basically "querying" the hashmap to find the duplicate to current, so we can go to it and use that info to shift left pointer
+            if(hash[current_char] + 1 > left)
+            { // if shifting the left part of the window doesn't go backwards, proceed
+
+                left = hash[current_char] + 1; 
+
+            } // else do nothing to left
+            //or left = hash.find(current_char) -> second //.find() returns an iterator (points to element in bucket if found (element being <key, value> pair, then -> second gives us the value))
+
             //save substring before moving to next
-            int distance = right - left; 
+            int distance = (right - left) + 1; // + 1 to be inclusive, need to account for 
             substring = given.substr(left, distance); //from left forward "length" many indicies 
             if(substring.length() > final_substring.length()){
                 final_substring = substring; 
             }
             
-            // need to get to and past where last dupe was seen, NOT JUST CURRENT POSITION  
-            left = i + 1; 
+
+            //still need to update hashmap even if we get a dupe (so we can find index of everything) 
+            hash[current_char] = i; 
 
         }
 
     }
+
+            //if no duplicate every occurs 
+    if(final_substring.empty()){
+        final_substring = given; 
+    }
+
     return final_substring.length(); 
 
 }
@@ -87,9 +119,9 @@ int lengthOfLongestSubstring(string s) {
 // entry point 
 int main(){
 
-    string s = "abcabcbb";
+    string s = "aaaaaa";
 
     // pass string into function for testing
-    cout << lengthOfLongestSubstring(s) << endl;
+    cout << "Longest Substring in " << s << ": " << lengthOfLongestSubstring(s) << endl;
 
 }
