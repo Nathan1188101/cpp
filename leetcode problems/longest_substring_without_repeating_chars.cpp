@@ -68,12 +68,13 @@ int lengthOfLongestSubstring(string s) {
             //if char has been seen 
 
             //save substring before moving to next
-            substring = given.substr(left, right);
+            int distance = right - left; 
+            substring = given.substr(left, distance); //from left forward "length" many indicies 
             if(substring.length() > final_substring.length()){
                 final_substring = substring; 
             }
             
-            //don't add to hashmap and shift window from left up to and past that (current) position 
+            // need to get to and past where last dupe was seen, NOT JUST CURRENT POSITION  
             left = i + 1; 
 
         }
