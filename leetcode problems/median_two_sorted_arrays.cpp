@@ -1,3 +1,4 @@
+// VIDEO HELP: https://www.youtube.com/watch?v=q6IEA26hvXc
 /*
 4. Median of Two Sorted Arrays
 Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
@@ -20,6 +21,7 @@ Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
 #include<iostream> 
 #include<vector> 
 #include<climits> 
+#include<algorithm> 
 
 using namespace std; 
 
@@ -66,9 +68,22 @@ double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
         int j = half - i - 2; // pointer for B (not sure why -2)
         
         int Aleft = (i >= 0) ? A[i] : INT_MIN; // INT_MIN is the minium value a INT can be in C++
-        int Aright = A[i + 1]; 
+        int Aright = (i + 1 < A.size())? A[i + 1] : INT_MAX; 
         int Bleft = (j >= 0) ? B[j] : INT_MIN; 
-        int Bright = B[j + 1]; 
+        int Bright = (j + 1 < B.size()) ? B[j + 1] : INT_MAX; 
+
+        if(Aleft <= Bright && Bleft <= Aright)
+        {
+            // odd 
+            if(total % 2)// 1 & 0 Bool values, if the outcome of total % 2 is non zero, it is not even. 
+                return min(Aright, Bright);
+
+            else    
+                return max(Aleft, Bleft) + min(Aright, Bright); 
+            
+        }
+        else if(Aleft > Bright)
+            int r = i - 1; 
 
     }
 
