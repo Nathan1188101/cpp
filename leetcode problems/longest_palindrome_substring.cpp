@@ -54,41 +54,43 @@ string longestPalindrome(string s) {
         // divide by 2 
         // if even, round down? 
 
-    int total = given.length();
-    int half = total / 2; // returns int (floor)
-    cout << "total length of string: " << total << endl; 
-    cout << "half of string: " << half << endl; 
-
-    // right 
-    for(int i = half; i <= given.length() - 1; i++)
+    // iterate through each char in the string, and at each char treat it as the center and expand out. Do this at every char 
+    for(int i = 0; i <= given.length() - 1; i++)
     {
-        // left 
-        for(int j = half; j >= 0; j--)
+
+        // odd 
+        L = i; 
+        R = i; 
+        while(L >= 0 && R <= given.length() - 1 && given[L] == given[R])
         {
-            char a = given[i];
-            char b = given[j];
-
-            // int distance = (i - j) + 1; 
-            // if(a == b){
-            //     substring = given.substr(j, distance);
-            // }
-
-            // if(substring.length() > final_substring.length())
-            // {
-            //     final_substring = substring; 
-            // }
-            while(a == b){
-                int distance = (i - j) + 1; 
-                substring = given.substr(j, distance);
-                if(substring.length() > final_substring.length())
-                {
-                    final_substring = substring; 
-                }
-            }
-            
-            
+            // expand outward
+            L--; // left
+            R++; // right 
+            int distance = (R - L - 1); 
+            substring = given.substr(L + 1, distance); 
         }
+        if(substring.length() > final_substring.length())
+        {
+            final_substring = substring; 
+        }
+
+        // even (resetting them)
+        L = i; 
+        R = i + 1;
+        while(L >= 0 && R <= given.length() - 1 && given[L] == given[R])
+        {
+            L--; 
+            R++; 
+            int distance = (R - L - 1); 
+            substring = given.substr(L + 1, distance);
+        }
+        if(substring.length() > final_substring.length())
+        {
+            final_substring = substring; 
+        }
+
     }
+
     return final_substring; 
 }
 
@@ -102,8 +104,9 @@ int main(){
         "sefabahhfe",
     };
 
-    string s = "abadsefa";
-
-    cout << "longest palindromic substring: " << longestPalindrome(s) << endl; 
+    for(int i = 0; i < tests.size(); i++)
+    {
+        cout << "for: " << tests[i] << " output: " << longestPalindrome(tests[i]) << endl; 
+    }
 
 }
