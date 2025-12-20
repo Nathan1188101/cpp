@@ -32,8 +32,6 @@ nums.length == 2n
 
 vector<int> shuffle(vector<int>& nums, int n) {
 
-    // half way
-    int n = nums.size() / 2; 
     vector<int> result(nums.size()); 
 
     // x goes 2 * i
@@ -41,14 +39,31 @@ vector<int> shuffle(vector<int>& nums, int n) {
     for(int i = 0; i < nums.size(); i++)
     {
         result[i] = nums[i*2];
-        
-
+        result[i + n] = nums[i*2 + 1];
     }
+    return result; 
 
 }
 
 int main(){
-
+    
     vector<int> nums = {2,5,1,3,4,7};
+    int n = nums.size() / 2; 
+    vector<int> result = shuffle(nums, n);
+
+    cout << "before: "; 
+    for(int i = 0; i < nums.size(); i++)
+    {
+        cout << nums[i];
+    }
+    cout << endl; 
+
+    cout << "after: ";
+    for(int i = 0; i < nums.size(); i++)
+    {
+        cout << result[i];
+    }
+    cout << endl;
+
 
 }
