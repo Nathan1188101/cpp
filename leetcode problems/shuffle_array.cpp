@@ -36,10 +36,10 @@ vector<int> shuffle(vector<int>& nums, int n) {
 
     // x goes 2 * i
     // y goes 2 * i + 1? 
-    for(int i = 0; i < nums.size(); i++)
+    for(int i = 0; i < n; i++)
     {
-        result[i] = nums[i*2];
-        result[i + n] = nums[i*2 + 1];
+        result[2*i] = nums[i];
+        result[i*2 + 1] = nums[i + n];
     }
     return result; 
 
@@ -67,3 +67,11 @@ int main(){
 
 
 }
+
+/*
+
+before: 251347
+
+after: 235417
+
+ */
