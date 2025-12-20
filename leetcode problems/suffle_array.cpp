@@ -34,8 +34,16 @@ vector<int> shuffle(vector<int>& nums, int n) {
 
     // half way
     int n = nums.size() / 2; 
+    vector<int> result(nums.size()); 
 
-    // go through and assign x and y vars? 
+    // x goes 2 * i
+    // y goes 2 * i + 1? 
+    for(int i = 0; i < nums.size(); i++)
+    {
+        result[i] = nums[i*2];
+        
+
+    }
 
 }
 
