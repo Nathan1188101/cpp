@@ -29,14 +29,26 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
     // compare temp val to next val?
     // increment counter when hitting ones, but set to 0 when encountering a 0 
     int counter = 0;
-    int temp = 0; 
     int R = 0; 
     int final_count = 0; 
 
     // iterate through the binary array 
     for(int i = 0; i < nums.size(); i++)
     {
+
+        // this implementation at the moment has a flaw.
+        // it is doing redundant checks. 
+        // if we find consecutive 1's, and then exit while loop, then iterate one from for loop, we just redundantly check ones we've already gone over 
+        // need to skip to the last 1 before encountering a 0 
+        // this redundancy makes our time complexity O(n^2) because worst case is we visit every index more than once, think, the last index will get visited n - 1 times because the iteration up to it everytime will have it scanned 
+
+        // ADDED THIS TO FIX THE ABOVE DESCRIBED REDUNDANCY 
+        if(counter > 0){
+            i  = R;
+        }
+
         R = i; 
+        counter = 0; 
         while(R < nums.size() && nums[R] == 1)
         {
             // expand forward from current iteration 
@@ -57,7 +69,7 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
 
 int main(){
 
-    vector<int> nums = {1,1,0,0,1,1,1};
+    vector<int> nums = {1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1};
     int result = findMaxConsecutiveOnes(nums);
 
     cout << "nums: "; 
