@@ -40,7 +40,7 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
         // it is doing redundant checks. 
         // if we find consecutive 1's, and then exit while loop, then iterate one from for loop, we just redundantly check ones we've already gone over 
         // need to skip to the last 1 before encountering a 0 
-        // this redundancy makes our time complexity O(n^2) because worst case is we visit every index more than once, think, the last index will get visited n - 1 times because the iteration up to it everytime will have it scanned 
+        // this redundancy makes our time complexity O(n^2) because worst case is we visit every index more than once, the last index will get visited the most because every iteration up to and including it will scan it. Waste of time. 
 
         // ADDED THIS TO FIX THE ABOVE DESCRIBED REDUNDANCY 
         if(counter > 0){
