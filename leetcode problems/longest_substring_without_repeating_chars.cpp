@@ -1,6 +1,6 @@
 #include <iostream> 
 #include <string> 
-#include <unordered_map> // this is hash map (dictionary, for us key is char, and value is index (int)
+#include <unordered_map> // this is hash map (dictionary. for us, key is char and value is index (int).
 
 using namespace std; 
 
