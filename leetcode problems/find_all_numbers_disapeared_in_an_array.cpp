@@ -50,7 +50,7 @@ vector<int> findDisappearedNumbers(vector<int>& nums) {
         // if NOT present (i.e returns .end(), then put in result array)
         if(map.find(i) == map.end())
         { // .end() returned if NOT found 
-            result.push_back(i); 
+            result.push_back(i); // add to result vector 
         }
     }
 
