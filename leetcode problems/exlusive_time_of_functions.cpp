@@ -2,6 +2,7 @@
 #include<string> 
 #include<vector> 
 #include<unordered_map> 
+#include<algorithm> 
 
 using namespace std; 
 
@@ -71,6 +72,7 @@ Each function has an "end" log for each "start" log.
 
 vector<int> exclusiveTime(int n, vector<string>& logs) {
 
+    /*
     // n is the number of functions in the program 
     // each of these functions has a unique id from 0 to n-1 
     
@@ -81,38 +83,84 @@ vector<int> exclusiveTime(int n, vector<string>& logs) {
     // thoughts: 
     // need a hashmap to keep track of all instances of a function appearing -> based on unique ID 
     // then can go and add all for each funtion when done searching for all 
-
+*/
+    
     vector<int> result; 
+    vector<pair<int, int>> stack; 
     unordered_map<int, int> func_map; 
-    int func_id; 
-    int func_time; 
+    int func_id = 0; 
+    int func_time = 0; 
     int total_time = 0; 
+    int start_time = 0; 
+    int end_time = 0; 
+    int run_time = 0;
+    int number = 0; 
+
 
     for(int i = 0; i < logs.size(); i++)
     {
+        /*
         // grab the func ID 
-        size_t pos = logs[i].find(":"); // size_t is an unsigned integer type used to represent indicies and sizes (can use int in smaller programs, but generally it's wrong and you should use size_t for .find()/stuff like this) 
-        func_id = stoi(logs[i].substr(0, pos)); 
+        //size_t pos = logs[i].find(":"); // size_t is an unsigned integer type used to represent indicies and sizes (can use int in smaller programs, but generally it's wrong and you should use size_t for .find()/stuff like this) 
+        //func_id = stoi(logs[i].substr(0, pos)); 
 
-        if(func_id >= 0 && func_id < n){
+        // if(func_id >= 0 && func_id < n){
 
-            size_t pos = logs[i].find(":");
-            func_time = stoi(logs[i].substr(logs[i].size() - 1, pos)); // from end to first (last) ":"
+        //     size_t pos = logs[i].rfind(":");
+        //     func_time = stoi(logs[i].substr(pos + 1, logs[i].size())); // from end to first (last) ":"
 
-            // add to hashmap with it's time
-            func_map[func_id] = func_time; // <func_id, time>
+        //     // add to hashmap with it's time
+        //     func_map[func_id] = func_time; // <func_id, time>
 
+        // }*/
+
+        size_t start_pos = logs[i].find(":"); 
+        size_t end_pos = logs[i].rfind(":"); 
+        string action = logs[i].substr(start_pos, end_pos); 
+
+
+        if(action == "start")
+        {
+            // push func id and start time stamp
+            func_id = stoi(logs[i].substr(0, start_pos)); 
+            start_time = stoi(logs[i].substr(end_pos + 1, logs[i].size()));
+            stack.push_back({func_id, start_time}); 
         }
+        else if(action == "end")
+        {
+            // get the func
+            func_id = stack.back().first;
+
+            // get the time and do the calc? 
+            start_time = stack.back().second;
+
+            // now have < func_id, start time> 
+
+            // get time from current END signal 
+            size_t end_pos = logs[i].rfind(":");
+            end_time = stoi(logs[i].substr(end_pos + 1, logs[i].size())); 
+
+            run_time = end_time - start_time;
+            result[i] = run_time;  
+        }
+
     }
 
-    for(int i = 0; i < n; i++)
-    {
-        auto find = func_map.find(i); 
-        int time = find->second; 
-        total_time += time; 
-        result[i] = time; 
-    }
+    /*
+    // for(int i = 0; i < n; i++)
+    // {
+    //     cout << "function: " << i << endl; 
 
+    //     auto find = func_map.find(i); 
+    //     int time = find->second; 
+    //     total_time += time; 
+
+    //     cout << "time found: " << time << endl; 
+
+    //     result.push_back(total_time); 
+    // }
+*/
+    
     return result; 
         
 }
