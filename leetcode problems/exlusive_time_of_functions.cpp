@@ -53,7 +53,7 @@ vector<int> exclusiveTime(int n, vector<string>& logs) {
             stack.pop_back(); // then pop 
             prev_time = current_time + 1; 
 
-            // NOTE: 
+            // NOTE: (about inclusive for END (+1), but exlusive for start) 
             /*
                 END calculations are inclusive. 
 
@@ -68,9 +68,7 @@ vector<int> exclusiveTime(int n, vector<string>& logs) {
                 for handling interruptions, start to start, just subtract.
 
                 for start to end do +1 because it ENDS AT x, it's inclusive. 
-            */
-
-            
+            */            
         }
 
     }
