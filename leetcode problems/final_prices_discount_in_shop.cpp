@@ -42,6 +42,8 @@ Constraints:
 
 vector<int> finalPrices(vector<int>& prices){
 
+    // THOUGHTS/NOTES: 
+    /*
     // prices[i] is the price of the ith item in the shop 
     // there is a special discount 
     // if you buy the ith item -> u get a discount equivalent to prices[j]
@@ -56,6 +58,8 @@ vector<int> finalPrices(vector<int>& prices){
     // and this price to the right must be less that what the price is at the current index i 
 
     // if the price to the right is less that the current, take the current price and subtract the one to the left
+
+    */
 
     vector<int> answer; // where answer[i] is the price u pay 
     int storage = 0; 
