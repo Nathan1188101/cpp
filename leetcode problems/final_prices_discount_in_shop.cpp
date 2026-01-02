@@ -57,36 +57,42 @@ vector<int> finalPrices(vector<int>& prices){
 
     // if the price to the right is less that the current, take the current price and subtract the one to the left
 
-    vector<int> answer(prices.size()); // where answer[i] is the price u pay 
-    int current = 0; 
-    int next = 0; 
-    int discount = 0; 
+    vector<int> answer; // where answer[i] is the price u pay 
+    int storage = 0; 
 
     for(int i = 0; i < prices.size(); i++)
     {
-        current = i; 
-
-        // need to ensure next pointer doesn't go out of bounds 
-        if(next > prices.size())
-            break; 
-
-        next = i + 1; 
-
-
-        if(current < next){
-            discount = prices[current] - prices[next]; 
-            answer.push_back(discount);
+        int discount = 0;
+        bool flag = false; 
+                
+        // starting 1 right of current, iterate through all prices 
+        for(int j = i + 1; j < prices.size(); j++)
+        {
+            // go until we find a lower value than at current i 
+            if(prices[j] <= prices[i])
+            {
+                discount = prices[i] - prices[j];
+                flag = true; 
+                break; 
+            }
         }
+        // PROBLEM HERE, WHAT IF IT'S 1 - 1, THAT WOULD BE 0 SO IT WILL JUST TAKE i (1) and push it. 
+        if(flag == false){
+            answer.push_back(prices[i]);
+        }
+        else
+            answer.push_back(discount); 
 
     }
 
-
+    return answer; 
 
 }
 
 int main(){
 
-    vector<int> prices = {8,4,6,2,3}; 
+    // vector<int> prices = {8,4,6,2,3};
+    vector<int> prices = {10,1,1,6};
     vector<int> answer = finalPrices(prices);
 
     cout << "answer: "; 
