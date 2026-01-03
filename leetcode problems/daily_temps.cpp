@@ -31,7 +31,7 @@ Constraints:
 
 */
 
-vector<int> dailyTemperatures(vector<int>& temperatures) {
+vector<int> dailyTemperatures1(vector<int>& temperatures) {
 
     // THOUGHTS: 
     /*
@@ -85,6 +85,35 @@ vector<int> dailyTemperatures(vector<int>& temperatures) {
     return answers; 
         
 }
+
+vector<int> dailyTemperatures(vector<int>& temperatures){
+
+    // use a stack approach I think will get us away from O(n) 
+
+    vector<int> answer(temperatures.size(), 0); // creating vector of size temperatures and giving all default values of 0
+    stack<int> stack; 
+
+    // need to iterate through and push indicies. 
+    // we aren't pusing temps, but "indicies of unresolved days"
+
+    // if stack not empty 
+    // before pushing to the waiting pile, see if today answers anyone already waiting 
+    
+    for(int i = 0; i < temperatures.size(); i++)
+    {
+        while(!stack.empty() && temperatures[i] > temperatures[stack.top()]){
+            int prev = stack.top();
+            int days = i - prev; 
+            answer[i] = days; 
+        }
+        stack.push(temperatures[i]); 
+
+    }
+
+    return answer; 
+
+}
+
 
 int main(){
                             //        2           6             6 - 2 = 4 
