@@ -101,12 +101,20 @@ vector<int> dailyTemperatures(vector<int>& temperatures){
     
     for(int i = 0; i < temperatures.size(); i++)
     {
+
         while(!stack.empty() && temperatures[i] > temperatures[stack.top()]){
+
+            // get top value 
             int prev = stack.top();
+            // destroy it 
+            stack.pop();
+
+            // run calc
             int days = i - prev; 
-            answer[i] = days; 
+            // add to answer list 
+            answer[prev] = days; 
         }
-        stack.push(temperatures[i]); 
+        stack.push(i); 
 
     }
 
@@ -114,6 +122,25 @@ vector<int> dailyTemperatures(vector<int>& temperatures){
 
 }
 
+// just checking my understanding (writing again from scratch)
+vector<int> dailyTemperatures3(vector<int>& temperatures){
+
+    vector<int> answer(temperatures.size()); 
+    stack<int> stack; 
+
+    for(int i = 0; i < temperatures.size(); i++)
+    {
+        while(!stack.empty() && temperatures[i] > temperatures[stack.top()])
+        {
+            int prev = temperatures[stack.top()];
+            stack.pop(); 
+            int days = i - prev; 
+            answer[prev] = days; 
+        }
+        stack.push(i);
+    }
+    return answer; 
+}
 
 int main(){
                             //        2           6             6 - 2 = 4 
