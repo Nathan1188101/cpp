@@ -62,37 +62,58 @@ int largestRectangleArea(vector<int>& heights) {
 
     */
 
-    int area, final_area = 0;
+    int area = 0;
+    int final_area = 0;
     int current_height = 0; 
     stack<int> stack; 
+    bool rightFlag = false; 
+    bool leftFlag = false; 
+  
+
+    if(heights.size() == 1){
+        final_area = 1 * heights[0]; 
+    }
 
     for(int i = 0; i < heights.size(); i++){
 
-        int R_pointer, L_pointer = 0; 
+        int R_pointer = i + 1; 
+        int L_pointer = i - 1; 
         current_height = heights[i]; 
+        cout << "current height: " << current_height << endl; 
+        int width = 0; 
+
+        // tryingn this because we have R and L pointer already set to left and right of current i
+        stack.push(current_height);
 
         while(R_pointer < heights.size() || L_pointer >= 0) // OR will continue as long as at least one condition is true
         {
 
-            // ok so theoretically (I believe) my while loop would keep executing say even if L pointer began going below 0, and R pointer was still valid
-            // then when finally both are no longer valid this while would exit.
-
-            R_pointer ++; 
-            L_pointer --; 
-
-            if(heights[R_pointer] >= current_height)
+            
+            if(R_pointer < heights.size() && heights[R_pointer] >= current_height)
             {
                 stack.push(heights[R_pointer]); 
+                cout << "pushed R" << endl; 
+                R_pointer ++; 
             }
-
-            if(heights[L_pointer] >= current_height)
+            
+            if(L_pointer >= 0 && heights[L_pointer] >= current_height)
             {
                 stack.push(heights[L_pointer]); 
+                cout << "pushed L" << endl; 
+                L_pointer --; 
             }
+
         }
         
-        int width = stack.size();
+        width = stack.size();
+        cout << "stack size: " << width << " on iteration " << i << endl; 
+        cout << "stack size/width: " << width << endl; 
         area = current_height * width; 
+
+        // then clear the stack for next run 
+        while(!stack.empty()){
+            stack.pop(); 
+        }
 
         if(area > final_area)
         {
@@ -110,7 +131,9 @@ int largestRectangleArea(vector<int>& heights) {
 
 int main(){
 
-    vector<int> heights = {2,1,5,6,2,3}; 
+    // vector<int> heights = {2,1,5,6,2,3}; 
+    // vector<int> heights = {1}; 
+    vector<int> heights = {1, 1}; 
     int result = largestRectangleArea(heights); 
 
     cout << "Largest area: " << result << endl; 
