@@ -30,7 +30,7 @@ Constraints:
 0 <= heights[i] <= 104
 */
 
-int largestRectangleArea(vector<int>& heights) {
+int largestRectangleArea1(vector<int>& heights) {
         
     // Thoughts 
     /*
@@ -126,6 +126,44 @@ int largestRectangleArea(vector<int>& heights) {
 
     return final_area; 
 
+
+}
+
+// trying new approach 
+int largestRectangleArea(vector<int>& heights){
+
+    stack<int> stack; 
+    int width = 0; 
+    int area = 0; 
+    int final_area = 0;
+    int height = 0;  
+
+
+    for(int i = 0; i < heights.size(); i++)
+    {
+        int current_height = heights[i]; 
+
+        if(stack.empty())
+        {
+            stack.push(i);
+        }
+        else if(heights[stack.top()] >= current_height){
+            stack.push(i); 
+        }
+        else{
+
+            width = stack.size();  
+
+            while(!stack.empty()){
+                height = heights[stack.top()]; 
+                stack.pop(); 
+
+            }
+        }
+
+    }
+
+    return final_area; 
 
 }
 
