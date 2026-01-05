@@ -66,8 +66,8 @@ int largestRectangleArea(vector<int>& heights) {
     int final_area = 0;
     int current_height = 0; 
     stack<int> stack; 
-    bool rightFlag = false; 
-    bool leftFlag = false; 
+    bool R_flag = false; 
+    bool L_flag = false; 
   
 
     if(heights.size() == 1){
@@ -78,36 +78,36 @@ int largestRectangleArea(vector<int>& heights) {
 
         int R_pointer = i + 1; 
         int L_pointer = i - 1; 
-        current_height = heights[i]; 
-        cout << "current height: " << current_height << endl; 
+        current_height = heights[i];
         int width = 0; 
+        R_flag = false;  
+        L_flag = false;
 
-        // tryingn this because we have R and L pointer already set to left and right of current i
+
         stack.push(current_height);
 
-        while(R_pointer < heights.size() || L_pointer >= 0) // OR will continue as long as at least one condition is true
+        while((R_pointer < heights.size() || L_pointer >= 0) && (R_flag == false || L_flag == false)) // OR will continue as long as at least one condition is true
         {
-
             
-            if(R_pointer < heights.size() && heights[R_pointer] >= current_height)
+            if(R_pointer < heights.size() && heights[R_pointer] >= current_height && R_flag == false)
             {
                 stack.push(heights[R_pointer]); 
-                cout << "pushed R" << endl; 
                 R_pointer ++; 
+            }else{
+                R_flag = true;
             }
             
-            if(L_pointer >= 0 && heights[L_pointer] >= current_height)
+            if(L_pointer >= 0 && heights[L_pointer] >= current_height && L_flag == false)
             {
                 stack.push(heights[L_pointer]); 
-                cout << "pushed L" << endl; 
                 L_pointer --; 
+            }else{
+                L_flag = true;
             }
 
         }
         
         width = stack.size();
-        cout << "stack size: " << width << " on iteration " << i << endl; 
-        cout << "stack size/width: " << width << endl; 
         area = current_height * width; 
 
         // then clear the stack for next run 
