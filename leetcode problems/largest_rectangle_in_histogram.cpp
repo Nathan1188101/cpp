@@ -129,8 +129,8 @@ int largestRectangleArea1(vector<int>& heights) {
 
 }
 
-// trying new approach 
-int largestRectangleArea(vector<int>& heights){
+// OK TURNS OUT THIS APPROACH IF FUNDAMENTALLY FLAWED, MOVING ON AND TRYING ANOTHER BELOW
+int largestRectangleArea2(vector<int>& heights){
 
     stack<int> stack; 
     int width = 0; 
@@ -156,11 +156,9 @@ int largestRectangleArea(vector<int>& heights){
         }
         else if(current_height < heights[stack.top()]){ 
             cout << "encountered smaller bar, being popping" << endl; 
-            
-            //height = heights[stack.top()]; // THIS IS THE ISSUE (I guess we need to first thing pushed)
-            //cout << "current height calculation: " << height << endl; 
 
             while(!stack.empty()){
+
                 // need to count the number of items popped from the list 
                 acc += 1; 
                 stack.pop(); 
@@ -168,32 +166,60 @@ int largestRectangleArea(vector<int>& heights){
 
                 if(stack.size() == 1)
                     height = heights[stack.top()]; 
-                    cout << "stack has 1 element left, so OG height was: " << height << endl; 
+                    cout << "stack has 1 element left, so OG height was: " << height << endl;
 
             }
+
             area = acc * height; 
             cout << "calcultion ran: " << acc << " * " << height << endl; 
             cout << "area = " << area << endl; 
+
             if(area > final_area)
                 final_area = area; 
                 cout << "area was found to be greater, final area = " << final_area << endl; 
         }
 
+        if(!stack.empty())
+        {
+            while(!stack.empty()){
+
+
+                if(stack.size() == 1)
+                    height = heights[stack.top()]; 
+                    cout << "stack has 1 element left, so OG height was: " << height << endl; 
+
+                // need to count the number of items popped from the list 
+                acc += 1; 
+                stack.pop(); 
+                cout << "pop" << endl; 
+
+
+            }
+
+            area = acc * height; 
+            cout << "calcultion ran: " << acc << " * " << height << endl; 
+            cout << "area = " << area << endl; 
+
+            if(area > final_area)
+                final_area = area; 
+                cout << "area was found to be greater, final area = " << final_area << endl; 
+        }
     }
 
     return final_area; 
 
 }
 
-// NEED TO FIGURE THIS OUT 
-// need to handle getting to end of list
-// calc is only run for when we exit a continuous block 
+// new approach 
+int largestRectangleArea(vector<int>& heights){
+
+}
 
 int main(){
 
     //vector<int> heights = {2,1,5,6,2,3}; 
-    vector<int> heights = {1}; 
-    //vector<int> heights = {1, 1}; // 2 
+    // vector<int> heights = {1}; 
+    vector<int> heights = {1, 1}; // 2 
     int result = largestRectangleArea(heights); 
 
     cout << "Largest area: " << result << endl; 
