@@ -250,12 +250,17 @@ int largestRectangleArea(vector<int>& heights){
 
             while(!stack.empty() && heights[stack.top()] > current_height){
 
-                int poppedIndex = stack.top(); 
+                int poppedIndex = stack.top(); // for getting width 
                 stack.pop(); 
 
                 height = heights[poppedIndex]; 
+
                 if(stack.empty()){
-                    width = i; // why?
+                    // if the stack is empty after popping 
+                    // then there isn't a shorter bar there to act as the LEFT BOUND 
+                    // so the rectanlge goes from 0 to i - 1. from the start of the array up until the right bound
+
+                    width = i; 
                 }else{
                     width = i - stack.top() - 1; 
                 }
@@ -272,10 +277,29 @@ int largestRectangleArea(vector<int>& heights){
 
         }
 
+    }
+
         // if we reach the end of the array, and the stack still has bars in it
         // we need to pop them and run the calculations 
+        while(!stack.empty()){
 
-    }
+            int poppedIndex = stack.top(); 
+            stack.pop(); 
+
+            height = heights[poppedIndex]; 
+            if(stack.empty()){
+                width = heights.size();
+            }else{
+                width = heights.size() - stack.top() - 1; 
+            }
+
+            area = height * width; 
+            if(area > final_area)
+            {
+                final_area = area; 
+            }
+
+        }
 
     return final_area; 
 
@@ -283,12 +307,11 @@ int largestRectangleArea(vector<int>& heights){
 
 int main(){
 
-    //vector<int> heights = {2,1,5,6,2,3}; 
-    // vector<int> heights = {1}; 
-    vector<int> heights = {1, 1}; // 2 
+    vector<int> heights = {2,1,5,6,2,3}; 
+    //vector<int> heights = {1}; 
+    //vector<int> heights = {1, 1}; // 2 
     int result = largestRectangleArea(heights); 
 
     cout << "Largest area: " << result << endl; 
-
 
 }
