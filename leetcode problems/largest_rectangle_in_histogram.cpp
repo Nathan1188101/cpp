@@ -213,7 +213,71 @@ int largestRectangleArea2(vector<int>& heights){
 // new approach 
 int largestRectangleArea(vector<int>& heights){
 
-    
+    stack<int> stack; 
+    int area = 0; 
+    int final_area = 0;
+    int width = 0; 
+    int height = 0; 
+    int current_height = 0;  
+
+    for(int i = 0; i < heights.size(); i++)
+    {
+
+        current_height = heights[i]; 
+
+        if(stack.empty())
+        {
+            // push the index 
+            stack.push(i); 
+        }
+        else if(heights[i] >= heights[stack.top()])
+        {
+            stack.push(i); 
+        }
+        else if(heights[i] < heights[stack.top()])
+        {
+            // encountered a shorter bar 
+
+            // we pop one bar at a time 
+            // right bound is the index of the smaller bar we just encountered 
+            // after each pop, we look to see what is at the top of the stack now 
+            // that bar is probably shorter (could be equal height but idk)
+            // that is the left boundary now 
+            // stack.top() (after popping) should be the first bar to the LEFT that is shorter 
+            // i is where we hit a shorter bar on the RIGHT 
+            // so width = R_bound - L_bound - 1 (-1 exlusive because we don't want to include the outer bounds, only what is within)
+
+
+            while(!stack.empty() && heights[stack.top()] > current_height){
+
+                int poppedIndex = stack.top(); 
+                stack.pop(); 
+
+                height = heights[poppedIndex]; 
+                if(stack.empty()){
+                    width = i; // why?
+                }else{
+                    width = i - stack.top() - 1; 
+                }
+
+                area = height * width; 
+                if(area > final_area)
+                {
+                    final_area = area; 
+                }
+
+            }
+
+            stack.push(i);
+
+        }
+
+        // if we reach the end of the array, and the stack still has bars in it
+        // we need to pop them and run the calculations 
+
+    }
+
+    return final_area; 
 
 }
 
