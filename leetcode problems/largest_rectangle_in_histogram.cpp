@@ -30,6 +30,8 @@ Constraints:
 0 <= heights[i] <= 104
 */
 
+
+// this functions correctly, but is O(n^2), so not good time complexity (we want linear, i.e one pass through the array)
 int largestRectangleArea1(vector<int>& heights) {
         
     // Thoughts 
@@ -129,7 +131,7 @@ int largestRectangleArea1(vector<int>& heights) {
 
 }
 
-// OK TURNS OUT THIS APPROACH IF FUNDAMENTALLY FLAWED, MOVING ON AND TRYING ANOTHER BELOW
+// OK TURNS OUT THIS APPROACH IF FUNDAMENTALLY FLAWED, MOVING ON AND TRYING ANOTHER BELOW (think this one is also O(n^2))
 int largestRectangleArea2(vector<int>& heights){
 
     stack<int> stack; 
@@ -258,14 +260,21 @@ int largestRectangleArea(vector<int>& heights){
                 if(stack.empty()){
                     // if the stack is empty after popping 
                     // then there isn't a shorter bar there to act as the LEFT BOUND 
-                    // so the rectanlge goes from 0 to i - 1. from the start of the array up until the right bound
+                    // so the rectanlge goes from 0 to i - 1 (but just i in this case because we want the width not the bound). from the start of the array up until the right bound
 
                     width = i; 
                 }else{
+
+                    // if the stack isn't empty
+                    // we take the right and left bound - 1 (exlusive, don't want the bounds, just what's inbetween)
+
                     width = i - stack.top() - 1; 
                 }
 
+                // area calculation 
                 area = height * width; 
+
+                // check to see if the area calculation is greater than whatever is set to final atm 
                 if(area > final_area)
                 {
                     final_area = area; 
@@ -273,7 +282,8 @@ int largestRectangleArea(vector<int>& heights){
 
             }
 
-            stack.push(i);
+            // don't forget to push the shorter bar we encountered (that caused all the above)
+            stack.push(i); 
 
         }
 
@@ -283,13 +293,23 @@ int largestRectangleArea(vector<int>& heights){
         // we need to pop them and run the calculations 
         while(!stack.empty()){
 
+            // get the top of stack height index 
             int poppedIndex = stack.top(); 
             stack.pop(); 
 
             height = heights[poppedIndex]; 
             if(stack.empty()){
+                
+                // if the stack is empty 
+                // then there is no shorter bar to the left, we've reached the end/the beginning of the heights array
+                // I think in thise case if we've gotten into this condition, then we have a bar that spans the whole array
+
                 width = heights.size();
             }else{
+
+                // otherwise, if the stack isn't empty
+                // it'll be from right bound (up to the shorter bar on the right), then left (to shorter bar on left), then - 1 to be exlusive and take out the bounds themself from the width 
+
                 width = heights.size() - stack.top() - 1; 
             }
 
