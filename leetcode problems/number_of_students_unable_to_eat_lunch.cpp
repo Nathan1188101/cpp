@@ -69,9 +69,13 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
 
     // count for students left 
     int student_count = 0; 
+    int acc = 0; 
+    int check = 0; 
     bool flag = false; 
 
     while(!students.empty()){
+
+        // we need a way to signal that we are looping around the same students, they can't eat   
 
         if(students[0] == sandwiches[0])
         {
@@ -80,8 +84,6 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
             // and remove sandwiches from top of stack 
             students.erase(students.begin()); 
             sandwiches.erase(sandwiches.begin()); 
-           
-            flag = false; 
 
             cout << "found match" << endl; 
         }
@@ -93,11 +95,24 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
 
             cout << "found mismatch, moving " << students[0] << " to back of line" << endl;  
 
-            flag = true; 
         }
 
-        if(flag = true)
-            break;
+
+    }
+
+    int tester = students[0];
+    for(int i = 1; i < students.size(); i++){
+        if(students[i] != tester){
+            // found a non dupe 
+            cout << "found a dif num" << endl; 
+            flag = false;  
+        }
+        else    
+            // no dupes 
+            flag = true; 
+
+    }
+    if(flag = true){
 
     }
 
