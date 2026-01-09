@@ -78,29 +78,57 @@ int timeRequiredToBuy(vector<int>& tickets, int k){
         int kth_person = k; 
         int time = 0; 
 
+        // I need to update position k as it moves around the queue 
+        // also need to stop the while loop when k position is 0, don't care about the others 
+
 
         while(!tickets.empty())
         {
+            cout << "tickets before taking: " << tickets[0] << endl; 
+
             // take a ticket 
             tickets[0] --;
+            cout << "tickets at front now: " << tickets[0] << endl; 
 
-            if(tickets[kth_person])
-                time ++; 
+            time++; 
 
-            // if the num of tickets at ith position is still greater than 0
-            if(tickets[0] != 0){
+            cout << "k position: " << kth_person << endl; 
+            if(kth_person == 0){
+
+                kth_person == tickets.size() - 1; 
+
+            }
+            else if(kth_person > 0){
+
+                kth_person --; 
+
+            }
+            
+            if(tickets[kth_person] == 0){
+                break; 
+            }
+
+
+            // if the num of tickets at the front of the line
+            if(tickets[0] > 0){
                 // take the now decremented amount and put to back of line 
                 tickets.push_back(tickets[0]);
 
                 // then delete the copy of it at the front
                 tickets.erase(tickets.begin()); 
+                cout << "moving front to back" << endl; 
             }
-            else{
+            else if(tickets[0] == 0){
                 // else it is 0 
                 // remove from queue as it is done 
                 tickets.erase(tickets.begin());
+                kth_person --; 
+                cout << "deletion occured, k now: " << kth_person << endl;  
             }
+
         }
+
+        return time; 
 
 }
 
