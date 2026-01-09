@@ -53,6 +53,83 @@ n == tickets.length
 0 <= k < n
 */
 
+// leaving couts in 
+int timeRequiredToBuy1(vector<int>& tickets, int k){
+
+        // thoughts: 
+        /*
+            ok so we have a line of people 
+            0th person is at the front of the line 
+
+            we are given a 0 indexed array (tickets -> same length as there are people in the line)
+            the amount of tickets the ith person in line wants to buy is at tickets[i]
+
+            each person takes 1 sec to buy a ticket 
+            only one ticket at a time 
+            go back to end of line after getting ticket (if needing more still)
+
+            return the time taken for the person at position k (initially -> the line is going to change but we are talking about from its first state) to finish buying tickets 
+            
+        */
+
+
+        int kth_person = k; 
+        int time = 0; 
+
+        while(!tickets.empty())
+        {
+            cout << "tickets at front before taking: " << tickets[0] << endl; 
+
+            // take a ticket 
+            tickets[0] --;
+            cout << "tickets at front now: " << tickets[0] << endl; 
+
+            time++; 
+
+            if(tickets[kth_person] == 0){
+                break; 
+            }
+
+            // if the num of tickets at the front of the line
+            if(tickets[0] > 0){
+                // take the now decremented amount and put to back of line 
+                tickets.push_back(tickets[0]);
+
+                // then delete the copy of it at the front
+                tickets.erase(tickets.begin()); 
+                cout << "moving front to back" << endl; 
+            }
+            else if(tickets[0] == 0){
+                // else it is 0 
+                // remove from queue as it is done 
+                tickets.erase(tickets.begin());
+                cout << "deletion occured, k now: " << kth_person << endl;  
+
+
+            }
+
+            
+            // update K position after moving everything around 
+            cout << "k position: " << kth_person << endl; 
+            if(kth_person == 0){
+
+                kth_person = tickets.size() - 1; // this was == by accident  
+
+            }
+            else if(kth_person > 0){
+
+                kth_person --; 
+
+            }
+            
+
+        }
+
+        return time; 
+
+}
+
+// took couts out for better performance 
 int timeRequiredToBuy(vector<int>& tickets, int k){
 
         // thoughts: 
@@ -71,31 +148,44 @@ int timeRequiredToBuy(vector<int>& tickets, int k){
             
         */
 
-        // need to identify k
-        // take 1 ticket away from each index 1 by 1
-        // but have an acc targeted on k, keeping track of how many sec it takes total 
-
         int kth_person = k; 
         int time = 0; 
 
-        // I need to update position k as it moves around the queue 
-        // also need to stop the while loop when k position is 0, don't care about the others 
-
-
         while(!tickets.empty())
         {
-            cout << "tickets before taking: " << tickets[0] << endl; 
 
-            // take a ticket 
+            // first, we take a ticket 
             tickets[0] --;
-            cout << "tickets at front now: " << tickets[0] << endl; 
 
+            // then increment the time  as well
             time++; 
 
-            cout << "k position: " << kth_person << endl; 
+            // check to see if we just decremented k position to 0, because we need to exit at that point 
+            if(tickets[kth_person] == 0){
+                break; 
+            }
+
+            // if the num of tickets at the front of the line is still more than 0 
+            if(tickets[0] > 0){
+                // take the now decremented amount and put to back of line 
+                tickets.push_back(tickets[0]);
+
+                // then delete the copy of it at the front
+                tickets.erase(tickets.begin()); 
+            }
+            // else if the front of the line == 0, remove it 
+            else if(tickets[0] == 0){
+                // else it is 0 
+                // remove from queue as it is done 
+                tickets.erase(tickets.begin());
+ 
+            }
+
+            
+            // update k traker after all the above 
             if(kth_person == 0){
 
-                kth_person == tickets.size() - 1; 
+                kth_person = tickets.size() - 1;
 
             }
             else if(kth_person > 0){
@@ -104,27 +194,6 @@ int timeRequiredToBuy(vector<int>& tickets, int k){
 
             }
             
-            if(tickets[kth_person] == 0){
-                break; 
-            }
-
-
-            // if the num of tickets at the front of the line
-            if(tickets[0] > 0){
-                // take the now decremented amount and put to back of line 
-                tickets.push_back(tickets[0]);
-
-                // then delete the copy of it at the front
-                tickets.erase(tickets.begin()); 
-                cout << "moving front to back" << endl; 
-            }
-            else if(tickets[0] == 0){
-                // else it is 0 
-                // remove from queue as it is done 
-                tickets.erase(tickets.begin());
-                kth_person --; 
-                cout << "deletion occured, k now: " << kth_person << endl;  
-            }
 
         }
 
@@ -132,10 +201,11 @@ int timeRequiredToBuy(vector<int>& tickets, int k){
 
 }
 
+
 int main(){
 
-    vector<int> tickets = {2,3,2};
-    int k = 2; 
+    vector<int> tickets = {5,1,1,1};
+    int k = 0; 
     int result = timeRequiredToBuy(tickets, k); 
 
     cout << "result: " << result << endl; 
