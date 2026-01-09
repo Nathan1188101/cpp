@@ -45,7 +45,7 @@ sandwiches[i] is 0 or 1.
 students[i] is 0 or 1.
 */
 
-int countStudents(vector<int>& students, vector<int>& sandwiches){
+int countStudents1(vector<int>& students, vector<int>& sandwiches){
 
     // Thoughts: 
     /*
@@ -66,7 +66,7 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
     // check if index 0 of students matches index 0 (top of stack) of sandwiches 
     // if student does not match stack.top() then move student to back of students and continue 
     // if student does match stack.top() then remove both top of sandwiches and front of student queue 
-
+ 
     // count for students left 
     int student_count = 0; 
     int acc = 0; 
@@ -75,53 +75,91 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
     int temp_count = 0; 
 
     while(!students.empty()){
+
+        // need a way to tell if we are going through the same amount of students over and over again
+        // meaning no one can take the top 
+        // have a var that increments only when we go back of the line back to back 
+        // then if that value == the size of the array, we are deadlocked ig? 
+         
+        cout << "acc now: " << acc << endl;
+        if(acc == students.size()){
+            cout << "acc == students.size()" << endl; 
+            break; 
+        }
  
 
         // we need a way to signal that we are looping around the same students, they can't eat   
         if(students[0] == sandwiches[0])
         {
-            // if they match 
+            cout << "found match" << endl; 
+            // if they match  
             // remove student from front of queue 
             // and remove sandwiches from top of stack 
             students.erase(students.begin()); 
             sandwiches.erase(sandwiches.begin()); 
 
-            cout << "found match" << endl; 
+            acc = 0;  
+            cout << "acc = " << acc << endl; 
         }
         else{
+            cout << "found mismatch, moving " << students[0] << " to back of line" << endl;  
+            // no match 
+            // move student to back of student queue
+            students.push_back(students[0]); // move to back
+            cout << "pushing back " << students[0] << endl; 
+            students.erase(students.begin()); // then erase 
+            
+            acc ++;
+            cout << "acc = " << acc << endl; 
+        }
+
+    }
+
+    student_count = students.size(); 
+
+    return student_count; 
+
+}
+
+int countStudents(vector<int>& students, vector<int>& sandwiches){
+
+    int student_count = 0; 
+    int acc = 0; 
+    int check = 0; 
+    bool flag = false; 
+    int temp_count = 0; 
+
+    while(!students.empty()){
+
+         
+        if(acc == students.size()){
+            break; 
+        }
+ 
+
+        // we need a way to signal that we are looping around the same students, they can't eat   
+        if(students[0] == sandwiches[0])
+        {
+            // if they match  
+            students.erase(students.begin()); 
+            sandwiches.erase(sandwiches.begin()); 
+
+            // if we encounter a match we set acc back to 0
+            // because we just want to detect back to back mismatches  
+            acc = 0;  
+
+        }
+        else{
+           
             // no match 
             // move student to back of student queue
             students.push_back(students[0]); // move to back
             students.erase(students.begin()); // then erase 
             
-            cout << "found mismatch, moving " << students[0] << " to back of line" << endl;  
-
+            acc ++;
         }
 
     }
-
-    // not working 
-    /*
-    // int tester = students[0];
-    // for(int i = 1; i < students.size(); i++){
-    //     if(students[i] != tester){
-    //         // found a non dupe 
-    //         cout << "found a dif num" << endl; 
-    //         flag = false;  
-    //     }
-    //     else{
-    //         // no dupes 
-    //         flag = true;    
-    //     }    
-
-
-    // }
-    // if(flag == true){
-    //     student_count = students.size(); 
-    //     return student_count; 
-    // }
-    */
-
 
     student_count = students.size(); 
 
@@ -131,8 +169,10 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
 
 int main(){
 
-    vector<int> students = {1,1,1,0,0,1}; 
-    vector<int> sandwiches = {1,0,0,0,1,1}; 
+    //vector<int> students = {1,1,0,0}; 
+    //vector<int> sandwiches = {0,1,0,1}; 
+    vector<int> students = {1,1,1,0,0,1};
+    vector<int> sandwiches = {1,0,0,0,1,1};
     int result = countStudents(students, sandwiches); 
 
     cout << "students unable to eat lunch: " << result << endl; 
