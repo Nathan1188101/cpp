@@ -106,8 +106,6 @@ class MyQueue {
 
 int main(){
 
-    int x = 5;
-    cout << &x << endl; 
-
+    
 
 }
