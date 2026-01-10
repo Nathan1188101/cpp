@@ -51,27 +51,34 @@ Follow-up: Can you implement the queue such that each operation is amortized O(1
 // encapsulates data and functions 
 class MyQueue {
 
+// need to specify that this is all public, otherwise it defaults to private and cannot be accessed in main() 
+public:
+
     // thoughts:
     /*
         need to use two stacks 
+        FIFO queue 
+
+        PUSH FUNCTION: 
+        push to back of queue 
+        if the stack isn't empty 
+        push to stack 1
+        if stack 1 is already full -> pop and push each from 1 to 2 -> then push new element to stack 1 -> then push everything back on top 
 
     */
 
+    // could make these private because we don't want them to be messed with, keep them internal (for now will leave public)
     stack<int> stack1; 
     stack<int> stack2; 
 
-    MyQueue(){
-
-    }
+    MyQueue(){}
 
     void push(int x){
 
-        // push to back of queue 
-        // if the stack isn't empty 
-        // push to stack 1
-        // if stack 1 is already full -> pop and push each from 1 to 2 -> then push new element to stack 1 -> then push everything back on top 
+        cout << "pushing: " << x << endl; 
 
         if(stack1.empty()){
+            cout << "stack 1 empty, pushing " << x << endl; 
             stack1.push(x);
         }else{
             // stack1 has elements in it 
@@ -79,26 +86,47 @@ class MyQueue {
             while(!stack1.empty()){
                 stack2.push(stack1.top());
                 stack1.pop(); 
+                cout << "move from stack 1 to stack 2" << endl; 
             }
 
             stack1.push(x);
+            cout << "pushed " << x << " to back of queue" << endl; 
 
             while(!stack2.empty()){
                 stack1.push(stack2.top());
                 stack2.pop();
+                cout << "move from stack 2 to stack 1" << endl; 
             }
         }
+
     }
 
     int pop(){
 
+        cout << "popping front of line: " << stack1.top() << endl; 
+        int top = stack1.top();
+        // FIFO 
+        // so we remove the front of the queue 
+        stack1.pop(); 
+        return top; 
     }
 
     int peek(){
-
+        // returns the element at the front of the queue 
+        int peek = stack1.top(); 
+        return peek; 
     }
 
     bool empty(){
+
+        if(stack1.empty()){
+            cout << "queue empty" << endl; 
+            return true; 
+        }
+        else{
+            cout << "queue NOT empty" << endl; 
+            return false; 
+        }
 
     }
 
@@ -106,6 +134,19 @@ class MyQueue {
 
 int main(){
 
-    
+    MyQueue myQueue; 
+    myQueue.empty(); 
+    myQueue.push(1); // this would be front of queue 
+    myQueue.push(2);
+    myQueue.push(3); 
+    myQueue.empty(); 
+
+    myQueue.pop(); 
+    myQueue.pop();
+    myQueue.pop();
+
+    myQueue.empty();
+
+    return 0; 
 
 }
