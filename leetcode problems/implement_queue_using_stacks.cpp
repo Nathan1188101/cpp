@@ -51,12 +51,43 @@ Follow-up: Can you implement the queue such that each operation is amortized O(1
 // encapsulates data and functions 
 class MyQueue {
 
+    // thoughts:
+    /*
+        need to use two stacks 
+
+    */
+
+    stack<int> stack1; 
+    stack<int> stack2; 
+
     MyQueue(){
 
     }
 
     void push(int x){
 
+        // push to back of queue 
+        // if the stack isn't empty 
+        // push to stack 1
+        // if stack 1 is already full -> pop and push each from 1 to 2 -> then push new element to stack 1 -> then push everything back on top 
+
+        if(stack1.empty()){
+            stack1.push(x);
+        }else{
+            // stack1 has elements in it 
+            // so while it has elements, pop the top -> push to stack 2 (so top of stack 1 will be at bottom of stack 2, and end of stack 1 will be at top of stack 2)
+            while(!stack1.empty()){
+                stack2.push(stack1.top());
+                stack1.pop(); 
+            }
+
+            stack1.push(x);
+
+            while(!stack2.empty()){
+                stack1.push(stack2.top());
+                stack2.pop();
+            }
+        }
     }
 
     int pop(){
@@ -74,5 +105,9 @@ class MyQueue {
 };
 
 int main(){
+
+    int x = 5;
+    cout << &x << endl; 
+
 
 }
