@@ -125,9 +125,6 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
 
     int student_count = 0; 
     int acc = 0; 
-    int check = 0; 
-    bool flag = false; 
-    int temp_count = 0; 
 
     while(!students.empty()){
 
@@ -136,8 +133,6 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
             break; 
         }
  
-
-        // we need a way to signal that we are looping around the same students, they can't eat   
         if(students[0] == sandwiches[0])
         {
             // if they match  
@@ -167,13 +162,41 @@ int countStudents(vector<int>& students, vector<int>& sandwiches){
 
 }
 
+int testingKnowledgeTypeShit(vector<int>& students, vector<int>& sandwiches){
+
+    int acc = 0; 
+    int student_count = 0; 
+
+    while(!students.empty())
+    {
+        if(acc == students.size())
+        {
+            break; 
+        }
+
+        if(students[0] == sandwiches[0]){
+            students.erase(students.begin()); 
+            sandwiches.erase(sandwiches.begin()); 
+            acc = 0; 
+        }
+        else{
+            students.push_back(students[0]); 
+            students.erase(students.begin());
+            acc++; 
+        }
+    }
+
+    return students.size(); 
+
+}
+
 int main(){
 
     //vector<int> students = {1,1,0,0}; 
     //vector<int> sandwiches = {0,1,0,1}; 
     vector<int> students = {1,1,1,0,0,1};
     vector<int> sandwiches = {1,0,0,0,1,1};
-    int result = countStudents(students, sandwiches); 
+    int result = testingKnowledgeTypeShit(students, sandwiches); 
 
     cout << "students unable to eat lunch: " << result << endl; 
 
