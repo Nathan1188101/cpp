@@ -1,6 +1,6 @@
 #include<iostream> 
 #include<vector> 
-#include<algorithm> // for max_element 
+#include<queue> // for priority queue 
 
 using namespace std; 
 
@@ -62,16 +62,35 @@ int lastStoneWeight(vector<int>& stones){
         // could be the same as max
         // otherwise we need the next largest 
 
+        // ok I did some research and have learned about:
+        // max heap
+        // which is good for making priority queues 
 
-        // remember: (lots of these c++ functions return what they find as an iterator (basically a pointer)), so a pointer references a location in memeory
-        //           so we want to dereference that (memory location/address) and just get the value there itself. 
-        //           doing *x does the derefencing -> returns the value itself
-        int maxVal = *max_element(stones.begin(), stones.end()); 
+        // a max heap: 
+        // each nodes value is >= it's children
+        // so larger values float to the top 
 
-        // need to ignore that from the vector now
-        // and find the next largest (or same)
+        // so somehow we use a priority queue to implment a max heap (I think?) 
+
+
+        // thoughts: 
+        /*
+            ok I've done some more research 
+            a priority queue by defauly in c++ is a max priority queue (max values prioritized)
+
+            looks something like this: 
+
+                priority_queue<int> pq; 
+
+                then, 
+
+                pq.top() = max
+                pq.pop() removes max 
+                pq.push(x) inserts x while keeping the heap property 
+
+        */
         
-
+        priority_queue<int> pq; 
 
     }
 
