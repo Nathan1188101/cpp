@@ -56,8 +56,21 @@ int lastStoneWeight(vector<int>& stones){
             return the weight of the last stone remaining (if there are any left) (will at most be one left)
     */
 
-    while(!stones.empty())
+
+    // by default it is a max heap, largest values float to the top 
+    priority_queue<int> pq; 
+    int result = 0; 
+
+
+    cout << "pushing everything to pq" << endl; 
+    // put everything into pq before looping 
+    for(int i = 0; i < stones.size(); i++){
+        pq.push(stones[i]);
+    }
+
+    while(!pq.empty())
     {
+        /*
         // need to find max value and then the next max value
         // could be the same as max
         // otherwise we need the next largest 
@@ -71,7 +84,7 @@ int lastStoneWeight(vector<int>& stones){
         // so larger values float to the top 
 
         // so somehow we use a priority queue to implment a max heap (I think?) 
-
+        */
 
         // thoughts: 
         /*
@@ -89,13 +102,82 @@ int lastStoneWeight(vector<int>& stones){
                 pq.push(x) inserts x while keeping the heap property 
 
         */
+
+        cout << "current size: " << pq.size() << endl; 
+        if(pq.size() == 1 || pq.empty()){
+            break; 
+        }
         
-        priority_queue<int> pq; 
+        // now that everything is in the queue we can start taking two largest values
+        // y should be guarenteed to be larger than x 
+        int y = pq.top(); 
+        cout << "top: " << y << endl; 
+        pq.pop(); 
+
+        int x = pq.top(); 
+        cout << "second top: " << x << endl; 
+        pq.pop(); 
+
+        if(x != y){
+            y = y - x;
+            cout << "y - x = " << y << endl; 
+            pq.push(y); 
+            cout << "pushed " << y << " to pq" << endl; 
+        }
 
     }
+
+    if(pq.empty())
+        return 0;
+
+    return pq.top(); 
+
+}
+
+// same as before I have just removed the debugging cout parts 
+int lastStoneWeight(vector<int>& stones){
+
+    priority_queue<int> pq; 
+    int result = 0; 
+
+    // put everything into pq before looping 
+    for(int i = 0; i < stones.size(); i++){
+        pq.push(stones[i]);
+    }
+
+    while(!pq.empty())
+    {
+
+
+        if(pq.size() == 1 || pq.empty()){
+            break; 
+        }
+
+        int y = pq.top(); 
+        pq.pop(); 
+
+        int x = pq.top(); 
+        pq.pop(); 
+
+        if(x != y){
+            y = y - x;
+            pq.push(y); 
+        }
+
+    }
+
+    if(pq.empty())
+        return 0;
+
+    return pq.top(); 
 
 }
 
 int main(){
+
+    vector<int> stones = {2,7,4,1,8,1};
+    int result = lastStoneWeight(stones); 
+
+    cout << "result: " << result << endl; 
     
 }
