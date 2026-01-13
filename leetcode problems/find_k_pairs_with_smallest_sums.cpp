@@ -69,26 +69,33 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
         pq2.push(nums2[i]);
     }
 
-    // take the root of each first 
-    // then keep going for the rest of k 
-    int top1 = pq1.top(); 
-    int top2 = pq2.top(); 
-
-    result.push_back({top1, top2});
 
     for(int i = 1; i < k; i++)
     {
         // take the top of each, compare them to see which is smallest. 
         // then use that smaller val as the control value and compare it to the others in the other array? 
 
+        // take the root of each first 
+        // then keep going for the rest of k 
+        int top1 = pq1.top(); 
+        cout << "top1: " << top1 << endl; 
+        int top2 = pq2.top(); 
+        cout << "top2: " << top2 << endl; 
+
+        result.push_back({top1, top2});
+
 
         if(top1 > top2)
         {
+            cout << "top1 greater than top2" << endl; 
+            cout << "popping: " << pq2.top() << endl; 
             pq2.pop();
             int next_smallest = pq2.top();
             result.push_back({top1, next_smallest}); 
         }
         else if(top2 > top1){
+            cout << "top2 greater than top1" << endl; 
+            cout << "popping: " << pq1.top() << endl; 
             pq1.pop(); 
             int next_smallest = pq1.top(); 
             result.push_back({top2, next_smallest}); 
@@ -111,8 +118,7 @@ int main(){
     {
         for(int j = 0; j < result[i].size(); j++)
         {
-            cout << "[" << i;
-            cout << ", " << j << "]" << endl; 
+            cout << "[" << result[i][0] << ", " << result[i][1] << "]" << endl; 
         }
     }
     
