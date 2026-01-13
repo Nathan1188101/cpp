@@ -58,6 +58,9 @@ int main(){
     int k = 3; 
     vector<vector<int>> result = kSmallestPairs(nums1, nums2, k); 
 
+    for(int i = 0; i < result.size() < i++){
+        cout << result[i, 1] << endl; 
+    }
     cout << "Result: " << result << endl; 
 
 }
