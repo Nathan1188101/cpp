@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector> 
+#include<queue> 
 
 using namespace std; 
 
@@ -42,12 +43,31 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
         ok we are given two integer arrays 
         nums 1 and nums 2 
         they are sorted in non decreasing order (meaning) -> values never go down, each element is either equal to or greater than the previous one 
-        we are also give an integer k 
+        we are also given an integer k 
 
         we need to define a pair (u, v) which consists of one element from the first array and one from the other 
 
         we need to return k pairs with the smallest sums 
+
+        possible solutions: 
+
+        I'm wondering if we can use a min_heap in some way to find the min values of each array and then combine them together to get smaller pairs 
+
+        but looking at the example it seems that we take a "control value" from one array and then compare it to every other value in the other array 
     */
+
+    priority_queue<int> pq1; 
+    priority_queue<int> pq2; 
+
+    for(int i = 0; i < nums1.size(); i++){
+        pq1.push(nums1[i]);
+    }
+
+    for(int i = 0; i < nums2.size(); i++){
+        pq2.push(nums2[i]);
+    }
+
+    // now 
 
 }
 
@@ -58,9 +78,14 @@ int main(){
     int k = 3; 
     vector<vector<int>> result = kSmallestPairs(nums1, nums2, k); 
 
-    for(int i = 0; i < result.size() < i++){
-        cout << result[i, 1] << endl; 
+    for(int i = 0; i < result.size(); i++)
+    {
+        for(int j = 0; j < result[i].size(); j++)
+        {
+            cout << "[" << i;
+            cout << ", " << j << "]" << endl; 
+        }
     }
-    cout << "Result: " << result << endl; 
+    
 
 }
