@@ -38,7 +38,7 @@ Constraints:
 1 <= stones[i] <= 1000
 */
 
-int lastStoneWeight(vector<int>& stones){
+int lastStoneWeight1(vector<int>& stones){
 
     // thoughts: 
     /*
