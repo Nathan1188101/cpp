@@ -56,8 +56,10 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
         but looking at the example it seems that we take a "control value" from one array and then compare it to every other value in the other array 
     */
 
-    priority_queue<int> pq1; 
-    priority_queue<int> pq2; 
+    // make a priority queue of ints, stored in a vector, where smallest values go on top (front of line)
+    priority_queue<int, vector<int>, greater<int>> pq1; 
+    priority_queue<int, vector<int>, greater<int>> pq2; 
+    vector<vector<int>> result; 
 
     for(int i = 0; i < nums1.size(); i++){
         pq1.push(nums1[i]);
@@ -67,7 +69,26 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
         pq2.push(nums2[i]);
     }
 
-    // now 
+    // take the root of each first 
+    // then keep going for the rest of k 
+
+    for(int i = 0; i < k; i++)
+    {
+        // take the top of each, compare them to see which is smallest. 
+        // then use that smaller val as the control value and compare it to the others in the other array? 
+
+        int top1 = pq1.top(); 
+        int top2 = pq2.top(); 
+
+        result.push_back({top1, top2});
+
+        if(top1 > top2)
+        {
+            
+        }
+
+    }
+
 
 }
 
