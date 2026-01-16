@@ -36,7 +36,7 @@ nums1 and nums2 both are sorted in non-decreasing order.
 k <= nums1.length * nums2.length
 */
 
-vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k){
+vector<vector<int>> kSmallestPairs1(vector<int>& nums1, vector<int>& nums2, int k){
 
     // thoughts: 
     /*
@@ -107,6 +107,142 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
 
 }
 
+vector<vector<int>> kSmallestPairs2(vector<int>& nums1, vector<int>& nums2, int k){
+
+    // thoughts: 
+    /*
+        ok starting fresh. 
+
+        two arrays give in non decreasing order and an int k 
+
+        we need to find k pairs with the smallest sums 
+
+        put both vectors into their own min priority queues? 
+
+        oh ya, we know that the earlier elements in both vectors will be the smallest
+        as they are sorted in non decreasing order. 
+
+
+        IDEA: 
+        calculate a bunch of pair sums -> store the sums on the heap? then use that info to get the
+        number of pairs 
+
+
+
+    */
+
+
+    // what is an efficient time to go through both vectors and calcualte sums? 
+    // could do nested loops and expand from each in each direction but that is slow 
+
+    // store the sum, and the index from i and index from j (tuple<sum, i, j>)
+    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq; 
+    vector<vector<int>> result; 
+
+    for (int i = 0; i < nums1.size(); i++)
+    {
+
+        int sum = 0; 
+
+        // ok I need to take each index from this array and do all combos with the other before moving on 
+        int current_num = nums1[i]; 
+        cout << "current num 1: " << current_num << endl; 
+
+        for (int j = 0; j < nums2.size(); j++)
+        {
+
+            cout << "current num2: " << nums2[j] << endl; 
+
+            sum = current_num + nums2[j];
+            cout << "calculated sum: " << sum << endl;  
+            pq.push({sum, i, j});
+            cout << "pushing: " << sum << " " << i << " " << j << endl; 
+        }
+
+    }
+
+    cout << "now checking " << k << " pairs" << endl; 
+    // iterate for k many and retrieve from the min heap pq 
+    for (int i = 0; i < k; i++){
+
+        cout << "iteration: " << i << endl; 
+
+        tuple<int, int, int> top = pq.top();
+        int list_one_index = get<1>(top); 
+        int list_two_index = get<2>(top);
+        pq.pop(); 
+        
+        int num1 = nums1[list_one_index]; 
+        int num2 = nums2[list_two_index]; 
+
+        result.push_back({num1, num2});
+
+    }
+
+    return result; 
+
+}
+
+vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k){
+
+    // thoughts: 
+    /*
+        ok starting fresh. 
+
+        two arrays give in non decreasing order and an int k 
+
+        we need to find k pairs with the smallest sums 
+
+        put both vectors into their own min priority queues? 
+
+        oh ya, we know that the earlier elements in both vectors will be the smallest
+        as they are sorted in non decreasing order. 
+
+
+        IDEA: 
+        calculate a bunch of pair sums -> store the sums on the heap? then use that info to get the
+        number of pairs 
+
+
+
+    */
+
+    // store the sum, and the index from i and index from j (tuple<sum, i, j>)
+    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq; 
+    vector<vector<int>> result; 
+
+    for (int i = 0; i < k; i++){
+
+        int sum = 0; 
+
+        for (int j = 0; j < k; j++){
+
+            sum = nums1[i] + nums2[j]; 
+            pq.push({sum, i, j});
+            
+        }
+
+    }
+
+    // iterate for k many and retrieve from the min heap pq 
+    for (int i = 0; i < k; i++){
+
+        tuple<int, int, int> top = pq.top();
+        int list_one_index = get<1>(top); 
+        int list_two_index = get<2>(top);
+        pq.pop(); 
+        
+        int num1 = nums1[list_one_index]; 
+        int num2 = nums2[list_two_index]; 
+
+        result.push_back({num1, num2});
+
+    }
+
+    return result; 
+
+}
+
 int main(){
 
     vector<int> nums1 = {1, 7, 11};
@@ -114,12 +250,11 @@ int main(){
     int k = 3; 
     vector<vector<int>> result = kSmallestPairs(nums1, nums2, k); 
 
-    for(int i = 0; i < result.size(); i++)
-    {
-        for(int j = 0; j < result[i].size(); j++)
-        {
-            cout << "[" << result[i][0] << ", " << result[i][1] << "]" << endl; 
-        }
+    cout << "result: " << endl; 
+    for (int i = 0; i < result.size(); i++){
+
+        cout << result[i][0] << ", " << result[i][1] << endl; 
+
     }
     
 
