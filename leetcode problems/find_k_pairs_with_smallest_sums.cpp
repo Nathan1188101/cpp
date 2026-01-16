@@ -1,8 +1,9 @@
 #include<iostream>
 #include<vector> 
 #include<queue> 
+#include<algorithm> 
 
-using namespace std; 
+using namespace std; // shouldn't do this technically 
 
 // problems: 
 /*
@@ -185,57 +186,33 @@ vector<vector<int>> kSmallestPairs2(vector<int>& nums1, vector<int>& nums2, int 
 
 vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k){
 
-    // thoughts: 
-    /*
-        ok starting fresh. 
-
-        two arrays give in non decreasing order and an int k 
-
-        we need to find k pairs with the smallest sums 
-
-        put both vectors into their own min priority queues? 
-
-        oh ya, we know that the earlier elements in both vectors will be the smallest
-        as they are sorted in non decreasing order. 
-
-
-        IDEA: 
-        calculate a bunch of pair sums -> store the sums on the heap? then use that info to get the
-        number of pairs 
-
-
-
-    */
 
     // store the sum, and the index from i and index from j (tuple<sum, i, j>)
     priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq; 
     vector<vector<int>> result; 
 
-    for (int i = 0; i < k; i++){
-
-        int sum = 0; 
-
-        for (int j = 0; j < k; j++){
-
-            sum = nums1[i] + nums2[j]; 
-            pq.push({sum, i, j});
-            
-        }
-
+    // ok add all i, j(0) pairs
+    for (int i = 0; i < min(k, (int)nums1.size()); i++){
+        int sum = nums1[i] + nums2[0];
+        pq.push({sum, i, 0}); 
     }
 
-    // iterate for k many and retrieve from the min heap pq 
+    // so now we have something like: (0,0), (1,0), (2, 0), etc 
+    // now we start popping and adding: (i,j+1)
     for (int i = 0; i < k; i++){
+        tuple<int, int, int> top_element = pq.top(); 
+        int indexI = get<1>(top_element); 
+        int indexJ = get<2>(top_element); 
+        int numI = nums1[indexI]; 
+        int numJ = nums2[indexJ]; 
+        pq.pop();
 
-        tuple<int, int, int> top = pq.top();
-        int list_one_index = get<1>(top); 
-        int list_two_index = get<2>(top);
-        pq.pop(); 
-        
-        int num1 = nums1[list_one_index]; 
-        int num2 = nums2[list_two_index]; 
+        result.push_back({numI, numJ}); 
 
-        result.push_back({num1, num2});
+        if(indexJ + 1 < nums2.size()){
+            int sum = nums1[indexI] + nums2[indexJ + 1]; // adding the successor of j index from currently grabbed i index. 
+            pq.push({sum, indexI, indexJ + 1});
+        }
 
     }
 
