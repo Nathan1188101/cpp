@@ -27,39 +27,79 @@ Problem 1.
 #include<iostream>
 #include<vector> 
 #include<string>
+#include<algorithm>
 
 std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> key){
 
-    std::string keySpace = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
+    std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
 
-    // need to take user input for plain text
-    // need to take user input for key 
+    // map message to keyspace (before permutation)
+    /*
+        thinking through this: 
+
+        so when we encounter a char, we need to check what it's value is. 
+            like if we find a H -> 7
+            
+            example: "hello" -> 7, 4, 11, 11, 14
+
+            so we need a way to iterate through the plain text -> match the current char to it's value -> then put it in some output vector or something 
 
 
-    // then map the letters to the numbers 
-    // then shuffle the numbers around the match the key
+    */
+
+    for (int i = 0; i < plainText.size(); i++) {
+
+        // identify current char
+        // find it in keyspace 
+        // get index -> boom done 
+
+        // get current char 
+        char current_char = plainText[i]; 
+
+        // search for it in space 
+        size_t index = key_space.find(current_char);
+
+        if (index != std::string::npos) {
+            // if char/index is found 
+            
+        }
 
 
+    }
 
 }
 
 
 int main(){
 
-    std::string plainText; 
+    std::string plain_text; 
     std::vector<int> key;  
     int input; 
 
     std::cout << "input plain text (message): "; 
-    std::cin >> plainText; 
+    std::cin >> plain_text; 
 
-    std::cout << "input 28 values for key: ";
-    for (int i = 0; i < 28; i++) {
+    std::cout << "input (from 0-28) 28 values for key: ";
+    while (key.size() != 28) {
+
         std::cin >> input;
-        key.push_back(input); 
+
+        // needs to be within the range 
+        if (input > 28 || input < 0) {
+            std::cout << "only values within the range of 0 - 28" << std::endl;
+        }
+        // cannot already exist in the list 
+        else if (std::find(key.begin(), key.end(), input) != key.end()) {
+            std::cout << "already input this value, try another." << std::endl; 
+        }
+        else {
+            // only add value if it passes validation 
+            key.push_back(input); 
+        }
+
     }
 
-    std::string result = subsitutionCipherEncryption(plainText, key); 
+    std::string result = subsitutionCipherEncryption(plain_text, key); 
 
     std::cout << "result: " << result << std::endl; 
 
