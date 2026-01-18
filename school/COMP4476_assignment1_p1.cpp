@@ -50,6 +50,7 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
 
     */
 
+    std::cout << "starting conversion to numbers " << std::endl;
     for (int i = 0; i < plainText.size(); i++) {
 
         // identify current char
@@ -58,16 +59,18 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
 
         // get current char 
         char current_char = plainText[i]; 
+        std::cout << "current char: " << current_char << std::endl; 
 
         // search for it in space 
         size_t index = key_space.find(current_char);
+        std::cout << "found index: " << index << std::endl; 
 
         if (index != std::string::npos) {
             // if char/index is found 
             // exists
 
             translation.push_back(index); 
-
+            std::cout << "pushed back: " << index << std::endl; 
         }
 
     }
@@ -81,18 +84,20 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
     // pi(1) = 3
     // pi(2) = 6
 
-    for (int i = 0; i < substitution.size(); i++) {
+    std::cout << "starting substitution (replace nums with permutated nums)" << std::endl; 
+    for (int i = 0; i < translation.size(); i++) {
 
         // so the index will give us the mapping to the value 
 
         // current num 
-        int current_num = substitution[i]; 
+        int current_num = translation[i]; 
 
         // the current num will the the index we use in the permutation
         // then replace the current num with what is at that index 
         
         // so go to index denoted by current num in permutation list
         int replace = key[current_num]; 
+        std::cout << "replacing: " << current_num << " with: " << replace << std::endl; 
 
         substitution.push_back(replace);
 
@@ -128,28 +133,31 @@ int main(){
     std::vector<int> key;  
     int input; 
 
-    std::cout << "input plain text (message): "; 
-    std::cin >> plain_text; 
+    plain_text = "HELLO";
+    key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
 
-    std::cout << "input (from 0-28) 28 values for key: ";
-    while (key.size() != 28) {
+    // std::cout << "input plain text (message): "; 
+    // std::cin >> plain_text; 
 
-        std::cin >> input;
+    // std::cout << "input (from 0-28) 28 values for key: ";
+    // while (key.size() != 28) {
 
-        // needs to be within the range 
-        if (input > 28 || input < 0) {
-            std::cout << "only values within the range of 0 - 28" << std::endl;
-        }
-        // cannot already exist in the list 
-        else if (std::find(key.begin(), key.end(), input) != key.end()) {
-            std::cout << "already input this value, try another." << std::endl; 
-        }
-        else {
-            // only add value if it passes validation 
-            key.push_back(input); 
-        }
+    //     std::cin >> input;
 
-    }
+    //     // needs to be within the range 
+    //     if (input > 28 || input < 0) {
+    //         std::cout << "only values within the range of 0 - 28" << std::endl;
+    //     }
+    //     // cannot already exist in the list 
+    //     else if (std::find(key.begin(), key.end(), input) != key.end()) {
+    //         std::cout << "already input this value, try another." << std::endl; 
+    //     }
+    //     else {
+    //         // only add value if it passes validation 
+    //         key.push_back(input); 
+    //     }
+
+    // }
 
     std::string result = subsitutionCipherEncryption(plain_text, key); 
 
