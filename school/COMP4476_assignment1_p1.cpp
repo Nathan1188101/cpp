@@ -32,6 +32,9 @@ Problem 1.
 std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> key){
 
     std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
+    std::vector<int> translation; 
+    std::vector<int> substitution; 
+    std::string encrypted; 
 
     // map message to keyspace (before permutation)
     /*
@@ -61,11 +64,60 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
 
         if (index != std::string::npos) {
             // if char/index is found 
-            
+            // exists
+
+            translation.push_back(index); 
+
         }
 
+    }
+    // now we have a vector of letters converted to numbers 
+    // now we need to take that and map them to the key
+    // so if we encounter a H -> 7 -> pi(7) = 12
+
+    // then we take the permutation 
+    // so if user entered -> 5, 3, 6, 11, etc. 
+    // pi(0) = 5
+    // pi(1) = 3
+    // pi(2) = 6
+
+    for (int i = 0; i < substitution.size(); i++) {
+
+        // so the index will give us the mapping to the value 
+
+        // current num 
+        int current_num = substitution[i]; 
+
+        // the current num will the the index we use in the permutation
+        // then replace the current num with what is at that index 
+        
+        // so go to index denoted by current num in permutation list
+        int replace = key[current_num]; 
+
+        substitution.push_back(replace);
+
+        // probably could turn to letter here at same time but for now we'll go below just to try it 
 
     }
+
+    // after that we should have a list of numbers (but encrypted), we just need to switch back to letters now 
+
+    for (int i = 0; i < substitution.size(); i++) {
+
+        // go through subbed list, and turn letters into nunmbers using orginal keyspace 
+        // so a 0 -> A still in this part 
+
+        int current_num = substitution[i]; 
+
+        char search = key_space[current_num]; 
+
+        encrypted.push_back(search); 
+
+    }
+
+        
+
+    return encrypted; 
 
 }
 
