@@ -29,9 +29,10 @@ Problem 1.
 #include<string>
 #include<algorithm>
 
-std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> key){
+std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int> key){
 
     std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
+    //std::string formatted_string; 
     std::vector<int> translation; 
     std::vector<int> substitution; 
     std::string encrypted; 
@@ -50,15 +51,27 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
 
     */
 
+    // NEED TO TAKE ALL PLAIN TEXT AND CONVERT CHARS TO UPPER CASE 
+
+    // for (int i = 0; i < plain_text.size(); i++) {
+
+    //     auto current_char = toupper(plain_text[i]); 
+
+    //     formatted_string.push_back(current_char); 
+
+    // }
+
+    std::string formatted_string = plain_text; 
+
     std::cout << "starting conversion to numbers " << std::endl;
-    for (int i = 0; i < plainText.size(); i++) {
+    for (int i = 0; i < formatted_string.size(); i++) {
 
         // identify current char
         // find it in keyspace 
         // get index -> boom done 
 
         // get current char 
-        char current_char = plainText[i]; 
+        char current_char = formatted_string[i]; 
         std::cout << "current char: " << current_char << std::endl; 
 
         // search for it in space 
@@ -126,6 +139,9 @@ std::string subsitutionCipherEncryption(std::string plainText, std::vector<int> 
 
 }
 
+std::string substitutionCipherDecryption(std::string cipherText, std::vector<int> key){
+
+}
 
 int main(){
 
@@ -133,31 +149,31 @@ int main(){
     std::vector<int> key;  
     int input; 
 
-    plain_text = "HELLO";
-    key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
+    // plain_text = "HELLO";
+    // key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
 
-    // std::cout << "input plain text (message): "; 
-    // std::cin >> plain_text; 
+    std::cout << "input plain text (message): "; 
+    std::cin >> plain_text; 
 
-    // std::cout << "input (from 0-28) 28 values for key: ";
-    // while (key.size() != 28) {
+    std::cout << "input (from 0-28) 28 values for key: ";
+    while (key.size() != 29) {
 
-    //     std::cin >> input;
+        std::cin >> input;
 
-    //     // needs to be within the range 
-    //     if (input > 28 || input < 0) {
-    //         std::cout << "only values within the range of 0 - 28" << std::endl;
-    //     }
-    //     // cannot already exist in the list 
-    //     else if (std::find(key.begin(), key.end(), input) != key.end()) {
-    //         std::cout << "already input this value, try another." << std::endl; 
-    //     }
-    //     else {
-    //         // only add value if it passes validation 
-    //         key.push_back(input); 
-    //     }
+        // needs to be within the range 
+        if (input > 28 || input < 0) {
+            std::cout << "only values within the range of 0 - 28" << std::endl;
+        }
+        // cannot already exist in the list 
+        else if (std::find(key.begin(), key.end(), input) != key.end()) {
+            std::cout << "already input this value, try another." << std::endl; 
+        }
+        else {
+            // only add value if it passes validation 
+            key.push_back(input); 
+        }
 
-    // }
+    }
 
     std::string result = subsitutionCipherEncryption(plain_text, key); 
 
