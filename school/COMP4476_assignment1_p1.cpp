@@ -23,7 +23,6 @@ Problem 1.
 
 
 */
-
 #include<iostream>
 #include<vector> 
 #include<string>
@@ -32,7 +31,7 @@ Problem 1.
 std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int> key){
 
     std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
-    //std::string formatted_string; 
+    std::string formatted_string; 
     std::vector<int> translation; 
     std::vector<int> substitution; 
     std::string encrypted; 
@@ -53,15 +52,15 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
 
     // NEED TO TAKE ALL PLAIN TEXT AND CONVERT CHARS TO UPPER CASE 
 
-    // for (int i = 0; i < plain_text.size(); i++) {
+    for (int i = 0; i < plain_text.size(); i++) {
 
-    //     auto current_char = toupper(plain_text[i]); 
+        auto current_char = toupper(plain_text[i]); 
 
-    //     formatted_string.push_back(current_char); 
+        formatted_string.push_back(current_char); 
 
-    // }
+    }
 
-    std::string formatted_string = plain_text; 
+    //std::string formatted_string = plain_text; 
 
     std::cout << "starting conversion to numbers " << std::endl;
     for (int i = 0; i < formatted_string.size(); i++) {
@@ -141,6 +140,15 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
 
 std::string substitutionCipherDecryption(std::string cipherText, std::vector<int> key){
 
+    /*
+        to decrypt 
+
+        we capture the cipher text,
+        map back using the key? 
+
+        
+    */
+
 }
 
 int main(){
@@ -150,10 +158,10 @@ int main(){
     int input; 
 
     // plain_text = "HELLO";
-    // key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
+    key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
 
     std::cout << "input plain text (message): "; 
-    std::cin >> plain_text; 
+    std::getline(std::cin, plain_text); 
 
     std::cout << "input (from 0-28) 28 values for key: ";
     while (key.size() != 29) {
