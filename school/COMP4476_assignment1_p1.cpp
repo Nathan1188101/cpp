@@ -31,8 +31,8 @@ Problem 1.
 
 const std::string KEY_SPACE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,.";
 
-// lots of comments throughout while thinking 
-std::string substitutionCipherEncryption1(const std::string& plain_text, const std::vector<int> key){
+// same as below, just with lots of comments throughout while thinking and debugging messages.  
+std::string substitutionCipherEncryption1(const std::string& plain_text, const std::vector<int>& key){
 
     std::string formatted_string; 
     std::vector<int> plain_text_ints; 
@@ -138,7 +138,7 @@ std::string substitutionCipherEncryption1(const std::string& plain_text, const s
 
 }
 
-// clean, no comments 
+// encryptionw
 std::string substitutionCipherEncryption(const std::string& plain_text, const std::vector<int>& key){
 
     std::string formatted_string; 
@@ -199,6 +199,7 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
 
 }
 
+// decryption 
 std::string substitutionCipherDecryption(const std::string& cipher_text, const std::vector<int>& key){
 
     /*
