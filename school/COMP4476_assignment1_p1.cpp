@@ -157,7 +157,7 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
 
     // convert plain text chars to plain text ints 
     for (int i = 0; i < formatted_string.size(); i++) {
-        
+
         // get current char 
         char current_char = formatted_string[i]; 
 
@@ -194,8 +194,6 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
         encrypted.push_back(search); 
 
     }
-
-        
 
     return encrypted; 
 
@@ -261,7 +259,6 @@ std::string substitutionCipherDecryption(const std::string& cipher_text, const s
 }
 
 int main(){
-
 
     std::string plain_text; 
     std::vector<int> key;  
