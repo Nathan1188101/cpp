@@ -156,37 +156,30 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
     }
 
     // convert plain text chars to plain text ints 
-    std::cout << "starting conversion to numbers " << std::endl;
     for (int i = 0; i < formatted_string.size(); i++) {
-
-
+        
         // get current char 
         char current_char = formatted_string[i]; 
-        std::cout << "current char: " << current_char << std::endl; 
 
         // search for it in space 
         size_t index = KEY_SPACE.find(current_char);
-        std::cout << "found index: " << index << std::endl; 
 
         // if number found 
         if (index != std::string::npos) {
             plain_text_ints.push_back(index); 
-            std::cout << "pushed back: " << index << std::endl; 
         }
 
     }
 
 
     // converting plain text ints to cipher text ints 
-    std::cout << "starting substitution (replace nums with permutated nums)" << std::endl; 
     for (int i = 0; i < plain_text_ints.size(); i++) {
 
         // current num 
         int current_num = plain_text_ints[i]; 
-        
+
         // so go to index denoted by current num in permutation list
         int replace = key[current_num]; 
-        std::cout << "replacing: " << current_num << " with: " << replace << std::endl; 
 
         substitution.push_back(replace);
 
@@ -225,17 +218,15 @@ std::string substitutionCipherDecryption(const std::string& cipher_text, const s
     std::vector<int> decrypted_ints;  
     std::string decryption; 
 
-    // convert to nums using Z29 
+    // convert to nums using Z29 (KEY_SPACE) 
     for (int i = 0; i < cipher_text.size(); i++) {
 
         char current_char = cipher_text[i]; 
         size_t index = KEY_SPACE.find(current_char);
         
         if (index != std::string::npos) {
-            // if char/index is found 
             // exists
             cipher_text_ints.push_back(index); 
-            std::cout << "pushed back: " << index << std::endl; 
         }
 
     }
@@ -245,7 +236,6 @@ std::string substitutionCipherDecryption(const std::string& cipher_text, const s
 
         // search for each of these nums in the permutation 
         // take the index of where it is and that's the num we need. 
-
         auto plain_text_int = std::find(key.begin(), key.end(), cipher_text_ints[i]);
 
         if (plain_text_int != key.end()) {
