@@ -27,12 +27,14 @@ Problem 1.
 #include<vector> 
 #include<string>
 #include<algorithm>
+#include<iterator> 
 
-std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int> key){
+// lots of comments throughout while thinking 
+std::string substitutionCipherEncryption1(std::string plain_text, std::vector<int> key){
 
     std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
     std::string formatted_string; 
-    std::vector<int> translation; 
+    std::vector<int> plain_text_ints; 
     std::vector<int> substitution; 
     std::string encrypted; 
 
@@ -50,7 +52,6 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
 
     */
 
-    // NEED TO TAKE ALL PLAIN TEXT AND CONVERT CHARS TO UPPER CASE 
 
     for (int i = 0; i < plain_text.size(); i++) {
 
@@ -59,8 +60,6 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
         formatted_string.push_back(current_char); 
 
     }
-
-    //std::string formatted_string = plain_text; 
 
     std::cout << "starting conversion to numbers " << std::endl;
     for (int i = 0; i < formatted_string.size(); i++) {
@@ -81,7 +80,7 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
             // if char/index is found 
             // exists
 
-            translation.push_back(index); 
+            plain_text_ints.push_back(index); 
             std::cout << "pushed back: " << index << std::endl; 
         }
 
@@ -97,12 +96,12 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
     // pi(2) = 6
 
     std::cout << "starting substitution (replace nums with permutated nums)" << std::endl; 
-    for (int i = 0; i < translation.size(); i++) {
+    for (int i = 0; i < plain_text_ints.size(); i++) {
 
         // so the index will give us the mapping to the value 
 
         // current num 
-        int current_num = translation[i]; 
+        int current_num = plain_text_ints[i]; 
 
         // the current num will the the index we use in the permutation
         // then replace the current num with what is at that index 
@@ -138,16 +137,138 @@ std::string subsitutionCipherEncryption(std::string plain_text, std::vector<int>
 
 }
 
+// clean, no comments 
+std::string substitutionCipherEncryption(std::string plain_text, std::vector<int> key){
+
+    std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
+    std::string formatted_string; 
+    std::vector<int> plain_text_ints; 
+    std::vector<int> substitution; 
+    std::string encrypted;
+
+    // convert to upper 
+    for (int i = 0; i < plain_text.size(); i++) {
+
+        auto current_char = toupper(plain_text[i]); 
+
+        formatted_string.push_back(current_char); 
+
+    }
+
+    // convert plain text chars to plain text ints 
+    std::cout << "starting conversion to numbers " << std::endl;
+    for (int i = 0; i < formatted_string.size(); i++) {
+
+
+        // get current char 
+        char current_char = formatted_string[i]; 
+        std::cout << "current char: " << current_char << std::endl; 
+
+        // search for it in space 
+        size_t index = key_space.find(current_char);
+        std::cout << "found index: " << index << std::endl; 
+
+        // if number found 
+        if (index != std::string::npos) {
+            plain_text_ints.push_back(index); 
+            std::cout << "pushed back: " << index << std::endl; 
+        }
+
+    }
+
+
+    // converting plain text ints to cipher text ints 
+    std::cout << "starting substitution (replace nums with permutated nums)" << std::endl; 
+    for (int i = 0; i < plain_text_ints.size(); i++) {
+
+        // current num 
+        int current_num = plain_text_ints[i]; 
+        
+        // so go to index denoted by current num in permutation list
+        int replace = key[current_num]; 
+        std::cout << "replacing: " << current_num << " with: " << replace << std::endl; 
+
+        substitution.push_back(replace);
+
+    }
+
+    for (int i = 0; i < substitution.size(); i++) {
+
+        int current_num = substitution[i]; 
+
+        char search = key_space[current_num]; 
+
+        encrypted.push_back(search); 
+
+    }
+
+        
+
+    return encrypted; 
+
+}
+
 std::string substitutionCipherDecryption(std::string cipherText, std::vector<int> key){
 
     /*
         to decrypt 
 
-        we capture the cipher text,
-        map back using the key? 
+        capture cipher text 
+        convert to nums using key_space 
+        then search for each num in permutation -> wherever that num is, take it's index (that's the original plain text number)
+        convert new nums to plain text
+        boom done. 
 
-        
     */
+
+    std::string key_space = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ,."; 
+    std::vector<int> cipher_text_ints;
+    std::vector<int> decrypted_ints;  
+    std::string decryption; 
+
+    // convert to nums using Z29 
+    for (int i = 0; i < cipherText.size(); i++) {
+
+        char current_char = cipherText[i]; 
+        size_t index = key_space.find(current_char);
+        
+        if (index != std::string::npos) {
+            // if char/index is found 
+            // exists
+
+            cipher_text_ints.push_back(index); 
+            std::cout << "pushed back: " << index << std::endl; 
+        }
+
+    }
+
+    // then apply inverse/reverse mapping 
+    for (int i = 0; i < cipher_text_ints.size(); i++) {
+
+        // search for each of these nums in the permutation 
+        // take the index of where it is and that's the num we need. 
+
+        auto plain_text_int = std::find(key.begin(), key.end(), cipher_text_ints[i]);
+
+        if (plain_text_int != key.end()) {
+            int index = std::distance(key.begin(), plain_text_int);
+            decrypted_ints.push_back(index); 
+        }
+
+    }
+
+    // convert decrypted nums to original plain text 
+    for (int i = 0; i < decrypted_ints.size(); i++) {
+
+        int current_num = decrypted_ints[i]; 
+
+        char map_to = key_space[current_num]; 
+
+        decryption.push_back(map_to);
+
+    }
+
+    return decryption; 
 
 }
 
@@ -183,8 +304,13 @@ int main(){
 
     }
 
-    std::string result = subsitutionCipherEncryption(plain_text, key); 
+    std::string result = substitutionCipherEncryption(plain_text, key); 
 
     std::cout << "result: " << result << std::endl; 
+
+    std::string cipher_text = result; 
+    std::string decrypt = substitutionCipherDecryption(cipher_text, key);
+    
+    std::cout << "decryption: " << decrypt << std::endl; 
 
 }
