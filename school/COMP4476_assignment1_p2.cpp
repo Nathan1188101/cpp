@@ -30,7 +30,7 @@ std::string permutationCipher(const std::string& plain_text, const int& m){
     
     for (int i = 0; i < blocks.size(); i++) {
 
-        
+        // something here
 
     }
 
