@@ -6,7 +6,7 @@ std::string permutationCipher(const std::string& plain_text, const int& m){
 
     // we split plain text up into m sized blocks 
     // then make permutations of each block 
-
+    
 
 
 }
