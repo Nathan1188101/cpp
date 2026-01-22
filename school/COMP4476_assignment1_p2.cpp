@@ -4,8 +4,6 @@
 #include<algorithm>
 #include<iterator> 
 
-const std::string LETTERS = "abcdefghijklmnopqrstuvwxyz"; 
-
 std::string permutationCipher(std::string& plain_text, const int& m, const std::vector<int>& permutation){
 
     std::string encrypted_message; 
@@ -15,26 +13,19 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     
     // string vector for blocks 
     std::vector<std::string> blocks; 
-    std::vector<std::string> permutated_blocks; 
+    std::vector<std::string> permuted_blocks; 
     int counter = 1; 
     int current = 0;
     blocks.push_back(""); // starting with 1 empty block we can begin adding to 
     for (int i = 0; i < plain_text.size(); i++) {
-
         // keep pushing/building a block until counter > m 
         // when counter > m, start building new block  
         if (counter <= m) {
-
-            std::cout << "current char: " << plain_text[i] << std::endl; 
-
             counter++; 
             blocks[current].push_back(plain_text[i]); 
-
         } else {
-            std::cout << "starting new block." << std::endl; 
-            std::cout << "current char: " << plain_text[i] << std::endl; 
             counter = 1; // reset counter  
-            current += 1; // incremement to go to that new block
+            current += 1; // increment to go to that new block
             blocks.push_back(""); // starting new block 
             blocks[current].push_back(plain_text[i]);
             counter++; 
@@ -42,7 +33,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     }
 
     // need to add padding to non full blocks 
-    // if the last string in the blocks vector isn't of size m, add padding. 
+    // if the last string in the blocks vector isn't of size m, add padding 
     if (blocks.back().size() != m) {
 
         // get size of block currently 
@@ -51,59 +42,52 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
         // find how much padding we need 
         int padding = m - current_size; 
 
-        // using 'x' as padding for now. Could generate random nums and access LETTERS but oh well. 
         for (int i = 0; i < padding; i++) {
             blocks.back().push_back('x');
         }
 
     }
 
-    // debugging blocks 
+    // showing blocks 
+    /*
     std::cout << "checking blocks: " << std::endl; 
     for (int i = 0; i < blocks.size(); i++) {
-
         // I want to check that blocks came out right. 
-
         std::cout << blocks[i] << std::endl; 
-
     }
+    */
     
-    // now need to do permutation on blocks 
+    // doing user defined permutation on blocks  
     for (int i = 0; i < blocks.size(); i++) {
 
-        // go through each block and rearange according to permutation 
-
         std::string current_block = blocks[i]; 
-        permutated_blocks.push_back(""); 
+        permuted_blocks.push_back(""); // creating an empty block 
 
         for (int i = 0; i < current_block.size(); i++) {
 
             // look up what i should be in permutation 
-            int location = permutation[i] - 1; // so if we at 0 -> (2) it will return what user input for front of block 
+            int location = permutation[i] - 1; // need to - 1 because of 0 based counting 
 
-            // then go to that location in the block 
-            permutated_blocks.back().push_back(current_block[location]);
+            // then go to that location in the block and add that char to the new block
+            permuted_blocks.back().push_back(current_block[location]); // build new permuted block into empty block
 
         }
     }
         
-    std::cout << "checking permutated blocks: " << std::endl; 
-    for (int i = 0; i < permutated_blocks.size(); i++) {
-
-        // I want to check that blocks came out right. 
-        std::cout << permutated_blocks[i] << std::endl; 
-
+    // showing permuted blocks 
+    /*
+    std::cout << "checking permuted blocks: " << std::endl; 
+    for (int i = 0; i < permuted_blocks.size(); i++) {
+        // I want to check that blocks came out right
+        std::cout << permuted_blocks[i] << std::endl; 
     }
+    */
 
-    // then just combine all these blocks into one string 
-    for (int i = 0; i < permutated_blocks.size(); i++) {
-
-        encrypted_message.append(permutated_blocks[i]);
-
+    // then combine all these blocks into one string 
+    for (int i = 0; i < permuted_blocks.size(); i++) {
+        encrypted_message.append(permuted_blocks[i]);
     }
     
-
-
     return encrypted_message;
 
 }
@@ -141,11 +125,9 @@ int main(){
             // only adding if it passes validation 
             permutation.push_back(input); 
         }
-
     } 
 
     std::string encrypt = permutationCipher(plain_text, m, permutation); 
-
     std::cout << "encrypted message: " << encrypt << std::endl; 
 
 }
