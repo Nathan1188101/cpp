@@ -15,6 +15,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     
     // string vector for blocks 
     std::vector<std::string> blocks; 
+    std::vector<std::string> permutated_blocks; 
     int counter = 1; 
     int current = 0;
     blocks.push_back(""); // starting with 1 empty block we can begin adding to 
@@ -56,30 +57,8 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
         }
 
     }
-    
-    // now need to do permutation on blocks 
-    for (int i = 0; i < blocks.size(); i++) {
 
-        // go through each block and rearange according to permutation 
-        // permutation example: 
-        // 1 2 3 4
-        // 2 1 4 3 
-        // -------
-        // 0 1 2 3 
-        // 2 1 4 3 
-
-        // so look to see what should be at 0 -> 2, go take 2 -> replace 0 with 2 
-
-        std::string current_block = blocks[i]; 
-
-
-
-    }
-
-
-
-
-
+    // debugging blocks 
     std::cout << "checking blocks: " << std::endl; 
     for (int i = 0; i < blocks.size(); i++) {
 
@@ -88,8 +67,37 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
         std::cout << blocks[i] << std::endl; 
 
     }
+    
+    // now need to do permutation on blocks 
+    for (int i = 0; i < blocks.size(); i++) {
 
-    return encrypted_message; 
+        // go through each block and rearange according to permutation 
+
+        std::string current_block = blocks[i]; 
+        permutated_blocks.push_back(""); 
+
+        for (int i = 0; i < current_block.size(); i++) {
+
+            // look up what i should be in permutation 
+            int location = permutation[i] - 1; // so if we at 0 -> (2) it will return what user input for front of block 
+
+            // then go to that location in the block 
+            permutated_blocks.back().push_back(current_block[location]);
+
+        }
+    }
+        
+    std::cout << "checking permutated blocks: " << std::endl; 
+    for (int i = 0; i < permutated_blocks.size(); i++) {
+
+        // I want to check that blocks came out right. 
+        std::cout << permutated_blocks[i] << std::endl; 
+
+    }
+    
+
+
+    return encrypted_message;
 
 }
 
@@ -109,7 +117,7 @@ int main(){
         std::cin >> m; 
     }
 
-    std::cout << "enter permutation from 1 - " << m; 
+    std::cout << "enter permutation from 1 - " << m << std::endl; 
 
     while (permutation.size() != m) {
 
