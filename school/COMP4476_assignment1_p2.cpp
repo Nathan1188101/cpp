@@ -94,6 +94,13 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
         std::cout << permutated_blocks[i] << std::endl; 
 
     }
+
+    // then just combine all these blocks into one string 
+    for (int i = 0; i < permutated_blocks.size(); i++) {
+
+        encrypted_message.append(permutated_blocks[i]);
+
+    }
     
 
 
@@ -138,5 +145,7 @@ int main(){
     } 
 
     std::string encrypt = permutationCipher(plain_text, m, permutation); 
+
+    std::cout << "encrypted message: " << encrypt << std::endl; 
 
 }
