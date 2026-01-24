@@ -146,6 +146,10 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
             // for each char in here
             // find it's pos in permuted blocks 
+            // HAVE ISSUES HERE WITH ENCOUNTERING DUPLICATE CHARS 
+            // PERHAPS A BOOL ON EACH POSITION SAYING WHETHER WE'VE GOTTEN IT YET OR NOT
+            // SOMETHING LIKE: std::vector<bool> using(m, false)?
+            // idk there is more to this but something around this idea....
             auto search = std::find(permuted_blocks[0].begin(), permuted_blocks[0].end(), target); 
             int index = std::distance(permuted_blocks[0].begin(), search); 
 
