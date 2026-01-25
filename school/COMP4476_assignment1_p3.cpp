@@ -12,24 +12,12 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     plain_text.erase(std::remove(plain_text.begin(), plain_text.end(), ' '), plain_text.end()); 
     
     // string vector for blocks 
-    std::vector<std::string> blocks; 
-    std::vector<std::string> permuted_blocks; 
-    int counter = 1; 
-    int current = 0;
-    blocks.push_back(""); // starting with 1 empty block we can begin adding to 
+    std::vector<std::string> blocks;  
     for (int i = 0; i < plain_text.size(); i++) {
-        // keep pushing/building a block until counter > m 
-        // when counter > m, start building new block  
-        if (counter <= m) {
-            counter++; 
-            blocks[current].push_back(plain_text[i]); 
-        } else {
-            counter = 1; // reset counter  
-            current += 1; // increment to go to that new block
-            blocks.push_back(""); // starting new block 
-            blocks[current].push_back(plain_text[i]);
-            counter++; 
+        if (i % m == 0) {
+            blocks.push_back(""); 
         }
+        blocks.back().push_back(plain_text[i]); 
     }
 
     // need to add padding to non full blocks 
@@ -49,6 +37,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     }
     
     // doing user defined permutation on blocks  
+    std::vector<std::string> permuted_blocks;
     for (int i = 0; i < blocks.size(); i++) {
 
         std::string current_block = blocks[i]; 
@@ -150,8 +139,10 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             // PERHAPS A BOOL ON EACH POSITION SAYING WHETHER WE'VE GOTTEN IT YET OR NOT
             // SOMETHING LIKE: std::vector<bool> using(m, false)?
             // idk there is more to this but something around this idea....
+            std::vector<bool> used(m, false); 
             auto search = std::find(permuted_blocks[0].begin(), permuted_blocks[0].end(), target); 
-            int index = std::distance(permuted_blocks[0].begin(), search); 
+            int index = std::distance(permuted_blocks[0].begin(), search);
+            used[index] = true;  
 
             candidate_key.push_back(index + 1); 
 
@@ -196,5 +187,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 }
 
 int main(){
+
+    
 
 }
