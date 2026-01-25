@@ -124,34 +124,26 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
         }
 
 
-        // build permutation from block[0] -> permuted_block[0]
-        // then compare that with the remaining blocks 
-        // if one fails, wrong m, increment and try again 
-        // if all blocks pass -> done. 
+        // building candidate key. Going through 
         std::vector<int> candidate_key; 
+        std::vector<bool> used(m, false); 
         for (int i = 0; i < blocks[0].size(); i++) {
 
             char target = blocks[0][i]; 
 
-            // for each char in here
-            // find it's pos in permuted blocks 
-            // HAVE ISSUES HERE WITH ENCOUNTERING DUPLICATE CHARS 
-            // PERHAPS A BOOL ON EACH POSITION SAYING WHETHER WE'VE GOTTEN IT YET OR NOT
-            // SOMETHING LIKE: std::vector<bool> using(m, false)?
-            // idk there is more to this but something around this idea....
-            std::vector<bool> used(m, false); 
-            auto search = std::find(permuted_blocks[0].begin(), permuted_blocks[0].end(), target); 
-            int index = std::distance(permuted_blocks[0].begin(), search);
-            used[index] = true;  
-
-            candidate_key.push_back(index + 1); 
+            for (int j = 0; j < permuted_blocks[0].size(); j++) {
+                if (permuted_blocks[0][j] == target && used[j] == false) {
+                    candidate_key.push_back(j + 1);
+                    used[j] = true; 
+                    break; 
+                }
+            }
 
         }
 
         // now that we have a temp key 
-        // test it with the rest of the blocks 
+        // test it with the rest of the blocks by making the permutation with the regular block and comparing it to the 
         int counter = 1; 
-        std::vector<bool> used(m, false);
         for (int i = 0; i < blocks.size(); i++) {
 
             std::string temp_permuted_block; 
@@ -159,7 +151,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             for (int j = 0; j < blocks[i].size(); j++) {
 
                 // make a temp permuted block (I'M DOING THIS WRONG LOL)
-                int position = candidate_key[j];
+                int position = candidate_key[j] - 1;
                 temp_permuted_block.push_back(blocks[i][position]); 
 
             }
@@ -188,6 +180,24 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
-    
+    std::string message = "hello there"; 
+    int m = 3; 
+    std::vector<int> key = {2, 3, 1}; 
+
+    // encrypt 
+    std::string encrypted_message = permutationCipher(message, m, key); 
+    std::cout << "message before: " << message << std::endl; 
+    std::cout << "encrypted message: " << encrypted_message << std::endl; 
+
+    // attack
+    std::string plain_copy = message; 
+    AttackResult result = plainTextAttack(plain_copy, encrypted_message); 
+
+    std::cout << "Found m: " << result.m << std::endl; 
+    std::cout << "Found key: "; 
+    for (int i = 0; i < result.key.size(); i++) {
+        std::cout << result.key[i]; 
+    }
+    std::cout << std::endl; 
 
 }
