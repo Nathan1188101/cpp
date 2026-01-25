@@ -4,7 +4,12 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML 3 Test");
     sf::CircleShape circle(80.f);
-    circle.setPosition({200.f, 200.f});
+    circle.setPosition({0.f, 0.f});
+
+    for (int i = 0; i < 600; i++) {
+
+    }
+
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
