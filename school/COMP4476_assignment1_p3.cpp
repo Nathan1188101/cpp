@@ -6,13 +6,13 @@
 
 // KNOWN LIMITATION FOR ATTACK ALGORITHM:
 /*
-    when the key size gets larger (for example I tried m = 10 on a large message test case),
-    the algorithm gets confused with repeating chars in big blocks and can mess up the permutation, etc. 
-    
-    I tested the bounds on the current long message I have in main(), and it appears to work up till m = 9. 
-    Then when it hits m = 10, it starts skipping passed stuff and it outputs m = 50 and it's all wrong. 
+   The algorithm can fail when the first block contains many duplicate chars. 
+   I build candidate keys by checking the first block created, and checking where
+   they ended up compared to the first permuted block. Ambiguous mappings occur when 
+   there are repeated chars throughout that can break my algorithm. 
 
-    anyway, it works great for smaller key sizes for the most part. 
+   The algorithm works great when this isn't present in your message however,
+   meaning you have more distinct chars.  
 
 */
 
@@ -84,21 +84,6 @@ struct AttackResult {
 AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_text) {
 
     AttackResult result; 
-
-    // THOUGHTS: 
-    /*
-    // base case m = 2
-    // this is like swap position or not 
-
-    // I need to be looking at positions 
-    // across blocks, which plaintext position j could consistently land in ciphertext position i
-    
-    // so iteratively go through different block sizes for plain and cipher text 
-    // analyze positions in plain and cipher blocks
-    // we're looking to see 
-
-    // whenever we find the permutation, whatever block size was used to find that will be m 
-    */
     
     // removing the spaces in the message for clean blocks
     plain_text.erase(std::remove(plain_text.begin(), plain_text.end(), ' '), plain_text.end()); 
@@ -199,19 +184,19 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
-    // my algo breaks for longer messages with large key sizes like this due to duplicate char stuff, I suppose it happens when the block sizes are large with lots of duplicates...
+    // Algorithm breaks on this one
     // std::string message = "hello there my name is nathan and I am the best in the game"; 
     // int m = 10; 
     // std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
 
-    // works fine for these test cases below I find however. 
-    std::string message = "hello there my name is nathan and I am the best in the game"; 
-    int m = 9; 
-    std::vector<int> key = {2, 3, 6, 4, 5, 1, 7, 8, 9};     
+    // worked for this though. 
+    // std::string message = "hello there my name is nathan and I am the best in the game"; 
+    // int m = 9; 
+    // std::vector<int> key = {2, 3, 6, 4, 5, 1, 7, 8, 9};     
 
-    // std::string message = "abcdefghi";
-    // int m = 3;
-    // std::vector<int> key = {2, 3, 1}; 
+    std::string message = "beyond the misty mountains, a silver stream flows quietly through meadows where wildflowers bloom in vibrant colors. ancient stones mark forgotten pathways, while distant echoes whisper tales of bygone eras and lost civilizations.";
+    int m = 10; 
+    std::vector<int> key = {4, 3, 2, 1, 5, 6, 7, 10, 8, 9};
 
     // encrypt 
     std::string encrypted_message = permutationCipher(message, m, key); 
