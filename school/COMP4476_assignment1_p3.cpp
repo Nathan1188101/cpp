@@ -153,6 +153,14 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             m++;
             continue; 
         }
+        if (m == 10) {
+            std::cout << "At m=10:" << std::endl;
+            std::cout << "blocks[0]: '" << blocks[0] << "'" << std::endl;
+            std::cout << "permuted_blocks[0]: '" << permuted_blocks[0] << "'" << std::endl;
+            std::cout << "candidate_key: ";
+            for (int k : candidate_key) std::cout << k << " ";
+            std::cout << std::endl;
+        }
 
         std::cout << "testing candidate key with the existing blocks" << std::endl; 
         // now that we have a temp key 
@@ -193,9 +201,15 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
+    // my algo breaks for longer messages like this with duplicate chars 
     std::string message = "hello there my name is nathan and I am the best in the game"; 
     int m = 10; 
     std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
+
+    // works great for stuff like this though lol
+    // std::string message = "abcdefghi";
+    // int m = 3;
+    // std::vector<int> key = {2, 3, 1}; 
 
     // encrypt 
     std::string encrypted_message = permutationCipher(message, m, key); 
