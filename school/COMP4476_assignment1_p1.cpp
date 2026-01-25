@@ -41,11 +41,8 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
 
     // convert to upper 
     for (int i = 0; i < plain_text.size(); i++) {
-
         auto current_char = toupper(plain_text[i]); 
-
         formatted_string.push_back(current_char); 
-
     }
 
     // convert plain text chars to plain text ints 
@@ -58,7 +55,7 @@ std::string substitutionCipherEncryption(const std::string& plain_text, const st
         size_t index = KEY_SPACE.find(current_char);
 
         // if number found 
-        if (index != std::string::npos) {
+        if (index != std::string::npos) { // char found in keyspace 
             plain_text_ints.push_back(index); 
         }
 
@@ -158,12 +155,13 @@ int main(){
     std::vector<int> key;  
     int input; 
 
-    // pre made permutation key so you don't have to enter in the values (will stop while loop from running below)
+    // pre made permutation key so you don't have to enter in the values (will skip while loop below)
     key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
 
     std::cout << "input plain text (message): "; 
     std::getline(std::cin, plain_text); 
 
+    // this will get skipped when using pre made permutation. 
     std::cout << "input (from 0-28) 28 values for key: ";
     while (key.size() != 29) {
 
@@ -194,118 +192,3 @@ int main(){
     std::cout << "decryption: " << decrypt << std::endl; 
 
 }
-
-
-
-
-
-
-
-
-
-// same as other encryption function above, just with lots of comments throughout while thinking and debugging messages. Wanted to leave it to see my thought process from early stages 
-/*  
-std::string substitutionCipherEncryption1(const std::string& plain_text, const std::vector<int>& key){
-
-    std::string formatted_string; 
-    std::vector<int> plain_text_ints; 
-    std::vector<int> substitution; 
-    std::string encrypted; 
-
-    // map message to keyspace (before permutation)
-   
-    //    thinking through this: 
-
-    //    so when we encounter a char, we need to check what it's value is. 
-    //        like if we find a H -> 7
-            
-    //        example: "hello" -> 7, 4, 11, 11, 14
-
-    //        so we need a way to iterate through the plain text -> match the current char to it's value -> then put it in some output vector or something 
-
-
-
-    for (int i = 0; i < plain_text.size(); i++) {
-
-        auto current_char = toupper(plain_text[i]); 
-
-        formatted_string.push_back(current_char); 
-
-    }
-
-    std::cout << "starting conversion to numbers " << std::endl;
-    for (int i = 0; i < formatted_string.size(); i++) {
-
-        // identify current char
-        // find it in keyspace 
-        // get index -> boom done 
-
-        // get current char 
-        char current_char = formatted_string[i]; 
-        std::cout << "current char: " << current_char << std::endl; 
-
-        // search for it in space 
-        size_t index = KEY_SPACE.find(current_char);
-        std::cout << "found index: " << index << std::endl; 
-
-        if (index != std::string::npos) {
-            // if char/index is found 
-            // exists
-
-            plain_text_ints.push_back(index); 
-            std::cout << "pushed back: " << index << std::endl; 
-        }
-
-    }
-    // now we have a vector of letters converted to numbers 
-    // now we need to take that and map them to the key
-    // so if we encounter a H -> 7 -> pi(7) = 12
-
-    // then we take the permutation 
-    // so if user entered -> 5, 3, 6, 11, etc. 
-    // pi(0) = 5
-    // pi(1) = 3
-    // pi(2) = 6
-
-    std::cout << "starting substitution (replace nums with permutated nums)" << std::endl; 
-    for (int i = 0; i < plain_text_ints.size(); i++) {
-
-        // so the index will give us the mapping to the value 
-
-        // current num 
-        int current_num = plain_text_ints[i]; 
-
-        // the current num will the the index we use in the permutation
-        // then replace the current num with what is at that index 
-        
-        // so go to index denoted by current num in permutation list
-        int replace = key[current_num]; 
-        std::cout << "replacing: " << current_num << " with: " << replace << std::endl; 
-
-        substitution.push_back(replace);
-
-        // probably could turn to letter here at same time but for now we'll go below just to try it 
-
-    }
-
-    // after that we should have a list of numbers (but encrypted), we just need to switch back to letters now 
-
-    for (int i = 0; i < substitution.size(); i++) {
-
-        // go through subbed list, and turn letters into nunmbers using orginal keyspace 
-        // so a 0 -> A still in this part 
-
-        int current_num = substitution[i]; 
-
-        char search = KEY_SPACE[current_num]; 
-
-        encrypted.push_back(search); 
-
-    }
-
-        
-
-    return encrypted; 
-
-}
-*/

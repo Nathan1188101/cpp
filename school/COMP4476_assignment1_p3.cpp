@@ -4,6 +4,18 @@
 #include<algorithm>
 #include<iterator> 
 
+// KNOWN LIMITATION FOR ATTACK ALGORITHM:
+/*
+    when the key size gets larger (for example I tried m = 10 on a large message test case),
+    the algorithm gets confused with repeating chars in big blocks and can mess up the permutation, etc. 
+    
+    I tested the bounds on the current long message I have in main(), and it appears to work up till m = 9. 
+    Then when it hits m = 10, it starts skipping passed stuff and it outputs m = 50 and it's all wrong. 
+
+    anyway, it works great for smaller key sizes for the most part. 
+
+*/
+
 std::string permutationCipher(std::string& plain_text, const int& m, const std::vector<int>& permutation){
 
     std::string encrypted_message; 
@@ -95,10 +107,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
     int m = 2;
     while (m_found == false) {
 
-        std::cout << "current m = " << m << std::endl; 
-
         // PLAIN TEXT BLOCKS 
-        std::cout << "building plain text blocks..." << std::endl; 
         std::vector<std::string> blocks;  
         for (int i = 0; i < plain_text.size(); i++) {
             // everytime i is a multiple of m create a new block. Otherwise keep adding to the current one. 
@@ -107,7 +116,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             }
             blocks.back().push_back(plain_text[i]);
         }
-        // add padding 
+        // add padding to plain blocks 
         if (blocks.back().size() != m) {
             int current_size = blocks.back().size(); 
             int padding = m - current_size; 
@@ -117,7 +126,6 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
         }
         
         // CIPHER TEXT BLOCKS 
-        std::cout << "building cipher blocks..." << std::endl; 
         std::vector<std::string> permuted_blocks;  
         for (int i = 0; i < cipher_text.size(); i++) {
             if (i % m == 0) {
@@ -128,17 +136,16 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 
         // building candidate key.  
-        std::cout << "building candidate key..." << std::endl; 
         std::vector<int> candidate_key; 
-        std::vector<bool> used(m, false); 
+        std::vector<bool> used(m, false); // to mark used chars
         for (int i = 0; i < permuted_blocks[0].size(); i++) {
 
             char target = permuted_blocks[0][i]; 
 
-            // go through OG block 
+            // go through original block 
             for (int j = 0; j < blocks[0].size(); j++) {
                 if (blocks[0][j] == target && used[j] == false) {
-                    candidate_key.push_back(j + 1); 
+                    candidate_key.push_back(j + 1); // + 1 for non 0 based counting 
                     used[j] = true; 
                     break; // break, outter iterates and we begin looking for next char 
                 }
@@ -146,25 +153,15 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
         }
 
-
-        std::cout << "candidate key size: " << candidate_key.size() << std::endl; 
+        // checking if key matches up with what the size of it should be
         if (candidate_key.size() != m) {
-            std::cout << "key size does not match m, testing next block size." << std::endl;  
+            // if it doesn't, we already know there is an issue here with missing chars. must be too small 
             m++;
             continue; 
         }
-        if (m == 10) {
-            std::cout << "At m=10:" << std::endl;
-            std::cout << "blocks[0]: '" << blocks[0] << "'" << std::endl;
-            std::cout << "permuted_blocks[0]: '" << permuted_blocks[0] << "'" << std::endl;
-            std::cout << "candidate_key: ";
-            for (int k : candidate_key) std::cout << k << " ";
-            std::cout << std::endl;
-        }
-
-        std::cout << "testing candidate key with the existing blocks" << std::endl; 
+ 
         // now that we have a temp key 
-        // test it with the rest of the blocks by making the permutation with the regular block and comparing it to the 
+        // test it with the rest of the blocks by making the permutation with the regular block and comparing it to the actual permuted block
         int counter = 1; // block 0 already been checked. so counter at 1
         for (int i = 1; i < blocks.size(); i++) { // block 0 already checked so i = 1 to skip first block 
 
@@ -187,10 +184,11 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             }
 
         }
+        // success 
         if (counter == permuted_blocks.size()) {
             result.key = candidate_key; 
             result.m = m; 
-            m_found = true; 
+            m_found = true; // will exit while loop and return result 
         }
 
     }
