@@ -95,8 +95,10 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
     int m = 2;
     while (m_found == false) {
 
+        std::cout << "current m = " << m << std::endl; 
+
         // PLAIN TEXT BLOCKS 
-        // realized I could be doing this way simpler compared to before using modulo this time  
+        std::cout << "building plain text blocks..." << std::endl; 
         std::vector<std::string> blocks;  
         for (int i = 0; i < plain_text.size(); i++) {
             // everytime i is a multiple of m create a new block. Otherwise keep adding to the current one. 
@@ -115,6 +117,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
         }
         
         // CIPHER TEXT BLOCKS 
+        std::cout << "building cipher blocks..." << std::endl; 
         std::vector<std::string> permuted_blocks;  
         for (int i = 0; i < cipher_text.size(); i++) {
             if (i % m == 0) {
@@ -124,36 +127,44 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
         }
 
 
-        // building candidate key. Going through 
+        // building candidate key.  
+        std::cout << "building candidate key..." << std::endl; 
         std::vector<int> candidate_key; 
         std::vector<bool> used(m, false); 
-        for (int i = 0; i < blocks[0].size(); i++) {
+        for (int i = 0; i < permuted_blocks[0].size(); i++) {
 
-            char target = blocks[0][i]; 
+            char target = permuted_blocks[0][i]; 
 
-            for (int j = 0; j < permuted_blocks[0].size(); j++) {
-                if (permuted_blocks[0][j] == target && used[j] == false) {
-                    candidate_key.push_back(j + 1);
+            // go through OG block 
+            for (int j = 0; j < blocks[0].size(); j++) {
+                if (blocks[0][j] == target && used[j] == false) {
+                    candidate_key.push_back(j + 1); 
                     used[j] = true; 
-                    break; 
+                    break; // break, outter iterates and we begin looking for next char 
                 }
             }
 
         }
 
+
+        std::cout << "candidate key size: " << candidate_key.size() << std::endl; 
+        if (candidate_key.size() != m) {
+            std::cout << "key size does not match m, testing next block size." << std::endl;  
+            m++;
+            continue; 
+        }
+
+        std::cout << "testing candidate key with the existing blocks" << std::endl; 
         // now that we have a temp key 
         // test it with the rest of the blocks by making the permutation with the regular block and comparing it to the 
-        int counter = 1; 
-        for (int i = 0; i < blocks.size(); i++) {
+        int counter = 1; // block 0 already been checked. so counter at 1
+        for (int i = 1; i < blocks.size(); i++) { // block 0 already checked so i = 1 to skip first block 
 
             std::string temp_permuted_block; 
-            // go through and apply permutation 
+            // go through and apply permutation to build a temp block for comparison to real permuted block 
             for (int j = 0; j < blocks[i].size(); j++) {
-
-                // make a temp permuted block (I'M DOING THIS WRONG LOL)
                 int position = candidate_key[j] - 1;
                 temp_permuted_block.push_back(blocks[i][position]); 
-
             }
 
             // compare to real corresponding permuted block 
@@ -169,6 +180,8 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
         }
         if (counter == permuted_blocks.size()) {
+            result.key = candidate_key; 
+            result.m = m; 
             m_found = true; 
         }
 
@@ -180,9 +193,9 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
-    std::string message = "hello there"; 
-    int m = 3; 
-    std::vector<int> key = {2, 3, 1}; 
+    std::string message = "hello there my name is nathan and I am the best in the game"; 
+    int m = 10; 
+    std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
 
     // encrypt 
     std::string encrypted_message = permutationCipher(message, m, key); 
