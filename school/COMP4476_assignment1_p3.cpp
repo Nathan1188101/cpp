@@ -201,12 +201,16 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
-    // my algo breaks for longer messages like this with duplicate chars 
-    std::string message = "hello there my name is nathan and I am the best in the game"; 
-    int m = 10; 
-    std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
+    // my algo breaks for longer messages with large key sizes like this due to duplicate char stuff, I suppose it happens when the block sizes are large with lots of duplicates...
+    // std::string message = "hello there my name is nathan and I am the best in the game"; 
+    // int m = 10; 
+    // std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
 
-    // works great for stuff like this though lol
+    // works fine for these test cases below I find however. 
+    std::string message = "hello there my name is nathan and I am the best in the game"; 
+    int m = 9; 
+    std::vector<int> key = {2, 3, 6, 4, 5, 1, 7, 8, 9};     
+
     // std::string message = "abcdefghi";
     // int m = 3;
     // std::vector<int> key = {2, 3, 1}; 
