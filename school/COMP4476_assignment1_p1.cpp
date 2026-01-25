@@ -155,14 +155,14 @@ int main(){
     std::vector<int> key;  
     int input; 
 
-    // pre made permutation key so you don't have to enter in the values (will skip while loop below)
+    // NOTE: pre made permutation key so you don't have to enter in the values (will skip while loop below)
     key = {22, 28, 8, 23, 20, 6, 4, 24, 14, 21, 5, 15, 10, 7, 18, 3, 1, 0, 13, 12, 26, 16, 27, 9, 25, 19, 11, 2, 17}; 
 
     std::cout << "input plain text (message): "; 
     std::getline(std::cin, plain_text); 
 
-    // this will get skipped when using pre made permutation. 
-    std::cout << "input (from 0-28) 28 values for key: ";
+    // NOTE: this will get skipped when using pre made permutation. 
+    std::cout << "input (from 0-28) 29 values for key: " << std::endl;
     while (key.size() != 29) {
 
         std::cin >> input;
