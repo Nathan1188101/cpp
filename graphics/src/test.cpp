@@ -13,7 +13,6 @@ int main() {
     float x = 0.0; 
     float y = 0.0; 
     circle.setPosition({width / 2.0f, height / 2.0f});
-
     circle.setFillColor(sf::Color::Green); // set color (inner)
     circle.setOutlineThickness(3.0f);
     circle.setOutlineColor(sf::Color::Magenta); 
@@ -42,17 +41,14 @@ int main() {
             }
         }
 
-        // update cirlce position every frame 
-        // height++;
-        // width++;
-        // circle.setPosition({width, height});
-
         // rotate shape 
         circle.rotate(sf::degrees(1.0f)); 
+        // move (translate)
         circle.move({1.0f, -1.0f}); // y axis inverted in sfml (negaitve is up, positive is down)
 
         rectangle.rotate(sf::degrees(1)); 
 
+        // collisions 
         circle.setFillColor(sf::Color::Magenta);
         rectangle.setFillColor(sf::Color:: Yellow);         
         if (circle.getGlobalBounds().findIntersection(rectangle.getGlobalBounds())) {

@@ -1,3 +1,0 @@
-C:/Users/zopbo/Desktop/cpp/cpp/graphics/build/CMakeFiles/test.dir
-C:/Users/zopbo/Desktop/cpp/cpp/graphics/build/CMakeFiles/edit_cache.dir
-C:/Users/zopbo/Desktop/cpp/cpp/graphics/build/CMakeFiles/rebuild_cache.dir
