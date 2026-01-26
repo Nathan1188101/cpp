@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<iterator> 
 
+// PERMUTATION ENCRYPTION. (uses 'x' for padding)
 std::string permutationCipher(std::string& plain_text, const int& m, const std::vector<int>& permutation){
 
     std::string encrypted_message; 
@@ -11,29 +12,14 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     // removing the spaces in the message for clean blocks
     plain_text.erase(std::remove(plain_text.begin(), plain_text.end(), ' '), plain_text.end()); 
 
-    int length = plain_text.size();
-    
     // string vector for blocks 
     std::vector<std::string> blocks; 
-    std::vector<std::string> permuted_blocks; 
-    int counter = 1; 
-    int current = 0;
-    blocks.push_back(""); // starting with 1 empty block we can begin adding to 
     for (int i = 0; i < plain_text.size(); i++) {
-        // keep pushing/building a block until counter > m 
-        // when counter > m, start building new block  
-        if (counter <= m) {
-            counter++; 
-            blocks[current].push_back(plain_text[i]); 
-        } else {
-            counter = 1; // reset counter  
-            current += 1; // increment to go to that new block
-            blocks.push_back(""); // starting new block 
-            blocks[current].push_back(plain_text[i]);
-            counter++; 
+        if (i % m == 0) {
+            blocks.push_back(""); // start new block 
         }
+        blocks.back().push_back(plain_text[i]);
     }
-
     // need to add padding to non full blocks 
     // if the last string in the blocks vector isn't of size m, add padding 
     if (blocks.back().size() != m) {
@@ -50,7 +36,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
 
     }
 
-    // showing blocks 
+    // DEBUGGING: showing plain blocks 
     /*
     std::cout << "checking blocks: " << std::endl; 
     for (int i = 0; i < blocks.size(); i++) {
@@ -60,6 +46,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
     */
     
     // doing user defined permutation on blocks  
+    std::vector<std::string> permuted_blocks; 
     for (int i = 0; i < blocks.size(); i++) {
 
         std::string current_block = blocks[i]; 
@@ -76,7 +63,7 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
         }
     }
         
-    // showing permuted blocks 
+    // DEBUGGING: showing permuted blocks 
     /*
     std::cout << "checking permuted blocks: " << std::endl; 
     for (int i = 0; i < permuted_blocks.size(); i++) {
@@ -96,25 +83,15 @@ std::string permutationCipher(std::string& plain_text, const int& m, const std::
 
 std::string permutationCipherDecryption(std::string& cipher_text, const int& m, const std::vector<int>& permutation){
 
-    std::string plain_text; 
+    std::string plain_text; // for final output 
 
     // need to split the cipher text into m sized blocks 
-    int counter = 1; 
-    int current = 0; 
     std::vector<std::string> permuted_blocks;  
-    permuted_blocks.push_back(""); // start empty block 
     for (int i = 0; i < cipher_text.size(); i++) {
-        
-        if (counter <= m) {
-            counter++; 
-            permuted_blocks[current].push_back(cipher_text[i]);
-        } else {
-            counter = 1; 
-            current ++; 
+        if (i % m == 0) {
             permuted_blocks.push_back(""); // start new block 
-            permuted_blocks.back().push_back(cipher_text[i]); 
-            counter ++; 
         }
+        permuted_blocks.back().push_back(cipher_text[i]); 
     }
 
     // get inverse of permutation 
@@ -165,6 +142,11 @@ int main(){
     std::vector<int> permutation; // key 
     std::string plain_text; // message 
 
+    // test cases if you want them 
+    // int m = 3;
+    // permutation = {2, 1, 3};
+    // plain_text = "hello there"
+
     std::cout << "enter message: "; 
     std::getline(std::cin, plain_text);
     std::cout << "enter block size (m > 0): "; 
@@ -175,7 +157,7 @@ int main(){
     }
 
     std::cout << "enter permutation from 1 - " << m << std::endl; 
-
+    // taking input for permutation
     while (permutation.size() != m) {
 
         std::cin >> input; 

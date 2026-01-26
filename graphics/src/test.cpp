@@ -2,10 +2,37 @@
 #include <optional>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML 3 Test");
-    sf::CircleShape circle(80.f);
-    float x = 0.0f; 
-    float y = 0.0f; 
+    unsigned int width = 800; 
+    unsigned int height = 600; 
+    sf::RenderWindow window(sf::VideoMode({width, height}), "SFML 3 Test");
+    window.setFramerateLimit(60); 
+    
+    // circle stuff 
+    sf::CircleShape circle(80.0f); // sets radius (size) of circle 
+    circle.setOrigin(circle.getGeometricCenter()); // makes it so when we set the pos, or rotate the circle, it will all be done based on it's center (rather than a point at it's "top left").
+    float x = 0.0; 
+    float y = 0.0; 
+    circle.setPosition({width / 2.0f, height / 2.0f});
+
+    circle.setFillColor(sf::Color::Green); // set color (inner)
+    circle.setOutlineThickness(3.0f);
+    circle.setOutlineColor(sf::Color::Magenta); 
+    circle.setPointCount(3); 
+
+
+    // rectangle stuff 
+    sf::RectangleShape rectangle({50.0f, 80.0f}); 
+    rectangle.setOrigin(rectangle.getSize() / 2.0f); 
+    rectangle.setPosition({width / 2.0f, height / 2.0f});
+    rectangle.setFillColor(sf::Color::Yellow);
+    rectangle.setOutlineThickness(5.0f); 
+    rectangle.setOutlineColor(sf::Color::Blue);
+    
+    // convex shape 
+    sf::ConvexShape convex; 
+    convex.setPointCount(3); 
+    convex.setPoint(0, {}); 
+
 
 
     while (window.isOpen()) {
@@ -15,15 +42,31 @@ int main() {
             }
         }
 
-        x++; 
-        //y++;
-        if (x == 10.0) {
-            x = 10.0; 
+        // update cirlce position every frame 
+        // height++;
+        // width++;
+        // circle.setPosition({width, height});
+
+        // rotate shape 
+        circle.rotate(sf::degrees(1.0f)); 
+        circle.move({1.0f, -1.0f}); // y axis inverted in sfml (negaitve is up, positive is down)
+
+        rectangle.rotate(sf::degrees(1)); 
+
+        circle.setFillColor(sf::Color::Magenta);
+        rectangle.setFillColor(sf::Color:: Yellow);         
+        if (circle.getGlobalBounds().findIntersection(rectangle.getGlobalBounds())) {
+
+            // set color to indate interaction 
+            circle.setFillColor(sf::Color::Red);
+            rectangle.setFillColor(sf::Color::Red); 
+
         }
-        circle.setPosition({x, y});
+
 
         window.clear();
         window.draw(circle);
+        window.draw(rectangle); 
         window.display();
     }
 }

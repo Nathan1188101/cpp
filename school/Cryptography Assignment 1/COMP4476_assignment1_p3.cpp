@@ -4,6 +4,18 @@
 #include<algorithm>
 #include<iterator> 
 
+// KNOWN LIMITATION FOR ATTACK ALGORITHM:
+/*
+   The algorithm can fail when the first block contains many duplicate chars. 
+   I build candidate keys by checking the first block created, and checking where
+   they ended up compared to the first permuted block. Ambiguous mappings occur when 
+   there are repeated chars throughout that can break my algorithm. 
+
+   The algorithm works great when this isn't present in your message however,
+   meaning you have more distinct chars.  
+
+*/
+
 std::string permutationCipher(std::string& plain_text, const int& m, const std::vector<int>& permutation){
 
     std::string encrypted_message; 
@@ -72,21 +84,6 @@ struct AttackResult {
 AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_text) {
 
     AttackResult result; 
-
-    // THOUGHTS: 
-    /*
-    // base case m = 2
-    // this is like swap position or not 
-
-    // I need to be looking at positions 
-    // across blocks, which plaintext position j could consistently land in ciphertext position i
-    
-    // so iteratively go through different block sizes for plain and cipher text 
-    // analyze positions in plain and cipher blocks
-    // we're looking to see 
-
-    // whenever we find the permutation, whatever block size was used to find that will be m 
-    */
     
     // removing the spaces in the message for clean blocks
     plain_text.erase(std::remove(plain_text.begin(), plain_text.end(), ' '), plain_text.end()); 
@@ -96,7 +93,6 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
     while (m_found == false) {
 
         // PLAIN TEXT BLOCKS 
-        // realized I could be doing this way simpler compared to before using modulo this time  
         std::vector<std::string> blocks;  
         for (int i = 0; i < plain_text.size(); i++) {
             // everytime i is a multiple of m create a new block. Otherwise keep adding to the current one. 
@@ -105,7 +101,7 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             }
             blocks.back().push_back(plain_text[i]);
         }
-        // add padding 
+        // add padding to plain blocks 
         if (blocks.back().size() != m) {
             int current_size = blocks.back().size(); 
             int padding = m - current_size; 
@@ -124,44 +120,41 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
         }
 
 
-        // build permutation from block[0] -> permuted_block[0]
-        // then compare that with the remaining blocks 
-        // if one fails, wrong m, increment and try again 
-        // if all blocks pass -> done. 
+        // building candidate key.  
         std::vector<int> candidate_key; 
-        for (int i = 0; i < blocks[0].size(); i++) {
+        std::vector<bool> used(m, false); // to mark used chars
+        for (int i = 0; i < permuted_blocks[0].size(); i++) {
 
-            char target = blocks[0][i]; 
+            char target = permuted_blocks[0][i]; 
 
-            // for each char in here
-            // find it's pos in permuted blocks 
-            // HAVE ISSUES HERE WITH ENCOUNTERING DUPLICATE CHARS 
-            // PERHAPS A BOOL ON EACH POSITION SAYING WHETHER WE'VE GOTTEN IT YET OR NOT
-            // SOMETHING LIKE: std::vector<bool> using(m, false)?
-            // idk there is more to this but something around this idea....
-            std::vector<bool> used(m, false); 
-            auto search = std::find(permuted_blocks[0].begin(), permuted_blocks[0].end(), target); 
-            int index = std::distance(permuted_blocks[0].begin(), search);
-            used[index] = true;  
-
-            candidate_key.push_back(index + 1); 
+            // go through original block 
+            for (int j = 0; j < blocks[0].size(); j++) {
+                if (blocks[0][j] == target && used[j] == false) {
+                    candidate_key.push_back(j + 1); // + 1 for non 0 based counting 
+                    used[j] = true; 
+                    break; // break, outter iterates and we begin looking for next char 
+                }
+            }
 
         }
 
+        // checking if key matches up with what the size of it should be
+        if (candidate_key.size() != m) {
+            // if it doesn't, we already know there is an issue here with missing chars. must be too small 
+            m++;
+            continue; 
+        }
+ 
         // now that we have a temp key 
-        // test it with the rest of the blocks 
-        int counter = 1; 
-        std::vector<bool> used(m, false);
-        for (int i = 0; i < blocks.size(); i++) {
+        // test it with the rest of the blocks by making the permutation with the regular block and comparing it to the actual permuted block
+        int counter = 1; // block 0 already been checked. so counter at 1
+        for (int i = 1; i < blocks.size(); i++) { // block 0 already checked so i = 1 to skip first block 
 
             std::string temp_permuted_block; 
-            // go through and apply permutation 
+            // go through and apply permutation to build a temp block for comparison to real permuted block 
             for (int j = 0; j < blocks[i].size(); j++) {
-
-                // make a temp permuted block (I'M DOING THIS WRONG LOL)
-                int position = candidate_key[j];
+                int position = candidate_key[j] - 1;
                 temp_permuted_block.push_back(blocks[i][position]); 
-
             }
 
             // compare to real corresponding permuted block 
@@ -176,8 +169,11 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
             }
 
         }
+        // success 
         if (counter == permuted_blocks.size()) {
-            m_found = true; 
+            result.key = candidate_key; 
+            result.m = m; 
+            m_found = true; // will exit while loop and return result 
         }
 
     }
@@ -188,6 +184,34 @@ AttackResult plainTextAttack(std::string& plain_text, const std::string& cipher_
 
 int main(){
 
-    
+    // Algorithm breaks on this one
+    // std::string message = "hello there my name is nathan and I am the best in the game"; 
+    // int m = 10; 
+    // std::vector<int> key = {2, 3, 1, 4, 5, 7, 10, 9, 8, 6}; 
+
+    // worked for this though. 
+    // std::string message = "hello there my name is nathan and I am the best in the game"; 
+    // int m = 9; 
+    // std::vector<int> key = {2, 3, 6, 4, 5, 1, 7, 8, 9};     
+
+    std::string message = "beyond the misty mountains, a silver stream flows quietly through meadows where wildflowers bloom in vibrant colors. ancient stones mark forgotten pathways, while distant echoes whisper tales of bygone eras and lost civilizations.";
+    int m = 10; 
+    std::vector<int> key = {4, 3, 2, 1, 5, 6, 7, 10, 8, 9};
+
+    // encrypt 
+    std::string encrypted_message = permutationCipher(message, m, key); 
+    std::cout << "message before: " << message << std::endl; 
+    std::cout << "encrypted message: " << encrypted_message << std::endl; 
+
+    // attack
+    std::string plain_copy = message; 
+    AttackResult result = plainTextAttack(plain_copy, encrypted_message); 
+
+    std::cout << "Found m: " << result.m << std::endl; 
+    std::cout << "Found key: "; 
+    for (int i = 0; i < result.key.size(); i++) {
+        std::cout << result.key[i]; 
+    }
+    std::cout << std::endl; 
 
 }
