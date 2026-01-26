@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <optional>
+#include <optional> // can hold either a value of type T, or nothing. Handles null returned stuff 
 
 int main() {
     unsigned int width = 800; 
