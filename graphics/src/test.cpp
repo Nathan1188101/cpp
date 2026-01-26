@@ -4,11 +4,8 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML 3 Test");
     sf::CircleShape circle(80.f);
-    circle.setPosition({0.f, 0.f});
-
-    for (int i = 0; i < 600; i++) {
-
-    }
+    float x = 0.0f; 
+    float y = 0.0f; 
 
 
     while (window.isOpen()) {
@@ -17,6 +14,13 @@ int main() {
                 window.close();
             }
         }
+
+        x++; 
+        //y++;
+        if (x == 10.0) {
+            x = 10.0; 
+        }
+        circle.setPosition({x, y});
 
         window.clear();
         window.draw(circle);
