@@ -3,7 +3,7 @@
 #include<cmath> 
 #include<iostream> 
 
-bool isCirclClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos, float radius) {
+bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos, float radius) {
 
     // convert to world coords (need this since we have camera)
     sf::Vector2f worldPos = windowRef.mapPixelToCoords(mousePos); 
@@ -20,28 +20,34 @@ int main(){
     // setting up window 
     unsigned int width = 800; 
     unsigned int height = 600; 
-    sf::RenderWindow window(sf::VideoMode({width, height}), "camera");
+    sf::RenderWindow window(sf::VideoMode({width, height}), "Place Nodes");
     window.setFramerateLimit(240); 
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
 
-    float radius = 50.0f;
-    // circle 1
-    sf::CircleShape c1(radius);
-    c1.setOrigin(c1.getGeometricCenter()); // set center of circle
-    c1.setFillColor(sf::Color::Blue); 
-    c1.setPosition({(width / 2.0f) - 200.0f, height / 2.0f});
-
-    // circle 2 
-    sf::CircleShape c2(radius); 
-    c2.setOrigin(c2.getGeometricCenter()); 
-    c2.setFillColor(sf::Color::Red); 
-    c2.setPosition({(width / 2.0f) + 200.0f, height / 2.0f}); 
-
+    // vector of smart pointers 
+    std::vector<std::unique_ptr<sf::CircleShape>> circles;
     // ref to selected circle 
     sf::CircleShape* selected = nullptr; // empty to start (nothing selected) 
-    std::vector<sf::CircleShape*> circle_array = {&c1, &c2};
+
+    float radius = 50.0f;
+    
+    // circle 1
+    //sf::CircleShape c1(radius);
+    auto c1 = std::make_unique<sf::CircleShape>(radius);
+    (*c1).setOrigin((*c1).getGeometricCenter()); // set center of circle
+    (*c1).setFillColor(sf::Color::Blue); 
+    (*c1).setPosition({(width / 2.0f) - 200.0f, height / 2.0f});
+    circles.push_back(std::move(c1));
+
+    // circle 2 
+    //sf::CircleShape c2(radius); 
+    auto c2 = std::make_unique<sf::CircleShape>(radius);
+    (*c2).setOrigin((*c2).getGeometricCenter()); 
+    (*c2).setFillColor(sf::Color::Red); 
+    (*c2).setPosition({(width / 2.0f) + 200.0f, height / 2.0f});
+    circles.push_back(std::move(c2));
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -80,19 +86,19 @@ int main(){
                     sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
                     // loop through all circles to see if any pressed 
-                    for (int i = 0; i < circle_array.size(); i++) {
+                    for (int i = 0; i < circles.size(); i++) {
 
                         // get circle pos
-                        sf::Vector2f circlePos = circle_array[i]->getPosition();
+                        sf::Vector2f circlePos = circles[i]->getPosition();
 
                         // call the function at each iteration
-                        bool check = isCirclClicked(window, mousePos, circlePos, radius);
+                        bool check = isCircleClicked(window, mousePos, circlePos, radius);
 
                         // if clicked, set selected and give outline
                         if (check) {  
-                            selected = circle_array[i]; // was passing in ref but cirlce_array[i] will now return a ref itself, so we can just do this    
-                            circle_array[i]->setOutlineColor(sf::Color::Yellow);   
-                            circle_array[i]->setOutlineThickness(3.0f);    
+                            selected = circles[i].get(); // was passing in ref but cirlce_array[i] will now return a ref itself, so we can just do this    
+                            circles[i]->setOutlineColor(sf::Color::Yellow);   
+                            circles[i]->setOutlineThickness(3.0f);    
                         } 
                     }
                 
@@ -127,12 +133,16 @@ int main(){
                     // get mouse position 
                     sf::Vector2i mousePos = sf::Mouse::getPosition();
 
-                    // place new circle at mouse location 
-                    sf::CircleShape newCircle(radius);
-                    newCircle.setOrigin(newCircle.getGeometricCenter()); 
-                    newCircle.setPosition({float(mousePos.x), float(mousePos.y)}); 
-                    newCircle.setFillColor(sf::Color::Magenta);
-                    circle_array.push_back(&newCircle); 
+                    // create and place new circle at mouse location 
+                    auto circle = std::make_unique<sf::CircleShape>(radius); 
+                    // or mabye I should set stuff here and now before pusing to vector 
+                    // like
+                    // circle->setPosition(); type of thing
+
+                    circles.push_back(std::move(circle));
+                    circles.back()->setPosition({float(mousePos.x), float(mousePos.y)}); 
+                    circles.back()->setFillColor(sf::Color::Magenta); 
+                    circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
                 }
             }
 
@@ -155,8 +165,8 @@ int main(){
         
         // draw edge between circles
         // get positions of circles  
-        sf::Vector2f p1 = c1.getPosition(); 
-        sf::Vector2f p2 = c2.getPosition(); 
+        sf::Vector2f p1 = circles[0]->getPosition(); // after moving c1 and c2 into the smart pointer vector, that's where they are. So you have to access them through their "new owner" by going through circles. 
+        sf::Vector2f p2 = circles[1]->getPosition(); 
 
         // calculate the angle they form 
         float angle = atan2(p2.y - p1.y, p2.x - p1.x); 
@@ -174,8 +184,8 @@ int main(){
         window.setView(camera);
 
         // all drawing must be inbetween these 
-        for (int i = 0; i < circle_array.size(); i++) {
-            window.draw(*circle_array[i]); // dereference var by putting * infront of pointer var (this gives us access to the actual object)
+        for (int i = 0; i < circles.size(); i++) {
+            window.draw(*circles[i]); // dereference var by putting * infront of pointer var (this gives us access to the actual object)
         }
 
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
