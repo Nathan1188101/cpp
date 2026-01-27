@@ -1,6 +1,7 @@
 #include<SFML/Graphics.hpp>
 #include<optional> 
 #include<cmath> 
+#include<iostream> 
 
 bool isCirclClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos, float radius) {
 
@@ -20,7 +21,7 @@ int main(){
     unsigned int width = 800; 
     unsigned int height = 600; 
     sf::RenderWindow window(sf::VideoMode({width, height}), "camera");
-    window.setFramerateLimit(60); 
+    window.setFramerateLimit(240); 
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
@@ -98,6 +99,44 @@ int main(){
                 }
             
             }
+
+            // handling mouse movement 
+            if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
+                std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
+                std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
+            }
+
+            // handling selection and movement 
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                if(const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
+                    // need to make sure we are not tyring to access a nullptr
+                    if(selected != nullptr) {
+                        selected->setPosition({float(mouseMoved->position.x), float(mouseMoved->position.y)});
+                    }
+                    
+                }
+            }
+
+            // handling placement of new nodes 
+            if(const auto* mouseEntered = ev->getIf<sf::Event::MouseEntered>()) {
+                std::cout<< "MOUSE ENTERED" << std::endl; 
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+
+                    std::cout << "E PRESSED" << std::endl; 
+
+                    // get mouse position 
+                    sf::Vector2i mousePos = sf::Mouse::getPosition();
+
+                    // place new circle at mouse location 
+                    sf::CircleShape newCircle(radius);
+                    newCircle.setOrigin(newCircle.getGeometricCenter()); 
+                    newCircle.setPosition({float(mousePos.x), float(mousePos.y)}); 
+                    newCircle.setFillColor(sf::Color::Magenta);
+                    circle_array.push_back(&newCircle); 
+                }
+            }
+
+
         }
 
         // move camera based on key input  
@@ -114,11 +153,6 @@ int main(){
             camera.move({0, 2.f}); 
         }
         
-
-        // moving the circles 
-        c1.move({1.0f, 0}); 
-        c2.move({-1.0f, 0});
-
         // draw edge between circles
         // get positions of circles  
         sf::Vector2f p1 = c1.getPosition(); 
@@ -140,8 +174,10 @@ int main(){
         window.setView(camera);
 
         // all drawing must be inbetween these 
-        window.draw(c1);
-        window.draw(c2); 
+        for (int i = 0; i < circle_array.size(); i++) {
+            window.draw(*circle_array[i]); // dereference var by putting * infront of pointer var (this gives us access to the actual object)
+        }
+
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
 
         window.display(); //draw new one
