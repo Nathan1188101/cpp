@@ -62,6 +62,8 @@ int main(){
             // auto because we let the compiler to figure out the type, otherwise I'd have to type that whole sf::Event::blahblah...
             // pointer (*) because it's simpler and faster. we just want to know if an event is there or not. either "something" or nullptr
             if (const auto* click = ev->getIf<sf::Event::MouseButtonPressed>()) { // getIf<>() -> means get if <it's this event>() 
+
+                // handling selection of node in here (just does outline atm)
                 if (click->button == sf::Mouse::Button::Left) {
 
                     // clear outline if there is one on a circle already
@@ -85,15 +87,17 @@ int main(){
                         // call the function at each iteration
                         bool check = isCirclClicked(window, mousePos, circlePos, radius);
 
-                        // we are checking how far the click is from the circle center 
+                        // if clicked, set selected and give outline
                         if (check) {  
                             selected = circle_array[i]; // was passing in ref but cirlce_array[i] will now return a ref itself, so we can just do this    
                             circle_array[i]->setOutlineColor(sf::Color::Yellow);   
-                            circle_array[i]->setOutlineThickness(5.0f);    
+                            circle_array[i]->setOutlineThickness(3.0f);    
                         } 
                     }
                 
                 }
+            
+
             }
         }
 
@@ -110,6 +114,7 @@ int main(){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
             camera.move({0, 2.f}); 
         }
+        
 
         // moving the circles 
         c1.move({1.0f, 0}); 
