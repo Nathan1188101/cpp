@@ -3,6 +3,15 @@
 #include<cmath> 
 #include<iostream> 
 
+// ref to selected circle 
+sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
+sf::CircleShape* dragStartPos = nullptr; 
+sf::CircleShape* dragEndPos = nullptr; 
+
+
+// to detect dragging edge 
+bool is_dragging_edge;
+
 struct Edge {
     // I want to store the connection as a pair of pointers to the circles 
     // this will help us with moving circles, and keeping that edge connected as it moves 
@@ -62,6 +71,25 @@ void movement(sf::View& camera) {
 
 }
 
+std::array<sf::Vertex, 2> edgeStartToMouse(const sf::RenderWindow& window) {
+
+        if (!is_dragging_edge) {
+            dragStartPos = nullptr; 
+        }
+        sf::Vector2f circlePos;
+        if (dragStartPos != nullptr){
+            circlePos = dragStartPos->getPosition();  
+        }
+        sf::Vector2f mousePos = sf::Vector2f(window.mapPixelToCoords(sf::Mouse::getPosition(window))); 
+        float mouse_angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
+        sf::Vector2f edge_start_drag = circlePos + sf::Vector2f(radius * cos(mouse_angle), radius * sin(mouse_angle));
+        sf::Vertex edge_to_mouse[] = { 
+            {edge_start_drag}, {mousePos}
+        };
+
+        return {sf::Vertex{edge_start_drag}, sf::Vertex{mousePos}}; 
+}
+
 int main() {     
 
     // setting up window 
@@ -72,12 +100,7 @@ int main() {
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
     // camera 
-    sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
-
-    // ref to selected circle 
-    sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
-    sf::CircleShape* dragStartPos = nullptr; 
-    sf::CircleShape* dragEndPos = nullptr;  
+    sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window  
 
     float radius = 50.0f;
     
@@ -95,10 +118,7 @@ int main() {
     (*c2).setOrigin((*c2).getGeometricCenter()); 
     (*c2).setFillColor(sf::Color::Red); 
     (*c2).setPosition({(width / 2.0f) + 200.0f, height / 2.0f});
-    circles.push_back(std::move(c2));
-
-    // to detect dragging edge 
-    bool is_dragging_edge; 
+    circles.push_back(std::move(c2)); 
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -226,34 +246,6 @@ int main() {
             selected->setPosition({worldPos.x, worldPos.y}); 
         }
 
-        // handling edge function
-        // if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-        //     is_dragging_edge = true;
-        //     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-
-        //     for (int i = 0; i < circles.size(); i++) {                
-        //         if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
-        //             dragStartPos = circles[i].get(); // store that circle 
-        //             break; // stop searching 
-        //         }
-        //     }
-        // }
-        // stops edge from being drawn if right mouse button released 
-        if (!is_dragging_edge) {
-            dragStartPos = nullptr; 
-        }
-        sf::Vector2f circlePos;
-        if (dragStartPos != nullptr){
-            circlePos = dragStartPos->getPosition();  
-        }
-        sf::Vector2f mousePos = sf::Vector2f(window.mapPixelToCoords(sf::Mouse::getPosition(window))); 
-        float mouse_angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
-        sf::Vector2f edge_start_drag = circlePos + sf::Vector2f(radius * cos(mouse_angle), radius * sin(mouse_angle));
-        sf::Vertex edge_to_mouse[] = { 
-            {edge_start_drag}, {mousePos}
-        };
-
-
         // draw edge between circles
         // get positions of circles  
         sf::Vector2f p1 = circles[0]->getPosition(); // after moving c1 and c2 into the smart pointer vector, that's where they are. So you have to access them through their "new owner" by going through circles. 
@@ -268,25 +260,26 @@ int main() {
             {edge_start}, {edge_end} 
         };
 
+        window.clear(); // clear last frame
 
         // camera movement 
         movement(camera); 
-
-        window.clear(); // clear last frame
-
         window.setView(camera);
 
-        // all drawing must be inbetween clear and display  
+        // HANDLE DRAWING CIRCLES 
         for (int i = 0; i < circles.size(); i++) {
             window.draw(*circles[i]); 
         }
 
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
 
+        // HANDLE circle to mouse edge 
+        auto edge_to_mouse = edgeStartToMouse(window); 
         if (dragStartPos != nullptr) {
-            window.draw(edge_to_mouse, 2, sf::PrimitiveType::LineStrip);
+            window.draw(edge_to_mouse.data(), 2, sf::PrimitiveType::LineStrip);
         }
 
+        // draw finished connections 
         for (int i = 0; i < edges.size(); i++) {
             // for each edge get the start and end pos 
             sf::Vector2f start_pos = edges[i].start->getPosition();
@@ -296,8 +289,8 @@ int main() {
             float angle = atan2(start_pos.y - end_pos.y, start_pos.x - end_pos.x); 
 
             // calculate offset 
-            sf::Vector2f edge_start = start_pos + sf::Vector2f(radius * cos(angle), radius * sin(angle));
-            sf::Vector2f edge_end = end_pos - sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
+            sf::Vector2f edge_start = start_pos - sf::Vector2f(radius * cos(angle), radius * sin(angle));
+            sf::Vector2f edge_end = end_pos + sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
 
             sf::Vertex edge[] = {
                 {edge_start} , {edge_end}
