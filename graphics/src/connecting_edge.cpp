@@ -205,14 +205,14 @@ int main() {
 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-
-                    for (int i = 0; i < circles.size(); i++) {                
-                        if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
-
-                            if (dragStartPos == nullptr)
+                    if (dragStartPos != nullptr) {
+                        sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+                        for (int i = 0; i < circles.size(); i++) {                
+                            if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
                                 dragStartPos = circles[i].get(); // store that circle 
+                                is_dragging_edge = true; 
                                 break; // stop searching 
+                            }
                         }
                     }
                 }
@@ -227,18 +227,18 @@ int main() {
         }
 
         // handling edge function
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-            is_dragging_edge = true;
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+        // if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+        //     is_dragging_edge = true;
+        //     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
-            for (int i = 0; i < circles.size(); i++) {                
-                if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
-                    dragStartPos = circles[i].get(); // store that circle 
-                    break; // stop searching 
-                }
-            }
-        }
-        if (is_dragging_edge) {
+        //     for (int i = 0; i < circles.size(); i++) {                
+        //         if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
+        //             dragStartPos = circles[i].get(); // store that circle 
+        //             break; // stop searching 
+        //         }
+        //     }
+        // }
+        if (is_dragging_edge && dragStartPos != nullptr) {
 
         }
         // stops edge from being drawn if right mouse button released 
