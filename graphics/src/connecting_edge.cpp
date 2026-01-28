@@ -3,11 +3,16 @@
 #include<cmath> 
 #include<iostream> 
 
-float radius = 50.0f;
-// vector of smart pointers 
-std::vector<std::unique_ptr<sf::CircleShape>> circles;
-std::vector<std::unique_ptr<sf::Vertex>> vertices;  
+struct Edge {
+    // I want to store the connection as a pair of pointers to the circles 
+    // this will help us with moving circles, and keeping that edge connected as it moves 
+    sf::CircleShape* start; 
+    sf::CircleShape* end; 
+};
+std::vector<Edge> edges; 
 
+float radius = 50.0f;
+std::vector<std::unique_ptr<sf::CircleShape>> circles; // vector of smart pointers 
 
 bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos) {
 
@@ -71,7 +76,8 @@ int main() {
 
     // ref to selected circle 
     sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
-    sf::CircleShape* dragStartPos = nullptr;  
+    sf::CircleShape* dragStartPos = nullptr; 
+    sf::CircleShape* dragEndPos = nullptr;  
 
     float radius = 50.0f;
     
@@ -169,9 +175,30 @@ int main() {
                 }
             }
         
+            // detecting edge drag release 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonReleased>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
                     std::cout << "Right mouse button released" << std::endl;  
+
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+
+                    for (int i = 0; i < circles.size(); i++) {
+                        sf::Vector2f circlePos = circles[i]->getPosition(); 
+
+                        if (isCircleClicked(window, mousePos, circlePos)) {
+                            // store this end circle 
+                            dragEndPos = circles[i].get(); 
+                            break; 
+                        }
+                    }
+
+                    if (dragStartPos != nullptr && dragEndPos != nullptr && dragStartPos != dragEndPos) {
+                        edges.push_back({dragStartPos, dragEndPos});
+                    }
+                    dragStartPos = nullptr;
+                    dragEndPos = nullptr; 
+
+                    // SIGNAL to stop drawing edge (button has been released)
                     is_dragging_edge = false;
                 }
             }
@@ -186,7 +213,7 @@ int main() {
 
         // handling edge function
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-             is_dragging_edge = true; 
+            is_dragging_edge = true;
             sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
             for (int i = 0; i < circles.size(); i++) {                
@@ -196,11 +223,10 @@ int main() {
                 }
             }
         }
-
+        // stops edge from being drawn if right mouse button released 
         if (!is_dragging_edge) {
             dragStartPos = nullptr; 
         }
-
         sf::Vector2f circlePos;
         if (dragStartPos != nullptr){
             circlePos = dragStartPos->getPosition();  
@@ -208,12 +234,10 @@ int main() {
         sf::Vector2f mousePos = sf::Vector2f(window.mapPixelToCoords(sf::Mouse::getPosition(window))); 
         float mouse_angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
         sf::Vector2f edge_start_drag = circlePos + sf::Vector2f(radius * cos(mouse_angle), radius * sin(mouse_angle));
-        sf::Vertex edge[] = { 
+        sf::Vertex edge_to_mouse[] = { 
             {edge_start_drag}, {mousePos}
         };
 
-        // camera movement 
-        movement(camera); 
 
         // draw edge between circles
         // get positions of circles  
@@ -230,6 +254,8 @@ int main() {
         };
 
 
+        // camera movement 
+        movement(camera); 
 
         window.clear(); // clear last frame
 
@@ -243,10 +269,28 @@ int main() {
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
 
         if (dragStartPos != nullptr) {
-            window.draw(edge, 2, sf::PrimitiveType::LineStrip);
+            window.draw(edge_to_mouse, 2, sf::PrimitiveType::LineStrip);
         }
 
- 
+        for (int i = 0; i < edges.size(); i++) {
+            // for each edge get the start and end pos 
+            sf::Vector2f start_pos = edges[i].start->getPosition();
+            sf::Vector2f end_pos = edges[i].end->getPosition(); 
+
+            // calculate angle
+            float angle = atan2(start_pos.y - end_pos.y, start_pos.x - end_pos.x); 
+
+            // calculate offset 
+            sf::Vector2f edge_start = start_pos + sf::Vector2f(radius * cos(angle), radius * sin(angle));
+            sf::Vector2f edge_end = end_pos - sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
+
+            sf::Vertex edge[] = {
+                {edge_start} , {edge_end}
+            };
+
+            // draw 
+            window.draw(edge, 2, sf::PrimitiveType::LineStrip); 
+        }
 
 
         window.display(); //draw new one
