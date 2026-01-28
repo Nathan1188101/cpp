@@ -205,7 +205,7 @@ int main() {
 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
-                    if (dragStartPos != nullptr) {
+                    if (dragStartPos == nullptr) {
                         sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
                         for (int i = 0; i < circles.size(); i++) {                
                             if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
