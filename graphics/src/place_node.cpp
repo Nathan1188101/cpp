@@ -3,6 +3,11 @@
 #include<cmath> 
 #include<iostream> 
 
+float radius = 50.0f;
+// vector of smart pointers 
+std::vector<std::unique_ptr<sf::CircleShape>> circles;
+
+
 bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos, float radius) {
 
     // convert to world coords (need this since we have camera)
@@ -15,7 +20,25 @@ bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, c
     return distance <= radius; 
 }
 
-int main(){     
+void placeCircle(const sf::RenderWindow& window) {
+
+        // handling new circle placement 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+            // get mouse pos 
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window); // pass in window to get postion relative to window (otherwise u get position on entire desktop)
+            sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+            
+            auto newCircle = std::make_unique<sf::CircleShape>(radius); 
+            circles.push_back(std::move(newCircle)); 
+            circles.back()->setFillColor(sf::Color::Green); 
+            circles.back()->setPosition({worldPos.x, worldPos.y});
+            circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
+
+        }
+
+}
+
+int main() {     
 
     // setting up window 
     unsigned int width = 800; 
@@ -26,8 +49,6 @@ int main(){
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
 
-    // vector of smart pointers 
-    std::vector<std::unique_ptr<sf::CircleShape>> circles;
     // ref to selected circle 
     sf::CircleShape* selected = nullptr; // empty to start (nothing selected) 
 
@@ -128,50 +149,6 @@ int main(){
                 }
             }
 
-            // handling placement of new nodes 
-            // if(const auto* mouseEntered = ev->getIf<sf::Event::MouseEntered>()) {
-            //     std::cout<< "MOUSE ENTERED" << std::endl; 
-            //     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
-
-            //         std::cout << "E PRESSED" << std::endl; 
-
-            //         // get mouse position 
-            //         sf::Vector2i mousePos = sf::Mouse::getPosition();
-
-            //         // create and place new circle at mouse location 
-            //         auto circle = std::make_unique<sf::CircleShape>(radius); 
-            //         // or mabye I should set stuff here and now before pusing to vector 
-            //         // like
-            //         // circle->setPosition(); type of thing
-
-            //         circles.push_back(std::move(circle));
-            //         circles.back()->setPosition({float(mousePos.x), float(mousePos.y)}); 
-            //         circles.back()->setFillColor(sf::Color::Magenta); 
-            //         circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
-            //     }
-            // }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)){
-                if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
-                    std::cout << "E PRESSED" << std::endl; 
-
-                    // get mouse position 
-                    int mouse_x = mouseMoved->position.x; 
-                    int mouse_y = mouseMoved->position.y; 
-                    sf::Vector2i mousePos = {mouse_x, mouse_y}; 
-                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
-
-                    // create new circle, make it a smart pointer 
-                    auto circle = std::make_unique<sf::CircleShape>(radius); 
-                    // define circle properties 
-                    circles.push_back(std::move(circle));
-                    circles.back()->setPosition({worldPos.x, worldPos.y}); 
-                    circles.back()->setFillColor(sf::Color::Magenta); 
-                    circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
-                }
-            }
-
-
         }
 
         // move camera based on key input  
@@ -188,6 +165,22 @@ int main(){
             camera.move({0, 2.f}); 
         }
         
+        // // handling new circle placement 
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+        //     // get mouse pos 
+        //     sf::Vector2i mousePos = sf::Mouse::getPosition(window); // pass in window to get postion relative to window (otherwise u get position on entire desktop)
+        //     sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+            
+        //     auto newCircle = std::make_unique<sf::CircleShape>(radius); 
+        //     circles.push_back(std::move(newCircle)); 
+        //     circles.back()->setFillColor(sf::Color::Green); 
+        //     circles.back()->setPosition({worldPos.x, worldPos.y});
+        //     circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
+
+        // }
+
+        placeCircle(window); 
+
         // draw edge between circles
         // get positions of circles  
         sf::Vector2f p1 = circles[0]->getPosition(); // after moving c1 and c2 into the smart pointer vector, that's where they are. So you have to access them through their "new owner" by going through circles. 
