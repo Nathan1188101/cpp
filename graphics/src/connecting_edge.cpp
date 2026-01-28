@@ -70,7 +70,8 @@ int main() {
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
 
     // ref to selected circle 
-    sf::CircleShape* selected = nullptr; // empty to start (nothing selected) 
+    sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
+    sf::CircleShape* dragStartPos = nullptr;  
 
     float radius = 50.0f;
     
@@ -89,6 +90,9 @@ int main() {
     (*c2).setFillColor(sf::Color::Red); 
     (*c2).setPosition({(width / 2.0f) + 200.0f, height / 2.0f});
     circles.push_back(std::move(c2));
+
+    // to detect dragging edge 
+    bool is_dragging_edge; 
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -144,6 +148,7 @@ int main() {
                             selected = circles[i].get(); // was passing in ref but cirlce_array[i] will now return a ref itself, so we can just do this    
                             circles[i]->setOutlineColor(sf::Color::Yellow);   
                             circles[i]->setOutlineThickness(3.0f);    
+                            break; // only want one circle selected, so stop searching 
                         } 
                     }
                 
@@ -164,6 +169,12 @@ int main() {
                 }
             }
         
+            if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonReleased>()) {
+                if (mouse_event->button == sf::Mouse::Button::Right) {
+                    std::cout << "Right mouse button released" << std::endl;  
+                    is_dragging_edge = false;
+                }
+            }
         }
 
         // (click and drag) handling node movement <- used to be in event poll loop which was wrong, and why we were getting weird node movement bugs
@@ -173,22 +184,33 @@ int main() {
             selected->setPosition({worldPos.x, worldPos.y}); 
         }
 
+        // handling edge function
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-
+             is_dragging_edge = true; 
             sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
             for (int i = 0; i < circles.size(); i++) {                
-                if (isCircleClicked(window, mousePos, circles[i]->getPosition())) {
-                    // get position of circle 
-                    sf::Vector2f circlePos = circles[i]->getPosition(); 
-                    // get angle formed between mouse position and circle position 
-                    float angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
-                    // off set line from center of selected circle 
-                    sf::Vector2f edge_start = circlePos + sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
-                    selected = circles[i].get(); 
+                if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
+                    dragStartPos = circles[i].get(); // store that circle 
+                    break; // stop searching 
                 }
             }
         }
+
+        if (!is_dragging_edge) {
+            dragStartPos = nullptr; 
+        }
+
+        sf::Vector2f circlePos;
+        if (dragStartPos != nullptr){
+            circlePos = dragStartPos->getPosition();  
+        }
+        sf::Vector2f mousePos = sf::Vector2f(window.mapPixelToCoords(sf::Mouse::getPosition(window))); 
+        float mouse_angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
+        sf::Vector2f edge_start_drag = circlePos + sf::Vector2f(radius * cos(mouse_angle), radius * sin(mouse_angle));
+        sf::Vertex edge[] = { 
+            {edge_start_drag}, {mousePos}
+        };
 
         // camera movement 
         movement(camera); 
@@ -219,6 +241,12 @@ int main() {
         }
 
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
+
+        if (dragStartPos != nullptr) {
+            window.draw(edge, 2, sf::PrimitiveType::LineStrip);
+        }
+
+ 
 
 
         window.display(); //draw new one
