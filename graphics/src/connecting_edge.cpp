@@ -238,9 +238,6 @@ int main() {
         //         }
         //     }
         // }
-        if (is_dragging_edge && dragStartPos != nullptr) {
-
-        }
         // stops edge from being drawn if right mouse button released 
         if (!is_dragging_edge) {
             dragStartPos = nullptr; 
