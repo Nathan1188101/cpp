@@ -112,12 +112,17 @@ int main(){
                 std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
             }
 
-            // handling selection and movement 
+            // (DRAGGING) handling selection and movement 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
                 if(const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
                     // need to make sure we are not tyring to access a nullptr
                     if(selected != nullptr) {
-                        selected->setPosition({float(mouseMoved->position.x), float(mouseMoved->position.y)});
+                        // get mouse position
+                        int mouse_x = mouseMoved->position.x;
+                        int mouse_y = mouseMoved->position.y; 
+                        sf::Vector2i mousePos = {mouse_x, mouse_y};
+                        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
+                        selected->setPosition({worldPos.x, worldPos.y});
                     }
                     
                 }
@@ -167,13 +172,11 @@ int main(){
         // get positions of circles  
         sf::Vector2f p1 = circles[0]->getPosition(); // after moving c1 and c2 into the smart pointer vector, that's where they are. So you have to access them through their "new owner" by going through circles. 
         sf::Vector2f p2 = circles[1]->getPosition(); 
-
         // calculate the angle they form 
         float angle = atan2(p2.y - p1.y, p2.x - p1.x); 
         // now offset so edge goes to edge of circles 
         sf::Vector2f edge_start = p1 + sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
         sf::Vector2f edge_end = p2 - sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
-
         // set up the line 
         sf::Vertex line[] = {
             {edge_start}, {edge_end} 
@@ -183,9 +186,9 @@ int main(){
 
         window.setView(camera);
 
-        // all drawing must be inbetween these 
+        // all drawing must be inbetween clear and display  
         for (int i = 0; i < circles.size(); i++) {
-            window.draw(*circles[i]); // dereference var by putting * infront of pointer var (this gives us access to the actual object)
+            window.draw(*circles[i]); 
         }
 
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
