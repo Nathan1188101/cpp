@@ -129,23 +129,43 @@ int main(){
             }
 
             // handling placement of new nodes 
-            if(const auto* mouseEntered = ev->getIf<sf::Event::MouseEntered>()) {
-                std::cout<< "MOUSE ENTERED" << std::endl; 
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+            // if(const auto* mouseEntered = ev->getIf<sf::Event::MouseEntered>()) {
+            //     std::cout<< "MOUSE ENTERED" << std::endl; 
+            //     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
 
+            //         std::cout << "E PRESSED" << std::endl; 
+
+            //         // get mouse position 
+            //         sf::Vector2i mousePos = sf::Mouse::getPosition();
+
+            //         // create and place new circle at mouse location 
+            //         auto circle = std::make_unique<sf::CircleShape>(radius); 
+            //         // or mabye I should set stuff here and now before pusing to vector 
+            //         // like
+            //         // circle->setPosition(); type of thing
+
+            //         circles.push_back(std::move(circle));
+            //         circles.back()->setPosition({float(mousePos.x), float(mousePos.y)}); 
+            //         circles.back()->setFillColor(sf::Color::Magenta); 
+            //         circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
+            //     }
+            // }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)){
+                if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
                     std::cout << "E PRESSED" << std::endl; 
 
                     // get mouse position 
-                    sf::Vector2i mousePos = sf::Mouse::getPosition();
+                    int mouse_x = mouseMoved->position.x; 
+                    int mouse_y = mouseMoved->position.y; 
+                    sf::Vector2i mousePos = {mouse_x, mouse_y}; 
+                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
-                    // create and place new circle at mouse location 
+                    // create new circle, make it a smart pointer 
                     auto circle = std::make_unique<sf::CircleShape>(radius); 
-                    // or mabye I should set stuff here and now before pusing to vector 
-                    // like
-                    // circle->setPosition(); type of thing
-
+                    // define circle properties 
                     circles.push_back(std::move(circle));
-                    circles.back()->setPosition({float(mousePos.x), float(mousePos.y)}); 
+                    circles.back()->setPosition({worldPos.x, worldPos.y}); 
                     circles.back()->setFillColor(sf::Color::Magenta); 
                     circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
                 }
