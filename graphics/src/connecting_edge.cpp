@@ -6,6 +6,7 @@
 float radius = 50.0f;
 // vector of smart pointers 
 std::vector<std::unique_ptr<sf::CircleShape>> circles;
+std::vector<std::unique_ptr<sf::Vertex>> vertices;  
 
 
 bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos) {
@@ -156,7 +157,7 @@ int main() {
                 std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
             }
         
-            // use event poll loop to detect key press, won't continuously update event queue now with having that disabled near the top of code
+            // place new cicle.                     use event poll loop to detect key press, won't continuously update event queue now with having that disabled near the top of code
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
                 if (key_event->code == sf::Keyboard::Key::E) {
                     placeCircle(window); 
@@ -176,15 +177,17 @@ int main() {
 
             sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
-            for (int i = 0; i < circles.size(); i++) {
-                //isCircleClicked(window, mousePos, circles[i]->getPosition()); 
-                
+            for (int i = 0; i < circles.size(); i++) {                
                 if (isCircleClicked(window, mousePos, circles[i]->getPosition())) {
-                    circles[i]->setFillColor(sf::Color::Yellow); 
+                    // get position of circle 
+                    sf::Vector2f circlePos = circles[i]->getPosition(); 
+                    // get angle formed between mouse position and circle position 
+                    float angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
+                    // off set line from center of selected circle 
+                    sf::Vector2f edge_start = circlePos + sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
+                    selected = circles[i].get(); 
                 }
             }
-
-
         }
 
         // camera movement 
@@ -216,6 +219,7 @@ int main() {
         }
 
         window.draw(line, 2, sf::PrimitiveType::LineStrip); 
+
 
         window.display(); //draw new one
 
