@@ -12,6 +12,7 @@ add_executable(nodes_and_edges src/nodes_and_edges.cpp)
 add_executable(camera src/camera.cpp)
 add_executable(click_detection src/click_detection.cpp)
 add_executable(place_node src/place_node.cpp) 
+add_executable(connecting_edge src/connecting_edge.cpp)
 
 target_link_libraries(test PRIVATE
     SFML::Graphics
@@ -44,6 +45,12 @@ target_link_libraries(click_detection PRIVATE
 )
 
 target_link_libraries(place_node PRIVATE
+    SFML::Graphics
+    SFML::Window
+    SFML::System
+)
+
+target_link_libraries(connecting_edge PRIVATE
     SFML::Graphics
     SFML::Window
     SFML::System

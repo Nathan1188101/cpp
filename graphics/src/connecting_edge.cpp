@@ -8,7 +8,7 @@ float radius = 50.0f;
 std::vector<std::unique_ptr<sf::CircleShape>> circles;
 
 
-bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos, float radius) {
+bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos) {
 
     // convert to world coords (need this since we have camera)
     sf::Vector2f worldPos = windowRef.mapPixelToCoords(mousePos); 
@@ -136,7 +136,7 @@ int main() {
                         sf::Vector2f circlePos = circles[i]->getPosition();
 
                         // call the function at each iteration
-                        bool check = isCircleClicked(window, mousePos, circlePos, radius);
+                        bool check = isCircleClicked(window, mousePos, circlePos);
 
                         // if clicked, set selected and give outline
                         if (check) {  
@@ -155,21 +155,6 @@ int main() {
                 std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
                 std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
             }
-
-            // (DRAGGING) handling selection and movement (so I need to check continuosly while left is held, so this evaluates to true every frame the button is held.)
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                if(const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
-                    // need to make sure we are not tyring to access a nullptr
-                    if(selected != nullptr) {
-                        // get mouse position
-                        int mouse_x = mouseMoved->position.x;
-                        int mouse_y = mouseMoved->position.y; 
-                        sf::Vector2i mousePos = {mouse_x, mouse_y};
-                        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
-                        selected->setPosition({worldPos.x, worldPos.y});
-                    } 
-                }
-            }
         
             // use event poll loop to detect key press, won't continuously update event queue now with having that disabled near the top of code
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
@@ -178,6 +163,28 @@ int main() {
                 }
             }
         
+        }
+
+        // (click and drag) handling node movement <- used to be in event poll loop which was wrong, and why we were getting weird node movement bugs
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && selected != nullptr) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
+            selected->setPosition({worldPos.x, worldPos.y}); 
+        }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+
+            for (int i = 0; i < circles.size(); i++) {
+                //isCircleClicked(window, mousePos, circles[i]->getPosition()); 
+                
+                if (isCircleClicked(window, mousePos, circles[i]->getPosition())) {
+                    circles[i]->setFillColor(sf::Color::Yellow); 
+                }
+            }
+
+
         }
 
         // camera movement 
