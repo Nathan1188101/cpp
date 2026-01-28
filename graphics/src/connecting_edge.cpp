@@ -8,7 +8,6 @@ sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
 sf::CircleShape* dragStartPos = nullptr; 
 sf::CircleShape* dragEndPos = nullptr; 
 
-
 // to detect dragging edge 
 bool is_dragging_edge;
 
@@ -95,14 +94,12 @@ int main() {
     // setting up window 
     unsigned int width = 800; 
     unsigned int height = 600; 
-    sf::RenderWindow window(sf::VideoMode({width, height}), "Place Nodes");
+    sf::RenderWindow window(sf::VideoMode({width, height}), "Connect Nodes");
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window  
-
-    float radius = 50.0f;
     
     // circle 1
     //sf::CircleShape c1(radius);
