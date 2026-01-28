@@ -13,7 +13,7 @@ bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, c
     // convert to world coords (need this since we have camera)
     sf::Vector2f worldPos = windowRef.mapPixelToCoords(mousePos); 
 
-    // euclidiean distance formula -> gets the straight line distance between two points (can do this more efficiently) 
+    // euclidiean distance formula -> gets the straight line distance between two points (can do this more efficiently) -> the points being where your mouse is and the center of the circle
     float distance = std::sqrt(std::pow(worldPos.x - circlePos.x, 2) +
                                             std::pow(worldPos.y - circlePos.y, 2));
 
@@ -23,7 +23,7 @@ bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, c
 void placeCircle(const sf::RenderWindow& window) {
 
         // handling new circle placement 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+        //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
             // get mouse pos 
             sf::Vector2i mousePos = sf::Mouse::getPosition(window); // pass in window to get postion relative to window (otherwise u get position on entire desktop)
             sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
@@ -34,6 +34,24 @@ void placeCircle(const sf::RenderWindow& window) {
             circles.back()->setPosition({worldPos.x, worldPos.y});
             circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
 
+        //}
+
+}
+
+void movement(sf::View& camera) {
+
+        // move camera based on key input  
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            camera.move({-2.f, 0}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            camera.move({2.f, 0}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+            camera.move({0, -2.f}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            camera.move({0, 2.f}); 
         }
 
 }
@@ -45,6 +63,7 @@ int main() {
     unsigned int height = 600; 
     sf::RenderWindow window(sf::VideoMode({width, height}), "Place Nodes");
     window.setFramerateLimit(240); 
+    window.setKeyRepeatEnabled(false); 
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window 
@@ -86,9 +105,13 @@ int main() {
                 }
             }
 
-            // const because read only, it's an event (don't mutate it)
-            // auto because we let the compiler to figure out the type, otherwise I'd have to type that whole sf::Event::blahblah...
-            // pointer (*) because it's simpler and faster. we just want to know if an event is there or not. either "something" or nullptr
+            /*
+            NOTES: 
+                 const because read only, it's an event (don't mutate it)
+                 auto because we let the compiler figure out the type, otherwise I'd have to type that whole sf::Event::blahblah...
+                 pointer (*) because it's simpler and faster. we just want to know if an event is there or not. either "something" or nullptr
+            */
+            // handle selection outline
             if (const auto* click = ev->getIf<sf::Event::MouseButtonPressed>()) { // getIf<>() -> means get if <it's this event>() 
 
                 // handling selection of node in here (just does outline atm)
@@ -98,6 +121,9 @@ int main() {
                     if (selected != nullptr) {
                         selected->setOutlineThickness(0.0f); 
                         selected = nullptr;  
+                    }
+                    else {
+
                     }
                     
                     // get mouse position in window coords (relative to top left of window type of thing)
@@ -127,7 +153,7 @@ int main() {
             
             }
 
-            // handling mouse movement 
+            // track mouse movement (DEBUG) 
             if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
                 std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
                 std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
@@ -144,42 +170,22 @@ int main() {
                         sf::Vector2i mousePos = {mouse_x, mouse_y};
                         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
                         selected->setPosition({worldPos.x, worldPos.y});
-                    }
-                    
+                    } 
                 }
             }
-
-        }
-
-        // move camera based on key input  
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-            camera.move({-2.f, 0}); 
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-            camera.move({2.f, 0}); 
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-            camera.move({0, -2.f}); 
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-            camera.move({0, 2.f}); 
-        }
         
-        // // handling new circle placement 
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
-        //     // get mouse pos 
-        //     sf::Vector2i mousePos = sf::Mouse::getPosition(window); // pass in window to get postion relative to window (otherwise u get position on entire desktop)
-        //     sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
-            
-        //     auto newCircle = std::make_unique<sf::CircleShape>(radius); 
-        //     circles.push_back(std::move(newCircle)); 
-        //     circles.back()->setFillColor(sf::Color::Green); 
-        //     circles.back()->setPosition({worldPos.x, worldPos.y});
-        //     circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
+            if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
+                if (key_event->code == sf::Keyboard::Key::E) {
+                    placeCircle(window); 
+                }
+            }
+        }
 
-        // }
+        // camera movement 
+        movement(camera); 
 
-        placeCircle(window); 
+        // handle circle placement 
+        //placeCircle(window); 
 
         // draw edge between circles
         // get positions of circles  
