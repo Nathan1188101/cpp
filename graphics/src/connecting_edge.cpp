@@ -202,6 +202,21 @@ int main() {
                     is_dragging_edge = false;
                 }
             }
+
+            if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouse_event->button == sf::Mouse::Button::Right) {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+
+                    for (int i = 0; i < circles.size(); i++) {                
+                        if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
+
+                            if (dragStartPos == nullptr)
+                                dragStartPos = circles[i].get(); // store that circle 
+                                break; // stop searching 
+                        }
+                    }
+                }
+            }
         }
 
         // (click and drag) handling node movement <- used to be in event poll loop which was wrong, and why we were getting weird node movement bugs
@@ -222,6 +237,9 @@ int main() {
                     break; // stop searching 
                 }
             }
+        }
+        if (is_dragging_edge) {
+
         }
         // stops edge from being drawn if right mouse button released 
         if (!is_dragging_edge) {
