@@ -35,7 +35,6 @@ int main() {
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window  
      
-    // circle manager 
     CircleManager manager;
     EdgeManager edgeManager(manager);  
 
@@ -44,7 +43,6 @@ int main() {
             if (ev->is<sf::Event::Closed>()) {
                 window.close(); 
             }
-
             // ZOOM CAMERA
             if (const auto* scroll = ev->getIf<sf::Event::MouseWheelScrolled>()) {
                 if (scroll->delta > 0) {
@@ -74,13 +72,13 @@ int main() {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
                     std::cout << "Right mouse button released" << std::endl;  
                     edgeManager.EdgeDragRelease(window); 
+                }
             }
 
             // START EDGE DRAG POSITION 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
-                    edgeManager.EdgeStartToMouse(window); 
-                    }
+                    edgeManager.getClickedCircleForEdgeToMouse(window); 
                 }
             }
         }
@@ -97,8 +95,11 @@ int main() {
         // HANDLE DRAWING CIRCLES 
         manager.drawCircles(window); 
 
+        // Current drag state (calculates edge for circle to mouse)
+        edgeManager.EdgeStartToMouse(window); 
+        // Draw edge to mosue
         edgeManager.DrawEdgeToMouse(window); 
-
+        // Draw connected edges 
         edgeManager.DrawCompletedEdges(window); 
 
 

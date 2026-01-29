@@ -16,7 +16,8 @@ class EdgeManager {
         std::array<sf::Vertex, 2> EdgeStartToMouse(const sf::RenderWindow& window);
         void EdgeDragRelease(const sf::RenderWindow& window);
         void DrawEdgeToMouse(sf::RenderWindow& window); 
-        void DrawCompletedEdges(sf::RenderWindow& window); 
+        void DrawCompletedEdges(sf::RenderWindow& window);
+        void getClickedCircleForEdgeToMouse(const sf::RenderWindow& window); 
 
     private:
         CircleManager& circleManager; // make reference to a circle manager private (Don't tell user what we are doing with it)

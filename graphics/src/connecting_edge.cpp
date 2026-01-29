@@ -216,6 +216,7 @@ int main() {
                 }
             }
 
+            // detecting right mouse button press for draggin edge from circle to mouse 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
                     if (dragStartPos == nullptr) {
