@@ -1,12 +1,15 @@
-#include<SFML/Graphics.hpp>
+#include<SFML/Graphics.hpp> 
 #include<optional> 
 #include<cmath> 
 #include<iostream> 
 
 // ref to selected circle 
-sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
-sf::CircleShape* dragStartPos = nullptr; 
+sf::CircleShape* selected = nullptr; // empty to start (nothing selected) 
+sf::CircleShape* dragStartPos = nullptr;  
 sf::CircleShape* dragEndPos = nullptr; 
+
+float radius = 50.0f;
+std::vector<std::unique_ptr<sf::CircleShape>> circles; // vector of smart pointers 
 
 // to detect dragging edge 
 bool is_dragging_edge;
@@ -18,9 +21,6 @@ struct Edge {
     sf::CircleShape* end; 
 };
 std::vector<Edge> edges; 
-
-float radius = 50.0f;
-std::vector<std::unique_ptr<sf::CircleShape>> circles; // vector of smart pointers 
 
 bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos) {
 
@@ -48,8 +48,7 @@ void placeCircle(const sf::RenderWindow& window) {
             circles.back()->setPosition({worldPos.x, worldPos.y});
             circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
 
-        //}
-
+        //}    
 }
 
 void movement(sf::View& camera) {
@@ -153,9 +152,6 @@ int main() {
                     
                     // get mouse position in window coords (relative to top left of window type of thing)
                     sf::Vector2i mousePos = click->position;
-
-                    // convert to world coords (need this since we have camera)
-                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
                     // loop through all circles to see if any pressed 
                     for (int i = 0; i < circles.size(); i++) {
