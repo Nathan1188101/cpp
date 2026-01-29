@@ -3,24 +3,7 @@
 #include<cmath> 
 #include<iostream> 
 #include"CircleManager.h"
-
-// ref to selected circle 
-sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
-sf::CircleShape* dragStartPos = nullptr; 
-sf::CircleShape* dragEndPos = nullptr; 
-float radius = 50.0;
-
-
-// to detect dragging edge 
-bool is_dragging_edge;
-
-struct Edge {
-    // I want to store the connection as a pair of pointers to the circles 
-    // this will help us with moving circles, and keeping that edge connected as it moves 
-    sf::CircleShape* start; 
-    sf::CircleShape* end; 
-};
-std::vector<Edge> edges; 
+#include"EdgeManager.h" 
 
 void movement(sf::View& camera) {
 
@@ -40,31 +23,12 @@ void movement(sf::View& camera) {
 
 }
 
-std::array<sf::Vertex, 2> edgeStartToMouse(const sf::RenderWindow& window) {
-
-        if (!is_dragging_edge) {
-            dragStartPos = nullptr; 
-        }
-        sf::Vector2f circlePos;
-        if (dragStartPos != nullptr){
-            circlePos = dragStartPos->getPosition();  
-        }
-        sf::Vector2f mousePos = sf::Vector2f(window.mapPixelToCoords(sf::Mouse::getPosition(window))); 
-        float mouse_angle = atan2(mousePos.y - circlePos.y, mousePos.x - circlePos.x); 
-        sf::Vector2f edge_start_drag = circlePos + sf::Vector2f(radius * cos(mouse_angle), radius * sin(mouse_angle));
-        sf::Vertex edge_to_mouse[] = { 
-            {edge_start_drag}, {mousePos}
-        };
-
-        return {sf::Vertex{edge_start_drag}, sf::Vertex{mousePos}}; 
-}
-
 int main() {     
 
     // setting up window 
     unsigned int width = 800; 
     unsigned int height = 600; 
-    sf::RenderWindow window(sf::VideoMode({width, height}), "Connect Nodes");
+    sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
@@ -72,7 +36,8 @@ int main() {
     sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window  
      
     // circle manager 
-    CircleManager manager; 
+    CircleManager manager;
+    EdgeManager edgeManager(manager);  
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -80,8 +45,7 @@ int main() {
                 window.close(); 
             }
 
-            // capturing scroll wheel event (have to do it in the event loop because you can't continuosly hold the scroll wheel in a position like you can a keyboard press)
-            // they are discrete, one-time 
+            // ZOOM CAMERA
             if (const auto* scroll = ev->getIf<sf::Event::MouseWheelScrolled>()) {
                 if (scroll->delta > 0) {
                     camera.zoom(0.9f);  // scroll up = zoom in (smaller view)
@@ -90,21 +54,15 @@ int main() {
                 }
             }
 
-            // SELECTED
+            // SELECT NODE 
             if (const auto* click = ev->getIf<sf::Event::MouseButtonPressed>()) { 
                 if (click->button == sf::Mouse::Button::Left) {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(); 
+                    sf::Vector2i mousePos = click->position;  // click position
                     manager.selectCircle(window, mousePos); 
                 }
             }
-
-            // track mouse movement (DEBUG) 
-            if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
-                std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
-                std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
-            }
-        
-            // place new cicle.                     use event poll loop to detect key press, won't continuously update event queue now with having that disabled near the top of code
+   
+            // PLACE NODE 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
                 if (key_event->code == sf::Keyboard::Key::E) {
                     manager.placeCircle(window); 
@@ -115,53 +73,20 @@ int main() {
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonReleased>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
                     std::cout << "Right mouse button released" << std::endl;  
-
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-
-                    for (int i = 0; i < circles.size(); i++) {
-                        sf::Vector2f circlePos = circles[i]->getPosition(); 
-
-                        if (isCircleClicked(window, mousePos, circlePos)) {
-                            // store this end circle 
-                            dragEndPos = circles[i].get(); 
-                            break; 
-                        }
-                    }
-
-                    if (dragStartPos != nullptr && dragEndPos != nullptr && dragStartPos != dragEndPos) {
-                        edges.push_back({dragStartPos, dragEndPos});
-                    }
-                    dragStartPos = nullptr;
-                    dragEndPos = nullptr; 
-
-                    // SIGNAL to stop drawing edge (button has been released)
-                    is_dragging_edge = false;
-                }
+                    edgeManager.EdgeDragRelease(window); 
             }
 
+            // START EDGE DRAG POSITION 
             if (const auto* mouse_event = ev->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_event->button == sf::Mouse::Button::Right) {
-                    if (dragStartPos == nullptr) {
-                        sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-                        for (int i = 0; i < circles.size(); i++) {                
-                            if (isCircleClicked(window, mousePos, circles[i]->getPosition())) { 
-                                dragStartPos = circles[i].get(); // store that circle 
-                                is_dragging_edge = true; 
-                                break; // stop searching 
-                            }
-                        }
+                    edgeManager.EdgeStartToMouse(window); 
                     }
                 }
             }
         }
 
-        // (click and drag) handling node movement <- used to be in event poll loop which was wrong, and why we were getting weird node movement bugs
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && selected != nullptr) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
-            selected->setPosition({worldPos.x, worldPos.y}); 
-        }
-
+        // MOVE CIRCLE 
+        manager.moveSelectedCircle(window); 
 
         window.clear(); // clear last frame
 
@@ -170,38 +95,11 @@ int main() {
         window.setView(camera);
 
         // HANDLE DRAWING CIRCLES 
-        for (int i = 0; i < circles.size(); i++) {
-            window.draw(*circles[i]); 
-        }
+        manager.drawCircles(window); 
 
-        window.draw(line, 2, sf::PrimitiveType::LineStrip); 
+        edgeManager.DrawEdgeToMouse(window); 
 
-        // HANDLE circle to mouse edge 
-        auto edge_to_mouse = edgeStartToMouse(window); 
-        if (dragStartPos != nullptr) {
-            window.draw(edge_to_mouse.data(), 2, sf::PrimitiveType::LineStrip);
-        }
-
-        // draw finished connections 
-        for (int i = 0; i < edges.size(); i++) {
-            // for each edge get the start and end pos 
-            sf::Vector2f start_pos = edges[i].start->getPosition();
-            sf::Vector2f end_pos = edges[i].end->getPosition(); 
-
-            // calculate angle
-            float angle = atan2(start_pos.y - end_pos.y, start_pos.x - end_pos.x); 
-
-            // calculate offset 
-            sf::Vector2f edge_start = start_pos - sf::Vector2f(radius * cos(angle), radius * sin(angle));
-            sf::Vector2f edge_end = end_pos + sf::Vector2f(radius * cos(angle), radius * sin(angle)); 
-
-            sf::Vertex edge[] = {
-                {edge_start} , {edge_end}
-            };
-
-            // draw 
-            window.draw(edge, 2, sf::PrimitiveType::LineStrip); 
-        }
+        edgeManager.DrawCompletedEdges(window); 
 
 
         window.display(); //draw new one

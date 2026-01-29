@@ -1,4 +1,5 @@
 #include"CircleManager.h"
+#include<cmath> 
 
 void CircleManager::placeCircle(const sf::RenderWindow& window) {
  
@@ -14,6 +15,7 @@ void CircleManager::placeCircle(const sf::RenderWindow& window) {
 
 }
 
+// PRIVATE (INTERNAL) FUNCTION 
 bool CircleManager::isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos) {
 
     // convert to world coords (need this since we have camera)
@@ -53,5 +55,17 @@ void CircleManager::selectCircle(const sf::RenderWindow& window, sf::Vector2i mo
         }
 }
 
-                
-                
+void CircleManager::moveSelectedCircle(const sf::RenderWindow& window) {
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && selected != nullptr) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
+        selected->setPosition({worldPos.x, worldPos.y}); 
+    }
+}                
+
+void CircleManager::drawCircles(sf::RenderWindow& window) {
+    // HANDLE DRAWING CIRCLES 
+    for (int i = 0; i < circles.size(); i++) {
+        window.draw(*circles[i]); 
+    }
+}
