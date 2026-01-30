@@ -12,6 +12,7 @@ class EdgeManager {
             // this will help us with moving circles, and keeping that edge connected as it moves 
             sf::CircleShape* start; 
             sf::CircleShape* end; 
+            // circles are using smart pointers so, this structure works out since that means a circles memory location won't chance ever. 
         };
         std::array<sf::Vertex, 2> EdgeStartToMouse(const sf::RenderWindow& window);
         void EdgeDragRelease(const sf::RenderWindow& window);

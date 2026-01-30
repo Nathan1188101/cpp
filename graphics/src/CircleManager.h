@@ -16,8 +16,11 @@ class CircleManager {
     private:
         // members 
         float radius = 50.0f; 
-        sf::CircleShape* selected = nullptr; // empty to start (nothing selected) 
+        sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
+        
+        // WE NEED THIS TO BE MANAGING NODES -> not just circles. 
         std::vector<std::unique_ptr<sf::CircleShape>> circles;
-
+        //std::vector<std::unique_ptr<Node>> would be better 
+        
             
 };

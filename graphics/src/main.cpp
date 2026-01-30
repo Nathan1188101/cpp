@@ -86,7 +86,7 @@ int main() {
         // MOVE CIRCLE 
         manager.moveSelectedCircle(window); 
 
-        window.clear(); // clear last frame
+        window.clear(); // clear last framed
 
         // camera movement 
         movement(camera); 
@@ -103,7 +103,7 @@ int main() {
         edgeManager.DrawCompletedEdges(window); 
 
 
-        window.display(); //draw new one
+        window.display(); //draw new frame 
 
     }
 }
