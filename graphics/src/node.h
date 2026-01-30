@@ -12,9 +12,14 @@
 
 class Node {
     public: 
-        // if u need something, just make a getter 
-        float getRadius(){return radius;}
-        int getID(){return id;}
+        Node(sf::Vector2f position, float radius, sf::Color color = sf::Color::Green); 
+
+        void setPosition(sf::Vector2f pos); 
+        sf::Vector2f getPosition() const; 
+        void setSelected(bool selected); // not sure about this one 
+        bool isSelected() const; 
+        void draw(sf::RenderWindow& window) const; 
+        sf::CircleShape& getShape(); 
         
 
 
