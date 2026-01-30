@@ -12,18 +12,25 @@
 */
 EdgeManager::EdgeManager(CircleManager& cm) : circleManager(cm) {}
 
+/*
+    this is for getting the start node for drawing edge from node to mouse 
+
+    we make sure dragStartPos is null before proceeding 
+    loop through all nodes -> check which one was clicked 
+    once we find target set it as the dragStartPos, and set is_dragging_edge to true. 
+    break to stop searching for more. 
+*/
 void EdgeManager::getClickedCircleForEdgeToMouse(const sf::RenderWindow& window) {
 
-    auto& circles_ref = circleManager.getCircles(); 
+    auto& nodes = circleManager.getNodes(); 
 
-    // getting clicked circle for drag start pos 
     if (dragStartPos == nullptr) {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-        for (int i = 0; i < circles_ref.size(); i++) {                
-            if (circleManager.isCircleClicked(window, mousePos, circles_ref[i]->getPosition())) { 
-                dragStartPos = circles_ref[i].get(); // store that circle 
+        for (auto& node : circleManager.getNodes()) {
+            if (node->isClicked(window, mousePos)) {
+                dragStartPos = node.get(); 
                 is_dragging_edge = true; 
-                break; // stop searching 
+                break; 
             }
         }
     }
@@ -51,53 +58,52 @@ std::array<sf::Vertex, 2> EdgeManager::EdgeStartToMouse(const sf::RenderWindow& 
     return {sf::Vertex{edge_start_drag}, sf::Vertex{mousePos}}; 
 }
 
+/*
+    When we let go of right mouse button
+    we want to see if that happened in a node
+    if so we grab that as the end pos, grab start pos we already have, and create this pair 
+    then when done we clear start and end because we've let go and are no longer dragging 
+    also set is_dragging_edge to false, as we are not dragging.
+*/
 void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
 
     // DEBUGGING 
     std::cout << "EDGE DRAG RELEASE CALLED" << std::endl; 
 
-    auto& circles = circleManager.getCircles(); 
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
-    for (int i = 0; i < circles.size(); i++) {
-        sf::Vector2f circlePos = circles[i]->getPosition();  
-        if (circleManager.isCircleClicked(window, mousePos, circlePos)) {
-            // store this end circle 
-            dragEndPos = circles[i].get(); 
-            break; 
+    for (auto& node : circleManager.getNodes()) {
+        if (node->isClicked(window, mousePos)) {
+            // store end circle pos 
+            dragEndPos = node.get(); 
+            break; // stop searching 
         }
     }
-    
-    // check to make sure edge doesn't already exist 
-    auto& check_start = dragStartPos;
+
+    auto& check_start = dragStartPos; 
     auto& check_end = dragEndPos; 
-    /*
-        NOTES ABOUT THE LAMBDA FUNCTION:
-        [&](const Edge& e) -> anonymous inline function to have each edge returned as a reference called e
-                              this will return true if the edge already exists. 
-    */
+
+    // check to make sure this edge doesn't already exist 
     auto it = std::find_if(edges.begin(), edges.end(), [&](const Edge& e){
-        // checking edges in both directions
+        // check edges, both directions 
         return (e.start == check_start && e.end == check_end) ||
                 (e.start == check_end && e.end == check_start);
     });
     if (it == edges.end()) {
-        // edge doesn't exist, so we can add it (if the next validation passes)
-        if (dragStartPos != nullptr && dragEndPos != nullptr && dragStartPos != dragEndPos) {
-            edges.push_back({dragStartPos, dragEndPos});
-        } 
+        // if return nothing -> edge doesn't exist 
+        if (dragStartPos != dragEndPos && dragStartPos != nullptr && dragEndPos != nullptr) {
+            edges.push_back({dragStartPos, dragEndPos}); 
+        }
     }
 
-    // set back to null 
-    dragStartPos = nullptr;
+    // set both to null when done 
+    dragStartPos = nullptr; 
     dragEndPos = nullptr;
 
-    // DEBUGGING  
-    std::cout << "Edges Size = " << edges.size() << std::endl; 
-
-    // SIGNAL to stop drawing edge (button has been released)
-    is_dragging_edge = false;
+    // DEBUGGING 
+    std::cout << "Edges: " << edges.size() << std::endl; 
+    
+    is_dragging_edge = false; // done dragging 
 }
 
 void EdgeManager::DrawEdgeToMouse(sf::RenderWindow& window) {

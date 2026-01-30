@@ -1,5 +1,6 @@
 #pragma once 
 #include<SFML/Graphics.hpp>
+#include "node.h"
 
 class CircleManager {
     public: 
@@ -11,16 +12,14 @@ class CircleManager {
 
         // getters 
         float getRadius() const {return radius;} // so we can access the radius anywhere (by def a public getter, makes it read only)
-        const std::vector<std::unique_ptr<sf::CircleShape>>& getCircles() const { return circles; }
+        const std::vector<std::unique_ptr<Node>>& getNodes() const {return nodes;};
 
     private:
         // members 
-        float radius = 50.0f; 
-        sf::CircleShape* selected = nullptr; // empty to start (nothing selected)
-        
-        // WE NEED THIS TO BE MANAGING NODES -> not just circles. 
-        std::vector<std::unique_ptr<sf::CircleShape>> circles;
-        //std::vector<std::unique_ptr<Node>> would be better 
-        
+        float radius = 50.0f; // this is stupid but I'm leaving it for now
+        Node* selected = nullptr; // empty to start (nothing selected)
+        std::vector<std::unique_ptr<Node>> nodes; 
+
+
             
 };

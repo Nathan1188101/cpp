@@ -3,15 +3,11 @@
 
 void CircleManager::placeCircle(const sf::RenderWindow& window) {
  
-        // get mouse pos 
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window); // pass in window to get postion relative to window (otherwise u get position on entire desktop)
-        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
-        auto newCircle = std::make_unique<sf::CircleShape>(radius); 
-        circles.push_back(std::move(newCircle)); 
-        circles.back()->setFillColor(sf::Color::Green); 
-        circles.back()->setPosition({worldPos.x, worldPos.y});
-        circles.back()->setOrigin(circles.back()->getGeometricCenter()); 
+        auto newNode = std::make_unique<Node>(worldPos, 50.0f, sf::Color::Green); 
+        nodes.push_back(std::move(newNode)); 
 
 }
 
@@ -30,29 +26,21 @@ bool CircleManager::isCircleClicked(const sf::RenderWindow& windowRef, sf::Vecto
 
 void CircleManager::selectCircle(const sf::RenderWindow& window, sf::Vector2i mousePos) {
 
-     // clear outline if there is one on a circle already
     if (selected != nullptr) {
-        selected->setOutlineThickness(0.0f); 
-        selected = nullptr;  
+        selected->setOutlineThickness(0);
+        selected = nullptr; 
     }
-    
-    // convert to world coords (need this since we have camera)
-    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
-    // loop through all circles to see if any pressed 
-    for (int i = 0; i < circles.size(); i++) {
+    for (auto& node : nodes) {
+        node->setSelected(false); 
+    }
 
-        // get circle pos
-        sf::Vector2f circlePos = circles[i]->getPosition();
-        // call the function at each iteration
-        bool check = isCircleClicked(window, mousePos, circlePos); 
-        // if clicked, set selected and give outline
-        if (isCircleClicked(window, mousePos, circlePos)) {  
-            selected = circles[i].get();   
-                circles[i]->setOutlineColor(sf::Color::Yellow);   
-                circles[i]->setOutlineThickness(3.0f);    
-                break; // only want one circle selected, so stop searching 
-            }
+    for (auto& node : nodes) {
+        if (node->isClicked(window, mousePos)) {
+            node->setSelected(true); 
+            selected = node.get(); 
+            break; 
         }
+    }
 }
 
 void CircleManager::moveSelectedCircle(const sf::RenderWindow& window) {
@@ -65,7 +53,7 @@ void CircleManager::moveSelectedCircle(const sf::RenderWindow& window) {
 
 void CircleManager::drawCircles(sf::RenderWindow& window) {
     // HANDLE DRAWING CIRCLES 
-    for (int i = 0; i < circles.size(); i++) {
-        window.draw(*circles[i]); 
+    for (auto& node : nodes) {
+        node->draw(window); 
     }
 }
