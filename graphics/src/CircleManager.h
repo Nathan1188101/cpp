@@ -18,6 +18,7 @@ class CircleManager {
         // members 
         float radius = 50.0f; // this is stupid but I'm leaving it for now
         Node* selected = nullptr; // empty to start (nothing selected)
+        int nextNodeId = 0; 
         std::vector<std::unique_ptr<Node>> nodes; 
 
 

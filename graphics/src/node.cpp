@@ -3,9 +3,10 @@
 #include<cmath> 
 
 // constructor definition 
-Node::Node(sf::Vector2f position, float radius, sf::Color color)
+Node::Node(sf::Vector2f position, float radius, int id,  sf::Color color)
     // initializer list 
-    : radius(radius) // attach radius to Node (now every node will know its radius)
+    : radius(radius), // attach radius to Node (now every node will know its radius)
+      id(id)
 {
     node.setRadius(radius); 
     node.setPosition(position); 

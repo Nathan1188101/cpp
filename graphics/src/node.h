@@ -12,7 +12,7 @@
 
 class Node {
     public: 
-        Node(sf::Vector2f position, float radius, sf::Color color); // constructor
+        Node(sf::Vector2f position, float radius, int id, sf::Color color); // constructor
 
         enum class Strategy { Cooperate, Compete, Unforgiving, TitForTat }; // possible strategies a node can employ, refer to as Node::Strategy
 
@@ -27,6 +27,7 @@ class Node {
         sf::CircleShape& getShape(); // get ref to shape 
         const std::vector<Node*> getNeighbors() const {return neighbors;} // (READ ONLY) get neighbors for node, with a promise to not modify the obj 
         void addNeighbor(Node* neighbor);
+        const int getId() const {return id;}
 
 
     private: 

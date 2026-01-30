@@ -101,8 +101,8 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
             // need to update these nodes neighbors 
             dragStartPos->addNeighbor(dragEndPos);
             dragEndPos->addNeighbor(dragStartPos); 
-            std::cout << "START total neighbors: " << dragStartPos->getNeighbors().size() << std::endl; 
-            std::cout << "end total neighbors: " << dragEndPos->getNeighbors().size() << std::endl; 
+            std::cout << dragStartPos->getId() << "'s total neighbors: " << dragStartPos->getNeighbors().size() << std::endl; 
+            std::cout << dragEndPos->getId() << "'s total neighbors: " << dragEndPos->getNeighbors().size() << std::endl; 
 
         }
     }
