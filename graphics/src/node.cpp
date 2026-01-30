@@ -59,3 +59,9 @@ bool Node::isClicked(const sf::RenderWindow& window, sf::Vector2i mousePos) cons
 
 }
 
+/*
+    add the neighbors a node has 
+*/
+void Node::addNeighbor(Node* node) {
+    neighbors.push_back(node); 
+}

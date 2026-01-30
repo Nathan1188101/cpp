@@ -6,7 +6,7 @@ void CircleManager::placeCircle(const sf::RenderWindow& window) {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
-        auto newNode = std::make_unique<Node>(worldPos, 50.0f, sf::Color::Green); 
+        auto newNode = std::make_unique<Node>(worldPos, 50.0f, sf::Color::White); 
         nodes.push_back(std::move(newNode)); 
 
 }

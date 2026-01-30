@@ -8,10 +8,8 @@ class EdgeManager {
         // this tells me how to create the object of EdgeManager (needs ref to circle manager)
         EdgeManager(CircleManager& cm); // constructor declaration (Edge manager must take ref to circleManager when being created now)
         struct Edge {
-            // I want to store the connection as a pair of pointers to the circles 
-            // this will help us with moving circles, and keeping that edge connected as it moves 
-            //sf::CircleShape* start; 
-            //sf::CircleShape* end; 
+            // I want to store the connection as a pair of pointers to the Nodes 
+            // this will help us with moving circles, and keeping that edge connected as it moves since we have a ref to the Node itself. (not a copy) 
             // circles are using smart pointers so, this structure works out since that means a circles memory location won't chance ever. 
             Node* start; 
             Node* end; 

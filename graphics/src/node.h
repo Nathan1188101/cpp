@@ -12,24 +12,29 @@
 
 class Node {
     public: 
-        Node(sf::Vector2f position, float radius, sf::Color color); 
+        Node(sf::Vector2f position, float radius, sf::Color color); // constructor
 
-        void setPosition(sf::Vector2f pos); 
+        enum class Strategy { Cooperate, Compete, Unforgiving, TitForTat }; // possible strategies a node can employ, refer to as Node::Strategy
+
+        void setPosition(sf::Vector2f pos); // sets position
         bool isClicked(const sf::RenderWindow& window, sf::Vector2i mousePos) const; // will convert your Vector2i mousePos to world coordinates (DONT WORRY)
-        sf::Vector2f getPosition() const; 
-        void setSelected(bool selected); // not sure about this one 
-        bool isSelected() const; 
-        void draw(sf::RenderWindow& window) const; 
-        void setOutlineColor(const sf::Color& color);
-        void setOutlineThickness(float thickness);
-        sf::CircleShape& getShape(); 
-        
+        sf::Vector2f getPosition() const; // returns position
+        void setSelected(bool selected); // will set outline and outline thickness 
+        bool isSelected() const; // returns if selected or not (T/F)
+        void draw(sf::RenderWindow& window) const; // draw circle
+        void setOutlineColor(const sf::Color& color); // set outline color 
+        void setOutlineThickness(float thickness); // set outline thickness 
+        sf::CircleShape& getShape(); // get ref to shape 
+        const std::vector<Node*> getNeighbors() const {return neighbors;} // (READ ONLY) get neighbors for node, with a promise to not modify the obj 
+        void addNeighbor(Node* neighbor);
 
 
     private: 
-        sf::CircleShape node; 
+        sf::CircleShape node; // node is a circle
         int id; 
         float radius;
         bool selected = false; // should mabye rename this since we also have a selected var in circleManager
-
+        float score; 
+        Strategy strategy;
+        std::vector<Node*> neighbors; // track a nodes neighbors (get a ref to them)
 };

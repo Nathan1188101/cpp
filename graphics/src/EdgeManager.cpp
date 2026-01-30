@@ -59,10 +59,11 @@ std::array<sf::Vertex, 2> EdgeManager::EdgeStartToMouse(const sf::RenderWindow& 
 }
 
 /*
+    HOW IT WORKS: 
     When we let go of right mouse button
     we want to see if that happened in a node
-    if so we grab that as the end pos, grab start pos we already have, and create this pair 
-    then when done we clear start and end because we've let go and are no longer dragging 
+    if so, we grab that as the end pos, grab start pos we already have, and create this pair 
+    then when done, we clear start and end because we've let go and are no longer dragging 
     also set is_dragging_edge to false, as we are not dragging.
 */
 void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
@@ -72,6 +73,7 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
 
+    // check if node was released on 
     for (auto& node : circleManager.getNodes()) {
         if (node->isClicked(window, mousePos)) {
             // store end circle pos 
@@ -80,6 +82,7 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
         }
     }
 
+    // ref for checking 
     auto& check_start = dragStartPos; 
     auto& check_end = dragEndPos; 
 
@@ -92,7 +95,15 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
     if (it == edges.end()) {
         // if return nothing -> edge doesn't exist 
         if (dragStartPos != dragEndPos && dragStartPos != nullptr && dragEndPos != nullptr) {
+            // create the pair (then we can draw the edge in DrawCompletedEdges())
             edges.push_back({dragStartPos, dragEndPos}); 
+
+            // need to update these nodes neighbors 
+            dragStartPos->addNeighbor(dragEndPos);
+            dragEndPos->addNeighbor(dragStartPos); 
+            std::cout << "START total neighbors: " << dragStartPos->getNeighbors().size() << std::endl; 
+            std::cout << "end total neighbors: " << dragEndPos->getNeighbors().size() << std::endl; 
+
         }
     }
 
