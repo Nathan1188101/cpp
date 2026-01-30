@@ -29,3 +29,5 @@ bool Node::isSelected() const {
 void Node::draw(sf::RenderWindow& window) const {
     window.draw(node); 
 }
+
+
