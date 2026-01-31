@@ -68,7 +68,7 @@ void Node::addNeighbor(Node* node) {
     neighbors.push_back(node); 
 }
 
-// nothing changes here, we are just calculating how well each node did given the current "board"
+// nothing changes here, we are just calculating how well each node did given the current round or "board"
 void Node::computeScore() {
 
     // count total num of neighbors cooperating 
@@ -79,11 +79,17 @@ void Node::computeScore() {
         }
     }
 
-    score = 0.0f; 
-    if (strategy == Strategy::Cooperate) {
-        score = (totalCooperators + 1) * 0.8; // WE WILL BE CHANGING THIS I THINK 
-    } else if (strategy == Strategy::Compete) {
-        score = (totalCooperators * 0.8f) + (neighbors.size() / 2.0f); 
+    // so right now each neighboring cooperating node is contributing 0.8 points of benefit. 
+    // right now there is more possible cooperation benefit on high-degree nodes
+    // less on low degree nodes
+    // apparently this is more realistic 
+    // -> maybe I should make this value configureable by the user later
+
+    if (cooperate) {
+        score = (totalCooperators + 1) * 0.8f;
+    } else {
+        float bonus = neighbors.size() / 2.0f;
+        score = (totalCooperators * 0.8f) + bonus; 
     }
     std::cout << id << "score: " << score << std::endl; 
 
@@ -104,32 +110,61 @@ void Node::selectStrategy() {
         node.setFillColor(sf::Color::Blue);
     } else if (score < 3) {
         strategy = Strategy::Unforgiving;
-        node.setFillColor(sf::Color::Magenta); 
+        node.setOutlineThickness(3);
+        node.setOutlineColor(sf::Color::Magenta); 
         // set color if you want
     } else { // score >= 3 && score <= 5
         strategy = Strategy::TitForTat;
-        node.setFillColor(sf::Color::Green); 
+        node.setOutlineThickness(3);
+        node.setOutlineColor(sf::Color::Green); 
         // set color if you want
     }
 
 }
 
+// checks nodes strat and then sets the nod's action for the round 
 void Node::applyStrategy() {
     switch(strategy) {
         case Strategy::Cooperate:
-            cooperate = true;
+            nextCooperate = true;
             break; 
         case Strategy::Compete:
-            cooperate = false; 
+            nextCooperate = false; 
             break;
-        case Strategy::TitForTat: {
-            int coopNeighbors = 0, compNeighbors = 0; 
-            for(Node* neighbor : neighbors) {
-                if (neighbor->cooperate) coopNeighbors++;
+        case Strategy::TitForTat: { // (follow local majority) cooperate if more eighbors cooperated than defected, defect if more neighbors did that 
+            int coopNeighbors = 0; 
+            int compNeighbors = 0; 
+
+            for (Node* neighbor : neighbors) {
+                if (neighbor->cooperate) 
+                    coopNeighbors++;
+                else
+                    compNeighbors++; 
+                
             }
-            cooperate = (compNeighbors <= 2);
+
+            // cooperate if majority is cooperating 
+            nextCooperate = (coopNeighbors >= compNeighbors);
             break; 
         }
+
+        case Strategy::Unforgiving:
+            int coopNeighbors = 0; 
+            int compNeighbors = 0; 
+
+            for (Node* n : neighbors) {
+                if (n -> cooperate) 
+                    coopNeighbors++; 
+                else
+                    compNeighbors++; 
+            }
+
+            // if 3 or more neighbors are defecting, join em
+            if (compNeighbors >= 3)
+                nextCooperate = false;  
+                
+            break; 
+
     }
 }
 
@@ -147,7 +182,7 @@ void Node::setNodeStrategy(Strategy strat) {
         node.setFillColor(sf::Color::Red); 
         std::cout << id << " set to compete" << std::endl; 
     }
-    
+    applyStrategy(); 
 }
 
 

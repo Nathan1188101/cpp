@@ -125,17 +125,27 @@ int main() {
 
                 simAccumulaor = 0.0f; 
 
+                // set cooperate/compete for this round 
+                // decide next action based on strat + last tick state 
                 for (auto& node : manager.getNodes()) {
-                    
+                    node->applyStrategy(); 
                 }
 
+                // commit all actions simultaneously 
+                for (auto& node : manager.getNodes()) {
+                    node->commitAction(); 
+                }
+
+                // score using commited actions
                 for (auto& node : manager.getNodes()) {
                     node->computeScore(); 
                 }
 
+                // select strat for next round 
                 for (auto& node : manager.getNodes()) {
                     node->selectStrategy(); 
                 }
+
             } 
         } else {
             simClock.restart(); 
