@@ -68,6 +68,7 @@ void Node::addNeighbor(Node* node) {
     neighbors.push_back(node); 
 }
 
+// nothing changes here, we are just calculating how well each node did given the current "board"
 void Node::computeScore() {
 
     // count total num of neighbors cooperating 
@@ -91,7 +92,7 @@ void Node::computeScore() {
 
 // LOTS OF WORK TO BE DONE HERE, JUST TESTING FOR NOW 
 /*
-    
+    this part uses the payoff to decide what to do next round
 */
 void Node::selectStrategy() {
 
@@ -113,6 +114,26 @@ void Node::selectStrategy() {
 
 }
 
+void Node::applyStrategy() {
+    switch(strategy) {
+        case Strategy::Cooperate:
+            cooperate = true;
+            break; 
+        case Strategy::Compete:
+            cooperate = false; 
+            break;
+        case Strategy::TitForTat: {
+            int coopNeighbors = 0, compNeighbors = 0; 
+            for(Node* neighbor : neighbors) {
+                if (neighbor->cooperate) coopNeighbors++;
+            }
+            cooperate = (compNeighbors <= 2);
+            break; 
+        }
+    }
+}
+
+// function for setting up initial state of nodes after placing them
 void Node::setNodeStrategy(Strategy strat) {
 
     // set the strategy from what was passed in 

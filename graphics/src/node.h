@@ -30,8 +30,8 @@ class Node {
         const int getId() const {return id;} // get node's Id 
         void computeScore();
         void selectStrategy();  
-        void setNodeStrategy(Strategy strat);
-
+        void setNodeStrategy(Strategy strat); // for setting initial state of a node after placing before running sim
+        void applyStrategy(); 
 
     private: 
         sf::CircleShape node; // node is a circle

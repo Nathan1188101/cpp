@@ -126,6 +126,10 @@ int main() {
                 simAccumulaor = 0.0f; 
 
                 for (auto& node : manager.getNodes()) {
+                    
+                }
+
+                for (auto& node : manager.getNodes()) {
                     node->computeScore(); 
                 }
 
