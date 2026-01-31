@@ -25,6 +25,11 @@ void movement(sf::View& camera) {
 
 int main() {     
 
+    sf::Clock simClock; 
+    float simStepInterval = 0.5f;
+    float simAccumulaor = 0.0f; 
+    bool simRunning = false; 
+
     // setting up window 
     unsigned int width = 800; 
     unsigned int height = 600; 
@@ -59,6 +64,35 @@ int main() {
                     manager.selectCircle(window, mousePos); 
                 }
             }
+
+            if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
+                if (key_event->code == sf::Keyboard::Key::C) {
+                    std::cout << "C pressed" << std::endl; 
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+                    for (auto& node : manager.getNodes()) {
+                        bool check = manager.isCircleClicked(window, mousePos, node->getPosition());
+                        if (check) {
+                            node->setNodeStrategy(Node::Strategy::Cooperate); 
+                        }
+                    } 
+                }
+
+                if (key_event->code == sf::Keyboard::Key::F) {
+                    std::cout << "F pressed" << std::endl; 
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+                    for (auto& node : manager.getNodes()) {
+                        bool check = manager.isCircleClicked(window, mousePos, node->getPosition());
+                        if (check) {
+                            node->setNodeStrategy(Node::Strategy::Compete); 
+                        }
+                    } 
+                }
+
+                if (key_event->code == sf::Keyboard::Key::Space) {
+                    simRunning = !simRunning;
+                    std::cout << (simRunning ? "Simulation started" : "Simulation paused") << std::endl;
+                }
+            }
    
             // PLACE NODE 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
@@ -83,6 +117,28 @@ int main() {
             }
         }
 
+        
+        // SIMULATION 
+        if (simRunning) {
+            simAccumulaor += simClock.restart().asSeconds();
+            if (simAccumulaor >= simStepInterval) {
+
+                simAccumulaor = 0.0f; 
+
+                for (auto& node : manager.getNodes()) {
+                    node->computeScore(); 
+                }
+
+                for (auto& node : manager.getNodes()) {
+                    node->selectStrategy(); 
+                }
+            } 
+        } else {
+            simClock.restart(); 
+        }
+
+        
+        
         // MOVE CIRCLE 
         manager.moveSelectedCircle(window); 
 

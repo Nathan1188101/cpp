@@ -1,6 +1,7 @@
 #include"Node.h" 
 #include<SFML/Graphics.hpp> 
 #include<cmath> 
+#include<iostream> 
 
 // constructor definition 
 Node::Node(sf::Vector2f position, float radius, int id,  sf::Color color)
@@ -66,3 +67,69 @@ bool Node::isClicked(const sf::RenderWindow& window, sf::Vector2i mousePos) cons
 void Node::addNeighbor(Node* node) {
     neighbors.push_back(node); 
 }
+
+void Node::computeScore() {
+
+    // count total num of neighbors cooperating 
+    int totalCooperators = 0; 
+    for (Node* neighbor : neighbors) {
+        if (neighbor->cooperate) {
+            totalCooperators++;
+        }
+    }
+
+    score = 0.0f; 
+    if (strategy == Strategy::Cooperate) {
+        score = (totalCooperators + 1) * 0.8; // WE WILL BE CHANGING THIS I THINK 
+    } else if (strategy == Strategy::Compete) {
+        score = (totalCooperators * 0.8f) + (neighbors.size() / 2.0f); 
+    }
+    std::cout << id << "score: " << score << std::endl; 
+
+
+}
+
+// LOTS OF WORK TO BE DONE HERE, JUST TESTING FOR NOW 
+/*
+    
+*/
+void Node::selectStrategy() {
+
+    if (score > 8) {
+        strategy = Strategy::Compete; 
+        node.setFillColor(sf::Color::Red); 
+    } else if (score > 5) {
+        strategy = Strategy::Cooperate;
+        node.setFillColor(sf::Color::Blue);
+    } else if (score < 3) {
+        strategy = Strategy::Unforgiving;
+        node.setFillColor(sf::Color::Magenta); 
+        // set color if you want
+    } else { // score >= 3 && score <= 5
+        strategy = Strategy::TitForTat;
+        node.setFillColor(sf::Color::Green); 
+        // set color if you want
+    }
+
+}
+
+void Node::setNodeStrategy(Strategy strat) {
+
+    // set the strategy from what was passed in 
+    strategy = strat; 
+
+    // set color based on strategy 
+    if (strat == Strategy::Cooperate) {
+        node.setFillColor(sf::Color::Blue);  
+        std::cout << id << " set to cooperate" << std::endl;
+    } else if (strat == Strategy::Compete) {
+        node.setFillColor(sf::Color::Red); 
+        std::cout << id << " set to compete" << std::endl; 
+    }
+    
+}
+
+
+
+
+

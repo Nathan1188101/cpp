@@ -26,8 +26,11 @@ class Node {
         void setOutlineThickness(float thickness); // set outline thickness 
         sf::CircleShape& getShape(); // get ref to shape 
         const std::vector<Node*> getNeighbors() const {return neighbors;} // (READ ONLY) get neighbors for node, with a promise to not modify the obj 
-        void addNeighbor(Node* neighbor);
-        const int getId() const {return id;}
+        void addNeighbor(Node* neighbor); // enables you to add a node as a neighbor to your current node
+        const int getId() const {return id;} // get node's Id 
+        void computeScore();
+        void selectStrategy();  
+        void setNodeStrategy(Strategy strat);
 
 
     private: 
@@ -38,4 +41,5 @@ class Node {
         float score; 
         Strategy strategy;
         std::vector<Node*> neighbors; // track a nodes neighbors (get a ref to them)
+        bool cooperate; // represents nodes current action
 };

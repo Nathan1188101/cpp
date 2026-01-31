@@ -101,6 +101,8 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
             // need to update these nodes neighbors 
             dragStartPos->addNeighbor(dragEndPos);
             dragEndPos->addNeighbor(dragStartPos); 
+
+            // DEBUGGING
             std::cout << dragStartPos->getId() << "'s total neighbors: " << dragStartPos->getNeighbors().size() << std::endl; 
             std::cout << dragEndPos->getId() << "'s total neighbors: " << dragEndPos->getNeighbors().size() << std::endl; 
 
@@ -146,6 +148,5 @@ void EdgeManager::DrawCompletedEdges(sf::RenderWindow& window) {
         window.draw(edge, 2, sf::PrimitiveType::LineStrip); 
     }
 }
-
 
 

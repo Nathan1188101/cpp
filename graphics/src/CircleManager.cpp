@@ -24,16 +24,22 @@ bool CircleManager::isCircleClicked(const sf::RenderWindow& windowRef, sf::Vecto
     return distance <= radius; 
 }
 
+
+
 void CircleManager::selectCircle(const sf::RenderWindow& window, sf::Vector2i mousePos) {
 
+    // if something is selected, set it to not be for selected pointer from CircleManager
     if (selected != nullptr) {
         selected->setOutlineThickness(0);
         selected = nullptr; 
     }
+    
+    // loop through all nodes and also set them to not selected
     for (auto& node : nodes) {
         node->setSelected(false); 
     }
 
+    // loop through to see if any node was clicked, and select if so. 
     for (auto& node : nodes) {
         if (node->isClicked(window, mousePos)) {
             node->setSelected(true); 
