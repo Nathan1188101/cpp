@@ -148,7 +148,7 @@ void Node::applyStrategy() {
             break; 
         }
 
-        case Strategy::Unforgiving:
+        case Strategy::Unforgiving: {
             int coopNeighbors = 0; 
             int compNeighbors = 0; 
 
@@ -160,11 +160,13 @@ void Node::applyStrategy() {
             }
 
             // if 3 or more neighbors are defecting, join em
-            if (compNeighbors >= 3)
+            if (compNeighbors >= neighbors.size() / 2) // need to tweak this threshold 
                 nextCooperate = false;  
-                
-            break; 
+            else    
+                nextCooperate = cooperate; // keep current action 
 
+            break; 
+        }
     }
 }
 
@@ -176,13 +178,15 @@ void Node::setNodeStrategy(Strategy strat) {
 
     // set color based on strategy 
     if (strat == Strategy::Cooperate) {
+        cooperate = true; 
         node.setFillColor(sf::Color::Blue);  
         std::cout << id << " set to cooperate" << std::endl;
     } else if (strat == Strategy::Compete) {
         node.setFillColor(sf::Color::Red); 
+        cooperate = false;
         std::cout << id << " set to compete" << std::endl; 
     }
-    applyStrategy(); 
+   
 }
 
 
