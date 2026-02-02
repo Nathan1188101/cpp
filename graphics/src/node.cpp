@@ -87,6 +87,7 @@ void Node::computeScore() {
 
     if (cooperate) {
         score = (totalCooperators + 1) * 0.8f;
+        
     } else {
         float bonus = neighbors.size() / 2.0f;
         score = (totalCooperators * 0.8f) + bonus; 
@@ -159,7 +160,7 @@ void Node::applyStrategy() {
                     compNeighbors++; 
             }
 
-            // if 3 or more neighbors are defecting, join em
+            // if  or more neighbors are defecting, join em
             if (compNeighbors >= neighbors.size() / 2) // need to tweak this threshold 
                 nextCooperate = false;  
             else    
@@ -175,6 +176,7 @@ void Node::setNodeStrategy(Strategy strat) {
 
     // set the strategy from what was passed in 
     strategy = strat; 
+    score = 0; // clear score -> allows you to use already made graph and reset inital states 
 
     // set color based on strategy 
     if (strat == Strategy::Cooperate) {

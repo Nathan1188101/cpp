@@ -31,23 +31,31 @@ int main() {
     bool simRunning = false; 
 
     // setting up window 
-    unsigned int width = 800; 
-    unsigned int height = 600; 
+    unsigned int width = 1920; 
+    unsigned int height = 1080; 
     sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
     // camera 
-    sf::View camera({width / 2.0f, height / 2.0f}, {800.f, 600.f}); // center at middle of window, and size of window  
+    sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window  
      
     CircleManager manager;
     EdgeManager edgeManager(manager);  
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
+
+
+
             if (ev->is<sf::Event::Closed>()) {
                 window.close(); 
             }
+
+            if (ev->is<sf::Event::Resized>()) {
+                // need to figure out how to handle window resizing 
+            }
+
             // ZOOM CAMERA
             if (const auto* scroll = ev->getIf<sf::Event::MouseWheelScrolled>()) {
                 if (scroll->delta > 0) {
