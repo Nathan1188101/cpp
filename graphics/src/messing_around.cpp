@@ -38,7 +38,8 @@ int main() {
 
         // apply gravity to velocity
         velocity.y += gravity * dt; // multiplying by the dt makes physics independent from frame rate (gravity is applied per second not per frame) since we can't rely on consistent frames (some quick, some slow) it would mess with the phyics 
-        velocity.x += gravity * dt; 
+        
+        // velocity.x += gravity * dt; // horizontal force 
 
         // apply velocity to position
         circle.move(velocity * dt);
