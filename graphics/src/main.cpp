@@ -6,6 +6,8 @@
 #include"EdgeManager.h" 
 #include<TGUI/TGUI.hpp> // ui 
 #include <TGUI/Backend/SFML-Graphics.hpp>
+// ChatWindow integration
+#include "ChatWindow.h"
 
 void movement(sf::View& camera) {
 
@@ -27,7 +29,7 @@ void movement(sf::View& camera) {
 
 int main() {     
 
-    // for sim tic rate 
+    // for sim tick rate 
     sf::Clock simClock; 
     float simStepInterval = 0.5f;
     float simAccumulaor = 0.0f; 
@@ -40,22 +42,23 @@ int main() {
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
-    
+
+    // create TGUI window 
     tgui::Gui gui{window};
-    auto button = tgui::Button::create("LLM"); 
-    button->setPosition({100.0f, 100.0f});
+    auto button = tgui::Button::create("LLM"); // make a button 
+    button->setPosition({0.0f, 0.0f});
     button->setSize(100, 50);
-    
-
-
-
     gui.add(button); 
 
-    auto chat_window = tgui::ChatBox::create();
-    chat_window->setPosition(400, 100);
-    chat_window->setSize(300, 500); 
-    //chat_window->showWithEffect();
-    gui.add(chat_window); 
+
+    // Create ChatWindow instance (now draggable)
+    ChatWindow chat(gui, 400, 100, 300, 500);
+    chat.addMessage("Welcome to the chat!", "System");
+
+    // Toggle chat window when LLM button is clicked
+    button->onPress([&chat]() {
+        chat.toggle();
+    });
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window  
@@ -66,7 +69,8 @@ int main() {
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
 
-
+            // Handle TGUI events (required for widget interaction like dragging)
+            gui.handleEvent(*ev);
 
             if (ev->is<sf::Event::Closed>()) {
                 window.close(); 
@@ -94,6 +98,11 @@ int main() {
             }
 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
+                // Skip game key bindings when typing in chat
+                if (chat.isInputFocused()) {
+                    continue;
+                }
+
                 if (key_event->code == sf::Keyboard::Key::C) {
                     std::cout << "C pressed" << std::endl; 
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
@@ -179,8 +188,7 @@ int main() {
             simClock.restart(); 
         }
 
-        
-        
+    
         // MOVE CIRCLE 
         manager.moveSelectedCircle(window); 
 
@@ -188,8 +196,10 @@ int main() {
 
         gui.draw(); // GUI 
 
-        // camera movement 
-        movement(camera); 
+        // ignore camera movement controls while focused on chat box 
+        if (!chat.isInputFocused()) {
+            movement(camera);
+        } 
         window.setView(camera);
 
         // HANDLE DRAWING CIRCLES 
