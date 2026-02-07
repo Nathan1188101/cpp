@@ -6,7 +6,6 @@
 #include"EdgeManager.h" 
 #include<TGUI/TGUI.hpp> // ui 
 #include <TGUI/Backend/SFML-Graphics.hpp>
-// ChatWindow integration
 #include "ChatWindow.h"
 
 void movement(sf::View& camera) {

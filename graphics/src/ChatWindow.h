@@ -4,6 +4,7 @@
 #include <TGUI/Backend/SFML-Graphics.hpp>
 
 class ChatWindow {
+    
 public:
     ChatWindow(tgui::Gui& gui, float x, float y, float width, float height);
     void addMessage(const std::string& message, const std::string& sender = "User");
@@ -11,6 +12,7 @@ public:
     void toggle();
     void setVisible(bool visible);
     bool isInputFocused() const;
+
 private:
     tgui::ChildWindow::Ptr childWindow;
     tgui::ChatBox::Ptr chatBox;
