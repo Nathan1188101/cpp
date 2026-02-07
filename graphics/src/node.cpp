@@ -1,4 +1,4 @@
-#include"Node.h" 
+#include"node.h" 
 #include<SFML/Graphics.hpp> 
 #include<cmath> 
 #include<iostream> 
@@ -15,32 +15,46 @@ Node::Node(sf::Vector2f position, float radius, int id,  sf::Color color)
     node.setOrigin(node.getGeometricCenter()); 
 }
 
+/// @brief allows you to set position of node
+/// @param pos pass in the position as a sf::Vector2f
 void Node::setPosition(sf::Vector2f pos) {
     node.setPosition(pos); 
 }
 
+/// @brief returns position of node, uses sfml under the hood
+/// @return position
 sf::Vector2f Node::getPosition() const {
     return node.getPosition(); 
 }
 
+/// @brief sets selected state, also built in outline and thickness setting so don't worry about doing that yourself
+/// @param sel selected = true, not selected = false 
 void Node::setSelected(bool sel) {
     selected = sel; 
     node.setOutlineThickness(sel ? 3.0f : 0.0f); 
     node.setOutlineColor(sel ? sf::Color::Yellow : sf::Color::Transparent); 
 }
 
+/// @brief simply returns a bool "selected"
+/// @return 
 bool Node::isSelected() const {
     return selected; 
 }
 
+/// @brief function used to draw a node, just uses the sfml draw function
+/// @param window need to pass in a ref to the window 
 void Node::draw(sf::RenderWindow& window) const {
     window.draw(node); 
 }
 
+/// @brief set the outline color 
+/// @param color is how to specify the color 
 void Node::setOutlineColor(const sf::Color& color) {
     node.setOutlineColor(color); 
 }
 
+/// @brief allows you to set the outline thickness of a node
+/// @param thickness is how you sepecifiy how thick (takes float)
 void Node::setOutlineThickness(float thickness) {
     node.setOutlineThickness(thickness); 
 }

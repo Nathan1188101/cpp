@@ -41,7 +41,7 @@ class Node {
         bool selected = false;                  // should mabye rename this since we also have a selected var in circleManager
         float score;                            // score
         Strategy strategy;                      // Strategy 
-        std::vector<Node*> neighbors;           // track a nodes neighbors (get a ref to them)
-        bool cooperate = true;                         // represents nodes current action
+        std::vector<Node*> neighbors;           // (Linked list approach for tracing adjacent nodes) track a nodes neighbors (get a ref to them)
+        bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
 };

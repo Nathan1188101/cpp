@@ -4,6 +4,8 @@
 #include<iostream> 
 #include"CircleManager.h"
 #include"EdgeManager.h" 
+#include<TGUI/TGUI.hpp> // ui 
+#include <TGUI/Backend/SFML-Graphics.hpp>
 
 void movement(sf::View& camera) {
 
@@ -25,6 +27,7 @@ void movement(sf::View& camera) {
 
 int main() {     
 
+    // for sim tic rate 
     sf::Clock simClock; 
     float simStepInterval = 0.5f;
     float simAccumulaor = 0.0f; 
@@ -36,6 +39,23 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
+
+    
+    tgui::Gui gui{window};
+    auto button = tgui::Button::create("LLM"); 
+    button->setPosition({100.0f, 100.0f});
+    button->setSize(100, 50);
+    
+
+
+
+    gui.add(button); 
+
+    auto chat_window = tgui::ChatBox::create();
+    chat_window->setPosition(400, 100);
+    chat_window->setSize(300, 500); 
+    //chat_window->showWithEffect();
+    gui.add(chat_window); 
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window  
@@ -165,6 +185,8 @@ int main() {
         manager.moveSelectedCircle(window); 
 
         window.clear(); // clear last framed
+
+        gui.draw(); // GUI 
 
         // camera movement 
         movement(camera); 
