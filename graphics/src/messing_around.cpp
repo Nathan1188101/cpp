@@ -1,5 +1,6 @@
 #include<SFML/Graphics.hpp>
 #include<iostream> 
+#include<cmath> 
 
 int main() {
 
@@ -36,10 +37,25 @@ int main() {
 
         }
 
+        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window)); 
+
+        // to get our mouse to affect the movement of the cirlce 
+        // we need to calculate the vector from the mouse to the ball 
+        // normalize the vector (gives us direction) 
+        // add a scaled version of that direction to the ball's velocity 
+        
+        // determine direction of velocity change 
+        sf::Vector2f direction_vec = mousePos - circle.getPosition();
+        // euclidean distance formula to get dstance from mouse to circle 
+        float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y);
+        // normalize vector for direction 
+        sf::Vector2f dir = direction_vec / distance; 
+        float strength = 200.0f; 
+        sf::Vector2f push = dir * strength;
+
+
         // apply gravity to velocity
         velocity.y += gravity * dt; // multiplying by the dt makes physics independent from frame rate (gravity is applied per second not per frame) since we can't rely on consistent frames (some quick, some slow) it would mess with the phyics 
-        
-        // velocity.x += gravity * dt; // horizontal force 
 
         // apply velocity to position
         circle.move(velocity * dt);
@@ -53,10 +69,21 @@ int main() {
             circle.setPosition(pos); 
         }
 
+        // horizontal force 
         if (pos.x + radius > width) {
             pos.x = width - radius; 
             velocity.x *= -0.8f; 
             circle.setPosition(pos); 
+        } else if (pos.x + radius < 0) {
+            pos.x = width - radius; 
+            velocity.x *= +0.8f; 
+            circle.setPosition(pos);  
+        }
+
+        if (distance <= 10.0f) { // random threshold to start
+
+            velocity += push; 
+
         }
 
         window.clear();
