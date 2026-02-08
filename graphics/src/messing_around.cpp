@@ -35,6 +35,12 @@ int main() {
                 window.close(); 
             }
 
+            // track mouse 
+            if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
+                std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
+                std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
+            }
+
         }
 
         sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window)); 
@@ -62,25 +68,31 @@ int main() {
 
         // ground collision and bounce 
         float radius = circle.getRadius(); 
-        sf::Vector2f pos = circle.getPosition(); 
-        if (pos.y + radius > height) {
-            pos.y = height - radius; 
+        sf::Vector2f cirlce_pos = circle.getPosition(); // I KNOW IT'S SPELT WRONG 
+        if (cirlce_pos.y + radius > height) {
+            cirlce_pos.y = height - radius; 
             velocity.y *= -0.8f; 
-            circle.setPosition(pos); 
+            circle.setPosition(cirlce_pos); 
+        }
+        if (cirlce_pos.y + radius < 0) {
+            cirlce_pos.y = 0 + radius; 
+            velocity.y *= -0.8f; 
+            circle.setPosition(cirlce_pos);
         }
 
         // horizontal force 
-        if (pos.x + radius > width) {
-            pos.x = width - radius; 
+        if (cirlce_pos.x + radius > width) {
+            cirlce_pos.x = width - radius; 
+            velocity.x *= 0.8f; 
+            circle.setPosition(cirlce_pos); 
+        } 
+        if (cirlce_pos.x + radius < 0) {
+            cirlce_pos.x = 0 + radius; 
             velocity.x *= -0.8f; 
-            circle.setPosition(pos); 
-        } else if (pos.x + radius < 0) {
-            pos.x = width - radius; 
-            velocity.x *= +0.8f; 
-            circle.setPosition(pos);  
+            circle.setPosition(cirlce_pos);  
         }
 
-        if (distance <= 10.0f) { // random threshold to start
+        if (distance <= radius) { // random threshold to start
 
             velocity += push; 
 
