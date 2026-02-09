@@ -42,5 +42,7 @@ void Simulation::BirthDeath() {
     int random_neighbor = rand() % neighbors.size(); 
     auto& chosen_neighbor = neighbors[random_neighbor]; 
 
+    
+
 
 }

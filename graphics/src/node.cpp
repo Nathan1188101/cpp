@@ -193,12 +193,18 @@ void Node::setNodeStrategy(Strategy strat) {
     score = 0; // clear score -> allows you to use already made graph and reset inital states 
 
     // set color based on strategy 
-    if (strat == Strategy::Cooperate) {
+    if (strat == Strategy::Cooperate) {                                 // RESIDENT 
         cooperate = true; 
         node.setFillColor(sf::Color::Blue);  
+
+        fitness = 1; 
+
         std::cout << id << " set to cooperate" << std::endl;
-    } else if (strat == Strategy::Compete) {
-        node.setFillColor(sf::Color::Red); 
+    } else if (strat == Strategy::Compete) {                            // DEFECTOR 
+        node.setFillColor(sf::Color::Red);
+
+        fitness = 1.05;   
+      
         cooperate = false;
         std::cout << id << " set to compete" << std::endl; 
     }

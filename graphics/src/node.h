@@ -47,4 +47,5 @@ class Node {
         bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
         int totalNodes;                         // keep track of total number of nodes  
+        int fitness;                            // for nodes fitness 
 };
