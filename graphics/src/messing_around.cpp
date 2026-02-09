@@ -2,6 +2,24 @@
 #include<iostream> 
 #include<cmath> 
 
+void movement(sf::View& camera) {
+
+        // move camera based on key input  
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            camera.move({-2.f, 0}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            camera.move({2.f, 0}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+            camera.move({0, -2.f}); 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            camera.move({0, 2.f}); 
+        }
+
+}
+
 int main() {
 
     sf::Clock clock; 
@@ -14,10 +32,12 @@ int main() {
 
     // create circle 
     sf::CircleShape circle; 
-    circle.setRadius(30.0f); 
+    circle.setRadius(20.0f); 
     circle.setOrigin(circle.getGeometricCenter()); 
     circle.setFillColor(sf::Color::White); 
     circle.setPosition({width / 2.0f, height / 2.0f});  
+
+    sf::View camera({width / 2.0f, height / 2.0f}, {800.0f, 600.0f});
 
     sf::Vector2f velocity{0, 0}; 
     const float gravity = 500.0f; 
@@ -35,6 +55,17 @@ int main() {
                 window.close(); 
             }
 
+            // ZOOM CAMERA
+            if (const auto* scroll = ev->getIf<sf::Event::MouseWheelScrolled>()) {
+                std::cout << "scrolling" << std::endl; 
+                if (scroll->delta > 0) {
+                    camera.zoom(0.9f);  // scroll up = zoom in (smaller view)
+                } else if (scroll->delta < 0) {
+                    camera.zoom(1.1f);  // scroll down = zoom out (larger view)
+                }
+            }
+
+
             // track mouse 
             if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
                 std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
@@ -43,14 +74,16 @@ int main() {
 
         }
 
-        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window)); 
+        // border around window 
+        sf::Vector2f top_left = {0.0, 0.0};
+        sf::Vector2f bottom_right = {800.0, 600.0};
+        sf::Vector2f top_right = {800.0, 0}; 
+        sf::Vector2f bottom_left = {0, 600.0};
+        sf::Vertex line[] = {
+            {top_left}, {top_right}, {bottom_right}, {bottom_left}, {top_left}
+        };
 
-        // to get our mouse to affect the movement of the cirlce 
-        // we need to calculate the vector from the mouse to the ball 
-        // normalize the vector (gives us direction) 
-        // add a scaled version of that direction to the ball's velocity 
-        
-        // determine direction of velocity change 
+        sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
         sf::Vector2f direction_vec = mousePos - circle.getPosition();
         // euclidean distance formula to get dstance from mouse to circle 
         float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y);
@@ -98,8 +131,11 @@ int main() {
 
         }
 
+        window.setView(camera); 
         window.clear();
+        movement(camera); 
         window.draw(circle);
+        window.draw(line, 5, sf::PrimitiveType::LineStrip);
         window.display();
 
     }
