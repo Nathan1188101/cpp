@@ -74,7 +74,7 @@ int main() {
             velocity.y *= -0.8f; 
             circle.setPosition(cirlce_pos); 
         }
-        if (cirlce_pos.y + radius < 0) {
+        if (cirlce_pos.y - radius < 0) {
             cirlce_pos.y = 0 + radius; 
             velocity.y *= -0.8f; 
             circle.setPosition(cirlce_pos);
@@ -83,16 +83,16 @@ int main() {
         // horizontal force 
         if (cirlce_pos.x + radius > width) {
             cirlce_pos.x = width - radius; 
-            velocity.x *= 0.8f; 
+            velocity.x *= -0.8f; 
             circle.setPosition(cirlce_pos); 
         } 
-        if (cirlce_pos.x + radius < 0) {
+        if (cirlce_pos.x - radius < 0) {
             cirlce_pos.x = 0 + radius; 
             velocity.x *= -0.8f; 
             circle.setPosition(cirlce_pos);  
         }
 
-        if (distance <= radius) { // random threshold to start
+        if (distance <= cirlce_pos.x + radius || distance <= cirlce_pos.y + radius ) { // random threshold to start
 
             velocity += push; 
 
