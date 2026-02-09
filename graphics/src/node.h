@@ -33,6 +33,8 @@ class Node {
         void setNodeStrategy(Strategy strat);                                               // for setting initial state of a node after placing before running sim
         void applyStrategy(); 
         void commitAction() {cooperate = nextCooperate;} 
+        void BirthDeath(); 
+        int getTotalNodes() {return totalNodes;}
 
     private: 
         sf::CircleShape node;                   // node is a circle
@@ -44,4 +46,5 @@ class Node {
         std::vector<Node*> neighbors;           // (Linked list approach for tracing adjacent nodes) track a nodes neighbors (get a ref to them)
         bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
+        int totalNodes;                         // keep track of total number of nodes  
 };

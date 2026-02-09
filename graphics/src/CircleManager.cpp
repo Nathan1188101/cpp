@@ -24,8 +24,6 @@ bool CircleManager::isCircleClicked(const sf::RenderWindow& windowRef, sf::Vecto
     return distance <= radius; 
 }
 
-
-
 void CircleManager::selectCircle(const sf::RenderWindow& window, sf::Vector2i mousePos) {
 
     // if something is selected, set it to not be for selected pointer from CircleManager

@@ -89,7 +89,7 @@ int main() {
         float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y);
         // normalize vector for direction 
         sf::Vector2f dir = direction_vec / distance; 
-        float strength = 200.0f; 
+        float strength = 10.0f; 
         sf::Vector2f push = dir * strength;
 
 

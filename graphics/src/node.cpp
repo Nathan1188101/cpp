@@ -204,8 +204,3 @@ void Node::setNodeStrategy(Strategy strat) {
     }
    
 }
-
-
-
-
-

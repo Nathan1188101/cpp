@@ -2,11 +2,12 @@
 #include<optional> 
 #include<cmath> 
 #include<iostream> 
+#include<TGUI/TGUI.hpp> 
+#include<TGUI/Backend/SFML-Graphics.hpp>
+#include"ChatWindow.h"
+#include"simulation.h"
 #include"CircleManager.h"
 #include"EdgeManager.h" 
-#include<TGUI/TGUI.hpp> // ui 
-#include <TGUI/Backend/SFML-Graphics.hpp>
-#include "ChatWindow.h"
 
 void movement(sf::View& camera) {
 
@@ -64,6 +65,7 @@ int main() {
      
     CircleManager manager;
     EdgeManager edgeManager(manager);  
+    Simulation simulation(manager); 
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -187,7 +189,7 @@ int main() {
             simClock.restart(); 
         }
 
-    
+        simulation.BirthDeath(); 
         // MOVE CIRCLE 
         manager.moveSelectedCircle(window); 
 
