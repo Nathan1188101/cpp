@@ -89,7 +89,7 @@ int main() {
         float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y);
         // normalize vector for direction 
         sf::Vector2f dir = direction_vec / distance; 
-        float strength = 10.0f; 
+        float strength = 20.0f; 
         sf::Vector2f push = dir * strength;
 
 
@@ -125,9 +125,9 @@ int main() {
             circle.setPosition(cirlce_pos);  
         }
 
-        if (distance <= cirlce_pos.x + radius || distance <= cirlce_pos.y + radius ) { // random threshold to start
+        if (distance <= radius * 2) { // random threshold to start
 
-            velocity += push; 
+            velocity -= push; 
 
         }
 
