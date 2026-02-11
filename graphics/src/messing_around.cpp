@@ -1,26 +1,39 @@
 #include<SFML/Graphics.hpp>
 #include<iostream> 
 #include<cmath> 
- 
-std::vector<sf::CircleShape> circles; 
-float gravity_strength = 20.0f; 
 
-struct ball {
+struct Ball {
     sf::CircleShape circle; 
     sf::Vector2f velocity; 
-}
 
-void placeCircle(const sf::RenderWindow& window) {
+    Ball(sf::Vector2f position, float radius) {
+        circle.setPosition(position);
+        circle.setRadius(radius); 
+        circle.setOrigin(circle.getGeometricCenter()); 
+        circle.setFillColor(sf::Color::White); 
+        velocity = {0, 0};  
+    }
 
-    sf::CircleShape circle; 
+    sf::Vector2f getPosition() {return circle.getPosition();}
+    float getRadius() {return circle.getRadius();} 
+    void setPosition(sf::Vector2f position) {circle.setPosition(position);}
+    void move(sf::Vector2f offset) {circle.move(offset);}
+    void draw(sf::RenderWindow& window) {window.draw(circle);} 
+};
+
+std::vector<Ball> balls; 
+float gravity_strength = 20.0f;
+
+void placeBall(const sf::RenderWindow& window) {
+
+    
     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
     sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); 
 
-    circle.setPosition(worldPos); 
-    circle.setRadius(20.0f); 
-    circle.setOrigin(circle.getGeometricCenter());
-    circle.setFillColor(sf::Color::White); 
-    circles.push_back(circle);
+    auto ball = Ball(worldPos, 20.0f);
+
+    balls.push_back(ball);
+
 
 }
 
@@ -62,7 +75,7 @@ int main() {
 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.0f, 600.0f});
 
-    sf::Vector2f velocity{0, 0}; 
+    //sf::Vector2f velocity{0, 0}; 
     const float gravity = 500.0f; 
 
     while (window.isOpen()) {
@@ -99,7 +112,7 @@ int main() {
 
                 if (key_pressed->code == sf::Keyboard::Key::E) {
                     // place circle 
-                    placeCircle(window); 
+                    placeBall(window); 
                 }
 
             }
@@ -115,106 +128,62 @@ int main() {
             {top_left}, {top_right}, {bottom_right}, {bottom_left}, {top_left}
         };
 
-        // sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
-        // sf::Vector2f direction_vec = mousePos - circle.getPosition();
-        // // euclidean distance formula to get dstance from mouse to circle 
-        // float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y);
-        // // normalize vector for direction 
-        // sf::Vector2f dir = direction_vec / distance; 
-        // float strength = 20.0f; 
-        // sf::Vector2f push = dir * strength;
-
-        for (auto& circle : circles) {
+        for (auto& circle : balls) {
             
             sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
             sf::Vector2f direction_vec = mousePos - circle.getPosition(); 
             float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y); 
-            sf::Vector2f dir = direction_vec / distance; // normalize vector to extract distance 
-            sf::Vector2f push = dir * gravity_strength; 
-            velocity.y += gravity * dt; // suppose this would be gravity (constant downward force of all circles)
-            circle.move(velocity * dt); 
+            sf::Vector2f push = {0, 0};
+            if (distance > 0) {
+                sf::Vector2f dir = direction_vec / distance; // normalize vector to extract distance 
+                push = dir * gravity_strength; 
+                circle.velocity.y += gravity * dt; // suppose this would be gravity (constant downward force of all circles)
+                circle.move(circle.velocity * dt); 
+            } 
 
 
-                    // ground collision and bounce 
+        // ground collision and bounce 
         float radius = circle.getRadius(); 
         sf::Vector2f cirlce_pos = circle.getPosition(); // I KNOW IT'S SPELT WRONG 
         if (cirlce_pos.y + radius > height) {
             cirlce_pos.y = height - radius; 
-            velocity.y *= -0.8f; 
+            circle.velocity.y *= -0.8f; 
             circle.setPosition(cirlce_pos); 
         }
         if (cirlce_pos.y - radius < 0) {
             cirlce_pos.y = 0 + radius; 
-            velocity.y *= -0.8f; 
+            circle.velocity.y *= -0.8f; 
             circle.setPosition(cirlce_pos);
         }
 
         // horizontal force 
         if (cirlce_pos.x + radius > width) {
             cirlce_pos.x = width - radius; 
-            velocity.x *= -0.8f; 
+            circle.velocity.x *= -0.8f; 
             circle.setPosition(cirlce_pos); 
         } 
         if (cirlce_pos.x - radius < 0) {
             cirlce_pos.x = 0 + radius; 
-            velocity.x *= -0.8f; 
+            circle.velocity.x *= -0.8f; 
             circle.setPosition(cirlce_pos);  
         }
 
         if (distance <= radius * 2) { // random threshold to start
 
-            velocity -= push; 
+            circle.velocity -= push; 
 
         }
 
 
         }
-
-        // // apply gravity to velocity
-        // velocity.y += gravity * dt; // multiplying by the dt makes physics independent from frame rate (gravity is applied per second not per frame) since we can't rely on consistent frames (some quick, some slow) it would mess with the phyics 
-
-        // // apply velocity to position
-        // circle.move(velocity * dt);
-
-        // ground collision and bounce 
-        // float radius = circle.getRadius(); 
-        // sf::Vector2f cirlce_pos = circle.getPosition(); // I KNOW IT'S SPELT WRONG 
-        // if (cirlce_pos.y + radius > height) {
-        //     cirlce_pos.y = height - radius; 
-        //     velocity.y *= -0.8f; 
-        //     circle.setPosition(cirlce_pos); 
-        // }
-        // if (cirlce_pos.y - radius < 0) {
-        //     cirlce_pos.y = 0 + radius; 
-        //     velocity.y *= -0.8f; 
-        //     circle.setPosition(cirlce_pos);
-        // }
-
-        // // horizontal force 
-        // if (cirlce_pos.x + radius > width) {
-        //     cirlce_pos.x = width - radius; 
-        //     velocity.x *= -0.8f; 
-        //     circle.setPosition(cirlce_pos); 
-        // } 
-        // if (cirlce_pos.x - radius < 0) {
-        //     cirlce_pos.x = 0 + radius; 
-        //     velocity.x *= -0.8f; 
-        //     circle.setPosition(cirlce_pos);  
-        // }
-
-        // if (distance <= radius * 2) { // random threshold to start
-
-        //     velocity -= push; 
-
-        // }
 
         window.setView(camera); 
         window.clear();
         movement(camera); 
         //window.draw(circle);
         window.draw(line, 5, sf::PrimitiveType::LineStrip);
-        for(auto& circle : circles) {
-            window.draw(circle); 
+        for(auto& circle : balls) {
+            circle.draw(window);  
         }
         window.display();
 
