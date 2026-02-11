@@ -9,6 +9,7 @@ class CircleManager {
         void moveSelectedCircle(const sf::RenderWindow& window); 
         void drawCircles(sf::RenderWindow& window);
         bool isCircleClicked(const sf::RenderWindow& windowRef, sf::Vector2i mousePos, const sf::Vector2f& circlePos);          // (should potentially be a private memeber function because it's an internal selection check), but making it public for now
+        void runMoranProcess(); 
 
         // getters 
         const float getRadius() const {return radius;}                                                                          // so we can access the radius anywhere (by def a public getter, makes it read only)

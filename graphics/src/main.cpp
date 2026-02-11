@@ -189,7 +189,7 @@ int main() {
             simClock.restart(); 
         }
 
-        simulation.BirthDeath(); 
+        //simulation.BirthDeath(); 
         // MOVE CIRCLE 
         manager.moveSelectedCircle(window); 
 

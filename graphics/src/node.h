@@ -35,6 +35,7 @@ class Node {
         void commitAction() {cooperate = nextCooperate;} 
         void BirthDeath(); 
         int getTotalNodes() {return totalNodes;}
+        float getFitness() {return fitness;}                                                // return a nodes fitness 
 
     private: 
         sf::CircleShape node;                   // node is a circle
@@ -47,5 +48,5 @@ class Node {
         bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
         int totalNodes;                         // keep track of total number of nodes  
-        int fitness;                            // for nodes fitness 
+        float fitness = 1.0f;                            // for nodes fitness 
 };

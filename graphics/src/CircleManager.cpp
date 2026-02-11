@@ -61,3 +61,29 @@ void CircleManager::drawCircles(sf::RenderWindow& window) {
         node->draw(window); 
     }
 }
+
+void CircleManager::runMoranProcess() {
+    if (nodes.empty()) return; // don't run 
+
+    // Sum all fitness values so we can select a node for reproduction 
+    // individuals with higher fitness (r > 1) increase their share of the total "fitness pool"
+    // this increases their prob of being picked (not guarenteed, just slightly biased)
+    // (refer to pg. 100 in Evolutionary Dynamics)
+
+    // so selection for reproduction should be weighted by fitness, and selection for death is uniform random 
+
+    // get total fitness 
+    float total_fitness = 0.0f;
+    for (auto& node : nodes) {
+        total_fitness += node->getFitness(); 
+    }
+
+    // now we that we have total fitness we need to generate a random number between 0 and total fitness F, or formally -> r e (0, F)
+    // then walk through nodes accumulating fitness
+    // the first node we get two where accumulated fitness is => the random value, is the node selected for reproduction  
+    for (auto& node : nodes) {
+        
+    }
+
+
+}
