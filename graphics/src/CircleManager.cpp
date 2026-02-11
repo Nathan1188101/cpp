@@ -1,5 +1,6 @@
 #include"CircleManager.h"
 #include<cmath> 
+#include<random> 
 
 void CircleManager::placeCircle(const sf::RenderWindow& window) {
  
@@ -80,10 +81,36 @@ void CircleManager::runMoranProcess() {
 
     // now we that we have total fitness we need to generate a random number between 0 and total fitness F, or formally -> r e (0, F)
     // then walk through nodes accumulating fitness
-    // the first node we get two where accumulated fitness is => the random value, is the node selected for reproduction  
+    // the first node we get two where accumulated fitness is => the random value, is the node selected for reproduction 
+    
+    // random number 
+    static std::mt19937 rng(std::random_device{}()); // generate random seed value, which ensures random numbers everytime it's run
+    std::uniform_real_distribution<float> dist(0.0f, total_fitness); // random number within bounds 0 to total fitness 
+    float random_threshold = dist(rng); 
+
+    Node* parent; 
+    float sum = 0.0f; 
     for (auto& node : nodes) {
-        
+        sum += node->getFitness(); 
+        if (sum >= random_threshold) {
+            // this is the node selected for reproduction 
+            parent = node.get(); 
+            break; 
+        }
     }
+
+    // now we have selected a node for reproduction 
+    // we need to choose one of it's neighbors randomly (1/N) for death 
+    
+    // generate random number between the lower and upper bound of neighbors 
+    // then select that neighbor for death 
+    std::uniform_real_distribution<int> dist_neighbor(0, parent->getNeighbors().size() - 1); 
+    int random_neighbor = dist_neighbor(rng); 
+    auto& neighbors = parent->getNeighbors();
+    if (neighbors.empty()) return; 
+    Node* for_death = neighbors[random_neighbor]; // NEED TO REPLACE THIS ONE -> with offspring of parent node 
+
+
 
 
 }
