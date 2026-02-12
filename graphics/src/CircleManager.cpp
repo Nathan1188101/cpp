@@ -124,5 +124,6 @@ void CircleManager::runMoranProcess() {
 
     // replacement 
     for_death->setType(parent->getType()); 
+    std::cout << "Node " << parent->getId() << " reproduced -> Node " << for_death->getId() << " was replaced" << std::endl; 
 
 }
