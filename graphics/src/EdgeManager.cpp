@@ -87,8 +87,9 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
     auto& check_end = dragEndPos; 
 
     // check to make sure this edge doesn't already exist 
-    auto it = std::find_if(edges.begin(), edges.end(), [&](const Edge& e){
+    auto it = std::find_if(edges.begin(), edges.end(), [&](const Edge& e){ // I need to go over again what this form means (some kind of anonomous function I remeber that returns )
         // check edges, both directions 
+        // returns "if this or this"  
         return (e.start == check_start && e.end == check_end) ||
                 (e.start == check_end && e.end == check_start);
     });

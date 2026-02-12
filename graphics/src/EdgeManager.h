@@ -5,8 +5,8 @@
 class EdgeManager {
 
     public: 
-        // this tells me how to create the object of EdgeManager (needs ref to circle manager)
-        EdgeManager(CircleManager& cm); // constructor declaration (Edge manager must take ref to circleManager when being created now)
+        
+        EdgeManager(CircleManager& cm);                                                                                     // constructor declaration (Edge manager must take ref to circleManager when being created now)
         struct Edge {
             // I want to store the connection as a pair of pointers to the Nodes 
             // this will help us with moving circles, and keeping that edge connected as it moves since we have a ref to the Node itself. (not a copy) 
@@ -19,6 +19,7 @@ class EdgeManager {
         void DrawEdgeToMouse(sf::RenderWindow& window); 
         void DrawCompletedEdges(sf::RenderWindow& window);
         void getClickedCircleForEdgeToMouse(const sf::RenderWindow& window); 
+        std::vector<Edge> getEdges() { return edges; }                                                                      // returns vector of that stores edges (pairs of nodes)
 
     private:
         CircleManager& circleManager; // make reference to a circle manager private (Don't tell user what we are doing with it)

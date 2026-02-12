@@ -217,10 +217,10 @@ void Node::setType(Type passed_type) {
     type = passed_type; 
     if (type == Type::Resident) {
         node.setFillColor(sf::Color::Blue); 
-        fitness = 1.0f; 
+        fitness = 1.0f; // neutral fitness 
     } else if (type == Type::Mutant) {
         // a mutant
         node.setFillColor(sf::Color::Red);
-        fitness = 1.01f;
+        fitness = 1.01f; 
     }
 }

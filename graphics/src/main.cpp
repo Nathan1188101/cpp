@@ -97,7 +97,7 @@ int main() {
                 }
             }
 
-            // SET NODE TYPE 
+            // SET NODE TYPE & RUN SIMULATION (PRESS SPACE)
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
                 // Skip game key bindings when typing in chat
                 if (chat.isInputFocused()) {
@@ -139,6 +139,9 @@ int main() {
                 if (key_event->code == sf::Keyboard::Key::E) {
                     manager.placeCircle(window); 
                 }
+                if (key_event->code == sf::Keyboard::Key::L) {
+                    manager.place100x100Grid(window); 
+                }
             }
         
             // detecting edge drag release 
@@ -165,7 +168,7 @@ int main() {
 
                 simAccumulaor = 0.0f; 
                 manager.runMoranProcess(); 
-                
+
             }               
         } else {
             simClock.restart(); 
