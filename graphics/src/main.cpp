@@ -195,6 +195,7 @@ int main() {
         // MOVE CIRCLE WITH MOUSE 
         manager.moveSelectedCircle(window); 
 
+
         window.clear(); // clear last framed
 
         gui.draw(); // GUI elements 

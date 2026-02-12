@@ -34,7 +34,6 @@ void placeBall(const sf::RenderWindow& window) {
 
     balls.push_back(ball);
 
-
 }
 
 void movement(sf::View& camera) {
@@ -57,7 +56,8 @@ void movement(sf::View& camera) {
 
 int main() {
 
-    sf::Clock clock; 
+    sf::Clock frame_clock; 
+    sf::Clock GlobalClock; 
 
     // setting up window 
     unsigned int width = 800; 
@@ -82,7 +82,10 @@ int main() {
 
         // measures frame times in seconds (resets clock every frame)
         // measures time since last frame 
-        float dt = clock.restart().asSeconds();
+        float dt = frame_clock.restart().asSeconds();
+
+        // for global clock 
+        float t = GlobalClock.getElapsedTime().asSeconds(); 
 
         while (auto ev = window.pollEvent()) {
 
@@ -178,7 +181,16 @@ int main() {
         }
 
         window.setView(camera); 
-        window.clear();
+
+        
+        sf::Color bg(
+            50 + 50 * std::sin(t),
+            20,
+            100 + 50 * std::cos(t)
+        );
+
+        window.clear(bg);
+        //window.clear();
         movement(camera); 
         //window.draw(circle);
         window.draw(line, 5, sf::PrimitiveType::LineStrip);
