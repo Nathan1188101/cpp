@@ -23,6 +23,5 @@ class CircleManager {
         int nextNodeId = 0; 
         std::vector<std::unique_ptr<Node>> nodes;                               // vector of all nodes 
 
-
-            
+     
 };

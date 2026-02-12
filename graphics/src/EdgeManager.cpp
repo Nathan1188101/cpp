@@ -161,4 +161,35 @@ void EdgeManager::DrawCompletedEdges(sf::RenderWindow& window) {
     }
 }
 
+void EdgeManager::makeEdge(Node* a, Node* b) {
+
+    if (a == nullptr || b == nullptr) return; // exit early if one is null 
+
+    // check to make sure this edge doesn't already exist 
+    auto it = std::find_if(edges.begin(), edges.end(), [&](const Edge& e){ 
+        // check edges, both directions 
+        // returns "if this or this"  
+        return (e.start == a && e.end == b) ||
+                (e.start == b && e.end == a);
+    });
+
+    // .end() means not found, therefore edge doesn't exist AND WE CAN CREATE IT
+    if (it == edges.end()) {
+        
+        if (a != b && a != nullptr && b != nullptr) {
+            // create the pair (then we can draw the edge in DrawCompletedEdges())
+            edges.push_back({a, b}); 
+
+            // make each a neighbor of eachother 
+            a->addNeighbor(b);
+            b->addNeighbor(a); 
+
+            // DEBUGGING
+            std::cout << a->getId() << "'s total neighbors: " << a->getNeighbors().size() << std::endl; 
+            std::cout << b->getId() << "'s total neighbors: " << b->getNeighbors().size() << std::endl; 
+
+        }
+    }
+
+}
 

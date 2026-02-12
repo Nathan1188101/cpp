@@ -129,36 +129,36 @@ void CircleManager::runMoranProcess() {
 }
 
 void CircleManager::place100x100Grid(const sf::RenderWindow& window) {
-    // lets actually start with 10 x 10 grid 
-    // could prolly use the placeCircle function and stuff we already have 
-    sf::Vector2f position = {0,0}; 
+   
+    // get mouse position and map it to the coordinates of the world (accounts for zooming and camera movement)
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+    sf::Vector2f start = window.mapPixelToCoords(mousePos); 
+
+    // position is where the mouse is 
+    sf::Vector2f position = start;
+    size_t start_index = nextNodeId - 1; // note the starting index before creating 100 nodes 
     int count = 0; 
 
     while (count < 10) {
 
+        // reset x position back to mouse x position 
+        position.x = start.x; 
+
         // horizontal part of the grid 
         for (int i = 0; i < 10; i++) {
-            if (count == 0) {
-                sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-                position = window.mapPixelToCoords(mousePos); 
-            }
+
             auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
             nodes.push_back(std::move(newNode));
-            position.x += 100.0f;
+            position.x += 100.0f; 
+
         }
-        position.y += 200.0f; 
+
+        position.y += 100.0f; 
         count++; 
+
     }
 
+    // note the last index after making 100 nodes 
+    size_t end_index = start_index + 100; 
 
-    // // vertice part of the grid 
-    // for (int j = 0; j < 10; j++) {
-    //     if (j == 0) {
-    //         sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-    //         position = window.mapPixelToCoords(mousePos); 
-    //     }
-    //     auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
-    //     nodes.push_back(std::move(newNode));
-    //     position.y += 100.0f;
-    // }
 }

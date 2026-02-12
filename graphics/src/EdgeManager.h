@@ -20,6 +20,7 @@ class EdgeManager {
         void DrawCompletedEdges(sf::RenderWindow& window);
         void getClickedCircleForEdgeToMouse(const sf::RenderWindow& window); 
         std::vector<Edge> getEdges() { return edges; }                                        // returns vector of that stores edges (pairs of nodes)
+        void makeEdge(Node* a, Node* b);                                                      // function for making edges (used by circle manager for grid making)
 
     private:
         CircleManager& circleManager;                                                         // make reference to a circle manager private (Don't tell user what we are doing with it)

@@ -134,12 +134,16 @@ int main() {
                 }
             }
    
-            // PLACE NODE 
+            // PLACE NODE(s) 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
+
+                // E = place node 
                 if (key_event->code == sf::Keyboard::Key::E) {
                     manager.placeCircle(window); 
                 }
-                if (key_event->code == sf::Keyboard::Key::L) {
+
+                // G = place grid 
+                if (key_event->code == sf::Keyboard::Key::G) {
                     manager.place100x100Grid(window); 
                 }
             }
