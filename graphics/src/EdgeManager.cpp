@@ -161,6 +161,9 @@ void EdgeManager::DrawCompletedEdges(sf::RenderWindow& window) {
     }
 }
 
+/// @brief for making edges, it will do all necessary checks to ensure no duplicate or null node edges are made
+/// @param a node a
+/// @param b node b
 void EdgeManager::makeEdge(Node* a, Node* b) {
 
     if (a == nullptr || b == nullptr) return; // exit early if one is null 
@@ -193,8 +196,16 @@ void EdgeManager::makeEdge(Node* a, Node* b) {
 
 }
 
-void EdgeManager::connectGridRange(size_t startIndex, int rows, int cols)
-{
+/// @brief Used for the grid craetion function to connect all the nodes together accordingly
+/// @param startIndex is so we now which node to start at and then we can go + 100 from that for the target nodes
+/// @param rows number of rows
+/// @param cols number of columns 
+void EdgeManager::connectGridRange(size_t startIndex, int rows, int cols) {
+
+    // GOT AI TO MAKE THIS EDGE CONNECTOR FOR THE GRID FOR ME USING MY makeEdge FUNCTION AND WHAT NOT
+    // I WILL COME BACK LATER TO STUDY THIS BUT I NEE TO PICK UP THE PACE AND WORK ON OTHER
+    // PARTS OF THIS FOR NOW!! 
+
     auto& nodes = circleManager.getNodes();
 
     // safety: ensure we have enough nodes

@@ -144,7 +144,7 @@ int main() {
 
                 // G = place grid 
                 if (key_event->code == sf::Keyboard::Key::G) {
-                    int start_index = manager.getNodes().size(); 
+                    int start_index = manager.getNodes().size(); // get number before placing 100 nodes (so we know start and end nodes for this, all nodes between start and end are the grid)
                     manager.place100x100Grid(window); 
                     edgeManager.connectGridRange(start_index, 10, 10);
                 }
