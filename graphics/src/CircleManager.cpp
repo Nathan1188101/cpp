@@ -132,13 +132,33 @@ void CircleManager::place100x100Grid(const sf::RenderWindow& window) {
     // lets actually start with 10 x 10 grid 
     // could prolly use the placeCircle function and stuff we already have 
     sf::Vector2f position = {0,0}; 
-    for (int i = 0; i < 10; i++) {
-        if (i == 0) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-            position = window.mapPixelToCoords(mousePos); 
+    int count = 0; 
+
+    while (count < 10) {
+
+        // horizontal part of the grid 
+        for (int i = 0; i < 10; i++) {
+            if (count == 0) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+                position = window.mapPixelToCoords(mousePos); 
+            }
+            auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
+            nodes.push_back(std::move(newNode));
+            position.x += 100.0f;
         }
-        auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
-        nodes.push_back(std::move(newNode));
-        position.x += 100.0f;
+        position.y += 200.0f; 
+        count++; 
     }
+
+
+    // // vertice part of the grid 
+    // for (int j = 0; j < 10; j++) {
+    //     if (j == 0) {
+    //         sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
+    //         position = window.mapPixelToCoords(mousePos); 
+    //     }
+    //     auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
+    //     nodes.push_back(std::move(newNode));
+    //     position.y += 100.0f;
+    // }
 }

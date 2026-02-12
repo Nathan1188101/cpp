@@ -3,7 +3,7 @@
 #include<iostream> 
 #include<algorithm> 
 
-// (CONSTRUCTOR DEFINITION) This is the definition of the constructor declaration -> we define how we are handling it and what we do with it here
+// (CONSTRUCTOR DEFINITION) This is the definition of the constructor declaration -> specifying what it needs when creating one kind of thing
 /*
     NOTES: 
     EdegeManager:: -> this means it is a method belonging to the EdgeManager class 
@@ -22,14 +22,16 @@ EdgeManager::EdgeManager(CircleManager& cm) : circleManager(cm) {}
 */
 void EdgeManager::getClickedCircleForEdgeToMouse(const sf::RenderWindow& window) {
 
+    // getting all nodes 
     auto& nodes = circleManager.getNodes(); 
 
+    // make sure we aren't already dragging from somewhere 
     if (dragStartPos == nullptr) {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
-        for (auto& node : circleManager.getNodes()) {
-            if (node->isClicked(window, mousePos)) {
-                dragStartPos = node.get(); 
-                is_dragging_edge = true; 
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window); // getting mouse pos 
+        for (auto& node : circleManager.getNodes()) {           // looping through all nodes 
+            if (node->isClicked(window, mousePos)) {            // checking each of these nodes to see if they've been clicked 
+                dragStartPos = node.get();                      // 
+                is_dragging_edge = true;                        
                 break; 
             }
         }
@@ -37,14 +39,19 @@ void EdgeManager::getClickedCircleForEdgeToMouse(const sf::RenderWindow& window)
 
 }
 
+/// @brief This basically tracks from the start node (where you clicked to begin the edge drag) to your mouse
+/// @param window is a ref to the window
+/// @return returns an array that holds two vectors (start node and your mouse)
 std::array<sf::Vertex, 2> EdgeManager::EdgeStartToMouse(const sf::RenderWindow& window) {
 
+    // get the radius of a circle 
     float radius = circleManager.getRadius(); 
 
+    // if we aren't dragging and edge make sure start pos is null 
     if (!is_dragging_edge) {
         dragStartPos = nullptr; 
     }
-    sf::Vector2f circlePos;
+    sf::Vector2f circlePos; 
     if (dragStartPos != nullptr){
         circlePos = dragStartPos->getPosition();  
     }
@@ -61,7 +68,7 @@ std::array<sf::Vertex, 2> EdgeManager::EdgeStartToMouse(const sf::RenderWindow& 
 /*
     HOW IT WORKS: 
     When we let go of right mouse button
-    we want to see if that happened in a node
+    we want to see if that happened in a node (like within the radius/diameter of a node)
     if so, we grab that as the end pos, grab start pos we already have, and create this pair 
     then when done, we clear start and end because we've let go and are no longer dragging 
     also set is_dragging_edge to false, as we are not dragging.
@@ -120,6 +127,8 @@ void EdgeManager::EdgeDragRelease(const sf::RenderWindow& window) {
     is_dragging_edge = false; // done dragging 
 }
 
+/// @brief draws the edge from a selected start node to your mouse 
+/// @param window 
 void EdgeManager::DrawEdgeToMouse(sf::RenderWindow& window) {
     // HANDLE circle to mouse edge 
     auto edge_to_mouse = EdgeStartToMouse(window); 
@@ -128,6 +137,8 @@ void EdgeManager::DrawEdgeToMouse(sf::RenderWindow& window) {
     }
 }
 
+/// @brief draws all completed connections 
+/// @param window 
 void EdgeManager::DrawCompletedEdges(sf::RenderWindow& window) {
 
     float radius = circleManager.getRadius(); 
