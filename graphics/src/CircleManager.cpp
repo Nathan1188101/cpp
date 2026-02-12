@@ -136,7 +136,7 @@ void CircleManager::place100x100Grid(const sf::RenderWindow& window) {
 
     // position is where the mouse is 
     sf::Vector2f position = start;
-    size_t start_index = nextNodeId - 1; // note the starting index before creating 100 nodes 
+    size_t start_index = nextNodeId - 1; //not using rn, note the starting index before creating 100 nodes 
     int count = 0; 
 
     while (count < 10) {
@@ -149,16 +149,17 @@ void CircleManager::place100x100Grid(const sf::RenderWindow& window) {
 
             auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
             nodes.push_back(std::move(newNode));
-            position.x += 100.0f; 
+            nodes.back()->setType(Node::Type::Resident); // all nodes in grid will be resident for now 
+            position.x += 200.0f; 
 
         }
 
-        position.y += 100.0f; 
+        position.y += 200.0f; 
         count++; 
 
     }
 
-    // note the last index after making 100 nodes 
+    // not using rn, note the last index after making 100 nodes 
     size_t end_index = start_index + 100; 
 
 }

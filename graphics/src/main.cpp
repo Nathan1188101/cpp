@@ -144,7 +144,9 @@ int main() {
 
                 // G = place grid 
                 if (key_event->code == sf::Keyboard::Key::G) {
+                    int start_index = manager.getNodes().size(); 
                     manager.place100x100Grid(window); 
+                    edgeManager.connectGridRange(start_index, 10, 10);
                 }
             }
         

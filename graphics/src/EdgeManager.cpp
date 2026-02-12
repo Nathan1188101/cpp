@@ -193,3 +193,34 @@ void EdgeManager::makeEdge(Node* a, Node* b) {
 
 }
 
+void EdgeManager::connectGridRange(size_t startIndex, int rows, int cols)
+{
+    auto& nodes = circleManager.getNodes();
+
+    // safety: ensure we have enough nodes
+    size_t needed = startIndex + static_cast<size_t>(rows * cols);
+    if (nodes.size() < needed) return;
+
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            size_t idx = startIndex + static_cast<size_t>(r * cols + c);
+            Node* a = nodes[idx].get();
+
+            // right neighbor
+            if (c + 1 < cols)
+            {
+                Node* right = nodes[idx + 1].get();
+                makeEdge(a, right);
+            }
+
+            // down neighbor
+            if (r + 1 < rows)
+            {
+                Node* down = nodes[idx + static_cast<size_t>(cols)].get();
+                makeEdge(a, down);
+            }
+        }
+    }
+}
