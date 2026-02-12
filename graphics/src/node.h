@@ -15,6 +15,7 @@ class Node {
         Node(sf::Vector2f position, float radius, int id, sf::Color color);                 // constructor
 
         enum class Strategy { Cooperate, Compete, Unforgiving, TitForTat };                 // possible strategies a node can employ, refer to as Node::Strategy
+        enum class Type {Resident, Mutant};                                                 // two possible types -> Resident, or Mutant
 
         void setPosition(sf::Vector2f pos);                                                 // sets position
         bool isClicked(const sf::RenderWindow& window, sf::Vector2i mousePos) const;        // will convert your Vector2i mousePos to world coordinates (DONT WORRY)
@@ -36,6 +37,8 @@ class Node {
         void BirthDeath(); 
         int getTotalNodes() {return totalNodes;}
         float getFitness() {return fitness;}                                                // return a nodes fitness 
+        Type getType() {return type;}                                                       // get node's type 
+        void setType(Type type); 
 
     private: 
         sf::CircleShape node;                   // node is a circle
@@ -48,5 +51,8 @@ class Node {
         bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
         int totalNodes;                         // keep track of total number of nodes  
-        float fitness = 1.0f;                            // for nodes fitness 
+        float fitness = 1.0f;                   // for nodes fitness 
+        Type type;                              // Store type (Resident or Mutant) of node 
+
+
 };

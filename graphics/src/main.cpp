@@ -5,7 +5,6 @@
 #include<TGUI/TGUI.hpp> 
 #include<TGUI/Backend/SFML-Graphics.hpp>
 #include"ChatWindow.h"
-#include"simulation.h"
 #include"CircleManager.h"
 #include"EdgeManager.h" 
 
@@ -43,8 +42,9 @@ int main() {
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
 
-    // create TGUI window 
+    // create TGUI instance?  
     tgui::Gui gui{window};
+    // TGUI button 
     auto button = tgui::Button::create("LLM"); // make a button 
     button->setPosition({0.0f, 0.0f});
     button->setSize(100, 50);
@@ -65,7 +65,6 @@ int main() {
      
     CircleManager manager;
     EdgeManager edgeManager(manager);  
-    Simulation simulation(manager); 
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -98,6 +97,7 @@ int main() {
                 }
             }
 
+            // SET NODE TYPE 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
                 // Skip game key bindings when typing in chat
                 if (chat.isInputFocused()) {
@@ -110,7 +110,8 @@ int main() {
                     for (auto& node : manager.getNodes()) {
                         bool check = manager.isCircleClicked(window, mousePos, node->getPosition());
                         if (check) {
-                            node->setNodeStrategy(Node::Strategy::Cooperate); 
+                            //node->setNodeStrategy(Node::Strategy::Cooperate);
+                            node->setType(Node::Type::Resident); // fitness 1.0f 
                         }
                     } 
                 }
@@ -121,7 +122,8 @@ int main() {
                     for (auto& node : manager.getNodes()) {
                         bool check = manager.isCircleClicked(window, mousePos, node->getPosition());
                         if (check) {
-                            node->setNodeStrategy(Node::Strategy::Compete); 
+                            //node->setNodeStrategy(Node::Strategy::Compete); 
+                            node->setType(Node::Type::Mutant); 
                         }
                     } 
                 }
@@ -189,13 +191,13 @@ int main() {
             simClock.restart(); 
         }
 
-        //simulation.BirthDeath(); 
-        // MOVE CIRCLE 
+       
+        // MOVE CIRCLE WITH MOUSE 
         manager.moveSelectedCircle(window); 
 
         window.clear(); // clear last framed
 
-        gui.draw(); // GUI 
+        gui.draw(); // GUI elements 
 
         // ignore camera movement controls while focused on chat box 
         if (!chat.isInputFocused()) {

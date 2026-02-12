@@ -1,6 +1,7 @@
 #include"CircleManager.h"
 #include<cmath> 
 #include<random> 
+#include<iostream>
 
 void CircleManager::placeCircle(const sf::RenderWindow& window) {
  
@@ -78,6 +79,10 @@ void CircleManager::runMoranProcess() {
     for (auto& node : nodes) {
         total_fitness += node->getFitness(); 
     }
+    // quick check to see if there was an error computing total fitness 
+    if (total_fitness <= 0) {
+        std::cout << "DEBUG: total fitness = " << total_fitness << std::endl; 
+    }
 
     // now we that we have total fitness we need to generate a random number between 0 and total fitness F, or formally -> r e (0, F)
     // then walk through nodes accumulating fitness
@@ -88,7 +93,7 @@ void CircleManager::runMoranProcess() {
     std::uniform_real_distribution<float> dist(0.0f, total_fitness); // random number within bounds 0 to total fitness 
     float random_threshold = dist(rng); 
 
-    Node* parent; 
+    Node* parent = nullptr; // remember to initialize to nullptr so we don't get it filled with garbage values 
     float sum = 0.0f; 
     for (auto& node : nodes) {
         sum += node->getFitness(); 
@@ -98,19 +103,26 @@ void CircleManager::runMoranProcess() {
             break; 
         }
     }
+    if (!parent) {
+        std::cout << "DEBUG: no parent selected" << std::endl; 
+        return; // get out and don't do the rest 
+    }
 
     // now we have selected a node for reproduction 
-    // we need to choose one of it's neighbors randomly (1/N) for death 
+    // we need to choose one of it's neighbors uniform randomly (1/def(parent)) for death 
     
     // generate random number between the lower and upper bound of neighbors 
     // then select that neighbor for death 
-    std::uniform_real_distribution<int> dist_neighbor(0, parent->getNeighbors().size() - 1); 
-    int random_neighbor = dist_neighbor(rng); 
     auto& neighbors = parent->getNeighbors();
-    if (neighbors.empty()) return; 
+    if (neighbors.empty()) {
+        std::cout << "DEBUG: selected parents has no neighbors!" << std::endl;
+        return; 
+    }
+    std::uniform_int_distribution<size_t> dist_neighbor(0, neighbors.size() - 1); 
+    size_t random_neighbor = dist_neighbor(rng); 
     Node* for_death = neighbors[random_neighbor]; // NEED TO REPLACE THIS ONE -> with offspring of parent node 
 
-
-
+    // replacement 
+    for_death->setType(parent->getType()); 
 
 }

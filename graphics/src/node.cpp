@@ -210,3 +210,17 @@ void Node::setNodeStrategy(Strategy strat) {
     }
    
 }
+
+/// @brief To change or set a node's type 
+/// @param type can be Resident or Mutant 
+void Node::setType(Type passed_type) {
+    type = passed_type; 
+    if (type == Type::Resident) {
+        node.setFillColor(sf::Color::Blue); 
+        fitness = 1.0f; 
+    } else if (type == Type::Mutant) {
+        // a mutant
+        node.setFillColor(sf::Color::Red);
+        fitness = 1.01f;
+    }
+}
