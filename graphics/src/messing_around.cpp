@@ -64,14 +64,7 @@ int main() {
     unsigned int height = 600; 
     sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240);
-    window.setKeyRepeatEnabled(false); 
-
-    // create circle 
-    // sf::CircleShape circle; 
-    // circle.setRadius(20.0f); 
-    // circle.setOrigin(circle.getGeometricCenter()); 
-    // circle.setFillColor(sf::Color::White); 
-    // circle.setPosition({width / 2.0f, height / 2.0f});  
+    window.setKeyRepeatEnabled(false);  
 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.0f, 600.0f});
 
