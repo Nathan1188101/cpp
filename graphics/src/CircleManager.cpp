@@ -128,7 +128,7 @@ void CircleManager::runMoranProcess() {
 
 }
 
-void CircleManager::place100x100Grid(const sf::RenderWindow& window) {
+void CircleManager::placeGrid(const sf::RenderWindow& window) {
    
     // get mouse position and map it to the coordinates of the world (accounts for zooming and camera movement)
     sf::Vector2i mousePos = sf::Mouse::getPosition(window); 
