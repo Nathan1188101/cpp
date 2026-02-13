@@ -136,15 +136,15 @@ void CircleManager::placeGrid(const sf::RenderWindow& window) {
 
     // position is where the mouse is 
     sf::Vector2f position = start;
-    size_t start_index = nextNodeId - 1; //not using rn, note the starting index before creating 100 nodes 
     int count = 0; 
 
+    // can chance count to increase or decrease size of grid (need to also chance for loop inside)
     while (count < 10) {
 
         // reset x position back to mouse x position 
         position.x = start.x; 
 
-        // horizontal part of the grid 
+        // horizontal part of the grid (chance the bound for i (10 right now) to increase or decrease the dimensions of the grid)
         for (int i = 0; i < 10; i++) {
 
             auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
@@ -158,8 +158,5 @@ void CircleManager::placeGrid(const sf::RenderWindow& window) {
         count++; 
 
     }
-
-    // not using rn, note the last index after making 100 nodes 
-    size_t end_index = start_index + 100; 
 
 }

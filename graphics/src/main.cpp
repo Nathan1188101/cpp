@@ -29,10 +29,10 @@ void movement(sf::View& camera) {
 int main() {     
 
     // for sim tick rate 
-    sf::Clock simClock; 
-    float simStepInterval = 0.5f;
-    float simAccumulaor = 0.0f; 
-    bool simRunning = false; 
+    sf::Clock simClock;                 // measures real time between frames 
+    float simStepInterval = 0.1f;       // the limit for the accumulator (fills to this before one simulation step runs)
+    float simAccumulaor = 0.0f;         // a bucket that fills with elapsed time 
+    bool simRunning = false;            // for pause and play 
 
     // setting up window 
     unsigned int width = 1920; 
@@ -168,15 +168,20 @@ int main() {
 
         
         // SIMULATION 
-        if (simRunning) {
-            simAccumulaor += simClock.restart().asSeconds();
-            if (simAccumulaor >= simStepInterval) {
+        if (simRunning) { // if space pressed 
+            simAccumulaor += simClock.restart().asSeconds(); // adding elapsed time to the "bucket"
+            if (simAccumulaor >= simStepInterval) { 
+                // once time has accumulated to be greater than or equal to the "capacity of the bucket"
+                // we run the moran process once          
 
-                simAccumulaor = 0.0f; 
-                manager.runMoranProcess(); 
+                simAccumulaor -= simStepInterval;       // don't zero the buck but subtract the time we used to execute a step then start from the left over amount (this is more accurate than just 0-ing -> we are carrying that time over)
+                manager.runMoranProcess();              // run a step 
+
+                // this is known as a fixed timestep accumulator pattern I've learned -> ensures stable behaviour and accurate long running sims 
 
             }               
         } else {
+            // restarting the clock while paused so the time doesn't accumulate (basically keeps zeroing while paused), prevents jumps after resuming 
             simClock.restart(); 
         }
 
