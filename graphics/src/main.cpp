@@ -7,6 +7,7 @@
 #include"ChatWindow.h"
 #include"CircleManager.h"
 #include"EdgeManager.h" 
+#include"SimHUD.h" 
 
 void movement(sf::View& camera) {
 
@@ -33,6 +34,7 @@ int main() {
     float simStepInterval = 0.1f;       // the limit for the accumulator (fills to this before one simulation step runs)
     float simAccumulaor = 0.0f;         // a bucket that fills with elapsed time 
     bool simRunning = false;            // for pause and play 
+    int simStep = 0;                    // tracks number of simulation steps 
 
     // setting up window 
     unsigned int width = 1920; 
@@ -46,7 +48,7 @@ int main() {
     tgui::Gui gui{window};
     // TGUI button 
     auto button = tgui::Button::create("LLM"); // make a button 
-    button->setPosition({0.0f, 0.0f});
+    button->setPosition({1920.0f - 100.0f, 0.0f});
     button->setSize(100, 50);
     gui.add(button); 
 
@@ -62,9 +64,15 @@ int main() {
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window  
-     
+    
+    // MANAGERS 
     CircleManager manager;
     EdgeManager edgeManager(manager);  
+    SimHUD hud; 
+
+    // HUD 
+    hud.loadFont("assets/arial/ARIAL.TTF"); 
+    hud.setOffset({15.0f, 15.0f}); 
 
     while (window.isOpen()) {
         while (auto ev = window.pollEvent()) {
@@ -176,6 +184,7 @@ int main() {
 
                 simAccumulaor -= simStepInterval;       // don't zero the buck but subtract the time we used to execute a step then start from the left over amount (this is more accurate than just 0-ing -> we are carrying that time over)
                 manager.runMoranProcess();              // run a step 
+                simStep++;                              // increment step counter
 
                 // this is known as a fixed timestep accumulator pattern I've learned -> ensures stable behaviour and accurate long running sims 
 
@@ -209,6 +218,15 @@ int main() {
         edgeManager.DrawEdgeToMouse(window); 
         // Draw connected edges 
         edgeManager.DrawCompletedEdges(window); 
+
+        // Count residents and mutants for HUD
+        int residents = 0, mutants = 0;
+        for (const auto& node : manager.getNodes()) {
+            if (node->getType() == Node::Type::Resident) residents++;
+            else mutants++;
+        }
+        hud.update(residents, mutants, simStep, simStepInterval, simRunning);
+        hud.drawHUD(window); 
 
 
         window.display(); //draw new frame 
