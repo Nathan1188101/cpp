@@ -216,11 +216,12 @@ void Node::setNodeStrategy(Strategy strat) {
 void Node::setType(Type passed_type) {
     type = passed_type; 
     if (type == Type::Resident) {
+        // resident 
         node.setFillColor(sf::Color::Blue); 
-        fitness = 1.0f; // neutral fitness 
+        fitness = 1.0f;                     // neutral fitness 
     } else if (type == Type::Mutant) {
         // a mutant
         node.setFillColor(sf::Color::Red);
-        fitness = 2.0f; 
+        fitness = 1.5f; 
     }
 }

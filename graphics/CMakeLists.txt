@@ -8,7 +8,7 @@ find_package(SFML 3 REQUIRED COMPONENTS Graphics Window System Audio)
 find_package(TGUI REQUIRED)
 
 add_executable(connecting_edge src/connecting_edge.cpp)
-add_executable(main src/main.cpp src/CircleManager.cpp src/EdgeManager.cpp src/node.cpp src/ChatWindow.cpp)
+add_executable(main src/main.cpp src/CircleManager.cpp src/EdgeManager.cpp src/Node.cpp src/ChatWindow.cpp src/SimHUD.cpp) 
 add_executable(messing_around src/messing_around.cpp)
 
 target_link_libraries(main PRIVATE
@@ -18,6 +18,7 @@ target_link_libraries(main PRIVATE
     TGUI::TGUI 
 )
 
+# this is not used anymore but I'll leave it for now
 target_link_libraries(connecting_edge PRIVATE
     SFML::Graphics
     SFML::Window
