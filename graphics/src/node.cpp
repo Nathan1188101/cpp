@@ -222,6 +222,6 @@ void Node::setType(Type passed_type) {
     } else if (type == Type::Mutant) {
         // a mutant
         node.setFillColor(sf::Color::Red);
-        fitness = 1.5f; 
+        fitness = 1.01f; 
     }
 }
