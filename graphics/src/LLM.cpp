@@ -53,7 +53,7 @@ std::future<std::string> LLM::chatAsync(const std::string& userMessage) {
 }
 
 std::string LLM::makeRequest(const std::string& userMessage) {
-    if (!isConfigured) {
+    if (!isConfigured()) {
         lastError = "API key not set";
         return "[Error: API key not configured]"; 
     }
@@ -87,7 +87,52 @@ std::string LLM::makeRequest(const std::string& userMessage) {
         // make POST request 
         auto response = client.Post("/openai/v1/chat/completions", headers, body, "application/json");
 
-    } catch () {
+        if (!response) {
+            lastError = "Error: no response";
+            return "[Error: Post didn't work, network error]"; 
+        }
 
+        // if request wasn't successful 
+        if (response->status != 200) {
+
+            // set last error to include the status of the raw response body 
+            lastError = "API error (HTTP " + std::to_string(response->status) + "): " + response->body; 
+
+            // then try and to parse the response body as JSON to see if it contains more specific info 
+            try {
+
+                // parse the response 
+                nlohmann::json errorJson = nlohmann::json::parse(response->body); 
+
+                // checking (key value pairs of json), so looking for "error" key, and if that error key contains a "message" field
+                // so if there an error message we return it 
+                if (errorJson.contains("error") && errorJson["error"].contains("message")) {
+                    return "[Error: " + errorJson["error"]["message"].get<std::string>() + "]"; // return the error message if one exists 
+                }
+                // if it fails we print an error msg to console 
+            } catch (const nlohmann::json::exception& e) {std::cout << "ERROR parsing error message from server: " << std::endl;}
+
+            // return a generic error message with HTTP status if nothing was found 
+            return "[Error: API returned status " + std::to_string(response->status) + "]"; 
+
+        }
+
+        // parse response 
+        nlohmann::json responseJson = nlohmann::json::parse(response->body); 
+
+        // this is how Groq and OpenAI structure their API responses 
+        if (responseJson.contains("choices") && !responseJson["choices"].empty()) {
+            return responseJson["choices"][0]["message"]["content"].get<std::string>(); 
+        } else {
+            lastError = "Unexpected API response format"; 
+            return "[Error: Unexpected response format]"; 
+        }
+
+    } catch (const nlohmann::json::exception& e) {
+        lastError = std::string("JSON error: ") + e.what(); 
+        return "[Error: failed to parse response]"; 
+    } catch (const std::exception& e) {
+        lastError = std::string("Error") + e.what(); 
+        return "[Error: " + std::string(e.what()) + "]"; 
     }
 }

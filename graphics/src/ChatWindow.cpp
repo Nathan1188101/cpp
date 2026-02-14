@@ -33,12 +33,29 @@ ChatWindow::ChatWindow(tgui::Gui& gui, float x, float y, float width, float heig
         if (!text.empty()) {
             addMessage(text, "You");
             inputBox->setText("");
+
+            if (llm.isConfigured()) {
+                waitingForResponse = true;
+                addMessage("Thinking...", "AI"); 
+
+                // prepend graph context if avilable 
+                std::string fullMessage = text; 
+                if (!graphContext.empty()) {
+                    // if there is graph context, include it 
+                    fullMessage = "[Current Graph State]\n" + graphContext + "\n\n[User Question]\n" + text; 
+                }
+
+                pendingResponse = llm.chatAsync(fullMessage); // send message asynchronosly so rest of sim still runs while waiting for response
+
+            } else {
+                addMessage("LLM was unable to configure. Check API key."); 
+            }
+
         }
     });
 
     gui.add(childWindow);
 }
-
 
 /// @brief this puts messages in the chat window
 /// @param message 
@@ -65,4 +82,43 @@ void ChatWindow::setVisible(bool visible) {
 // for focusing input on window and ingoring sim inputs 
 bool ChatWindow::isInputFocused() const {
     return inputBox->isFocused();
+}
+
+void ChatWindow::setAPIKey(const std::string& key) {
+    llm.setApiKey(key); 
+    addMessage("API key configured", "System") ;
+}
+
+void ChatWindow::setSystemPrompt(const std::string& prompt) {
+    llm.setSystemPrompt(prompt);
+}
+
+void ChatWindow::setGraphContext(const std::string& context) {
+    graphContext = context; 
+}
+
+/// @brief clears graph context 
+void ChatWindow::clearGraphContext() {
+    graphContext.clear(); 
+}
+
+void ChatWindow::update() {
+    if (waitingForResponse && pendingResponse.has_value()) {
+        // check if fugure is ready 
+        auto status = pendingResponse->wait_for(std::chrono::milliseconds(0)); 
+
+        // if async call is ready/done
+        if (status == std::future_status::ready) {
+
+            // get the response message from llm API 
+            std::string response = pendingResponse->get(); 
+
+            // display the response in the window 
+            addMessage(response, "AI");
+
+            pendingResponse.reset(); 
+            waitingForResponse = false; 
+
+        }
+    }
 }
