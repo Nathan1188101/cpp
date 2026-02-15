@@ -129,6 +129,13 @@ int main() {
     button->onPress([&chat]() {
         chat.toggle();
     }); 
+
+    tgui::Slider::Ptr slider = tgui::Slider::create(); 
+    slider->setPosition(width / 2, 0); // top middle? 
+    slider->setSize(200, 20); 
+    //slider->set(0, 100);
+    slider->setValue(50); 
+    gui.add(slider); 
     
     // IK THIS IS EXPOSED RIGHT NOW, WILL MAKE A NEW KEY LATER AND FIGURE OUT HOW TO LOAD FROM ENV WITH CUSTOM FUNCTION
     chat.setAPIKey("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");
