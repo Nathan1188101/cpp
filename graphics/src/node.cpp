@@ -225,3 +225,6 @@ void Node::setType(Type passed_type) {
         fitness = 1.01f; 
     }
 }
+
+
+

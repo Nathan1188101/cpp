@@ -110,13 +110,21 @@ int main() {
     auto button = tgui::Button::create("LLM"); // make a button 
     button->setPosition({1920.0f - 100.0f, 0.0f});
     button->setSize(100, 50);
+    auto buttonRenderer = button->getSharedRenderer();
+    buttonRenderer->setBackgroundColor(tgui::Color(30, 30, 35));
+    buttonRenderer->setBackgroundColorHover(tgui::Color(40, 40, 50));
+    buttonRenderer->setBackgroundColorDown(tgui::Color(20, 20, 25));
+    buttonRenderer->setBorderColor(tgui::Color(60, 60, 70)); 
+    buttonRenderer->setBorderColorHover(tgui::Color(80, 80, 100));
+    buttonRenderer->setBorderColorDown(tgui::Color(80, 80, 100));
+    buttonRenderer->setTextColor(tgui::Color::White); 
+    buttonRenderer->setTextColorHover(tgui::Color::White); 
+    buttonRenderer->setTextColorDown(tgui::Color::White); 
     gui.add(button); 
 
 
     // Create ChatWindow instance (now draggable)
     ChatWindow chat(gui, 400, 100, 300, 500);
-    chat.addMessage("Welcome to the chat!", "System");
-
     // Toggle visibility of chat window when LLM button is clicked
     button->onPress([&chat]() {
         chat.toggle();

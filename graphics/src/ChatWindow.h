@@ -24,9 +24,9 @@ public:
     void update(); // we call this in the main loop to check for async responses 
 
 private:
-    tgui::ChildWindow::Ptr childWindow;
-    tgui::ChatBox::Ptr chatBox;
-    tgui::EditBox::Ptr inputBox;
+    tgui::ChildWindow::Ptr chatWindowContainer;                     // main container for widgets, create this first and then add widgets to it, this groups related elements together (this can contain chat boxes, buttons, inputs) -> can be dragged, resized minimzed or closed (just depends on settings)
+    tgui::ChatBox::Ptr chatBox;                                     // chat box element/widget we are going to put in the child window
+    tgui::EditBox::Ptr inputBox;                                    // input box element/widget used for chat input in child
 
     // LLM
     LLM llm;
@@ -35,4 +35,7 @@ private:
 
     // graph context for llm 
     std::string graphContext; 
+
+    std::string last_sender = "";
+    bool changed = false;  
 };
