@@ -1,6 +1,66 @@
 #include<SFML/Graphics.hpp>
 #include<iostream> 
 #include<cmath> 
+#include<vector>
+#include<random>
+
+// -------------------- COOL BACKGROUND: STARFIELD --------------------
+struct Starfield {
+    sf::VertexArray stars;         // points
+    sf::FloatRect worldBounds;     // where stars live in world coords
+
+    Starfield(int count, sf::FloatRect bounds)
+        : stars(sf::PrimitiveType::Points, count), worldBounds(bounds)
+    {
+        std::mt19937 rng(std::random_device{}());
+        // making position and size (within a bound) random 
+        std::uniform_real_distribution<float> xDist(bounds.position.x, bounds.position.x + bounds.size.x);
+        std::uniform_real_distribution<float> yDist(bounds.position.y, bounds.position.y + bounds.size.y);
+
+        for (std::size_t i = 0; i < stars.getVertexCount(); i++) {
+            stars[i].position = { xDist(rng), yDist(rng) };
+
+            // Different brightness for depth vibe (no extra textures needed)
+            uint8_t brightness = static_cast<uint8_t>(150 + (i % 105)); // 150..254
+            stars[i].color = sf::Color(brightness, brightness, brightness);
+        }
+    }
+
+    void update(float dt, const sf::View& camera) {
+        // gentle drift speed; tweak to taste
+        const float speedX = -10.f;
+        const float speedY = -3.f;
+
+        // Keep stars within a moving "window" around the camera so you can travel forever
+        sf::Vector2f camCenter = camera.getCenter();
+        sf::Vector2f camSize   = camera.getSize();
+
+        // Define a big box around the camera (bigger than the screen)
+        // so new stars wrap in off-screen.
+        float pad = 400.f;
+        sf::FloatRect box(
+            { camCenter.x - camSize.x / 2.f - pad, camCenter.y - camSize.y / 2.f - pad },
+            { camSize.x + 2.f * pad,              camSize.y + 2.f * pad }
+        );
+
+        for (std::size_t i = 0; i < stars.getVertexCount(); i++) {
+            stars[i].position.x += speedX * dt;
+            stars[i].position.y += speedY * dt;
+
+            // Wrap stars around the camera-centered box
+            if (stars[i].position.x < box.position.x) stars[i].position.x = box.position.x + box.size.x;
+            if (stars[i].position.x > box.position.x + box.size.x) stars[i].position.x = box.position.x;
+
+            if (stars[i].position.y < box.position.y) stars[i].position.y = box.position.y + box.size.y;
+            if (stars[i].position.y > box.position.y + box.size.y) stars[i].position.y = box.position.y;
+        }
+    }
+
+    void draw(sf::RenderWindow& window) const {
+        window.draw(stars);
+    }
+};
+// --------------------------------------------------------------------
 
 struct Ball {
     sf::CircleShape circle; 
@@ -64,41 +124,37 @@ int main() {
     unsigned int height = 600; 
     sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240);
-    window.setKeyRepeatEnabled(false);  
+    window.setKeyRepeatEnabled(false); 
 
     sf::View camera({width / 2.0f, height / 2.0f}, {800.0f, 600.0f});
 
-    //sf::Vector2f velocity{0, 0}; 
+    // -------------------- INIT BACKGROUND --------------------
+    // Big initial bounds; after that, wrapping uses the camera box anyway
+    Starfield starfield(500, sf::FloatRect({-2000.f, -2000.f}, {4000.f, 4000.f}));
+    // ---------------------------------------------------------
+
     const float gravity = 500.0f; 
 
     while (window.isOpen()) {
 
-        // measures frame times in seconds (resets clock every frame)
-        // measures time since last frame 
         float dt = frame_clock.restart().asSeconds();
-
-        // for global clock 
         float t = GlobalClock.getElapsedTime().asSeconds(); 
 
         while (auto ev = window.pollEvent()) {
 
-            // to close window 
             if (ev->is<sf::Event::Closed>()) {
                 window.close(); 
             }
 
-            // ZOOM CAMERA
             if (const auto* scroll = ev->getIf<sf::Event::MouseWheelScrolled>()) {
                 std::cout << "scrolling" << std::endl; 
                 if (scroll->delta > 0) {
-                    camera.zoom(0.9f);  // scroll up = zoom in (smaller view)
+                    camera.zoom(0.9f);
                 } else if (scroll->delta < 0) {
-                    camera.zoom(1.1f);  // scroll down = zoom out (larger view)
+                    camera.zoom(1.1f);
                 }
             }
 
-
-            // track mouse 
             if (const auto* mouseMoved = ev->getIf<sf::Event::MouseMoved>()) {
                 std::cout << "new mouse x: " << mouseMoved->position.x << std::endl; 
                 std::cout << "new mouse y: " << mouseMoved->position.y << std::endl; 
@@ -107,7 +163,6 @@ int main() {
             if (const auto* key_pressed = ev->getIf<sf::Event::KeyPressed>()) {
 
                 if (key_pressed->code == sf::Keyboard::Key::E) {
-                    // place circle 
                     placeBall(window); 
                 }
 
@@ -115,7 +170,6 @@ int main() {
 
         }
 
-        // border around window 
         sf::Vector2f top_left = {0.0, 0.0};
         sf::Vector2f bottom_right = {800.0, 600.0};
         sf::Vector2f top_right = {800.0, 0}; 
@@ -131,68 +185,70 @@ int main() {
             float distance = std::sqrt(direction_vec.x * direction_vec.x + direction_vec.y * direction_vec.y); 
             sf::Vector2f push = {0, 0};
             if (distance > 0) {
-                sf::Vector2f dir = direction_vec / distance; // normalize vector to extract distance 
+                sf::Vector2f dir = direction_vec / distance; 
                 push = dir * gravity_strength; 
-                circle.velocity.y += gravity * dt; // suppose this would be gravity (constant downward force of all circles)
+                circle.velocity.y += gravity * dt; 
                 circle.move(circle.velocity * dt); 
             } 
 
+            float radius = circle.getRadius(); 
+            sf::Vector2f cirlce_pos = circle.getPosition(); 
+            if (cirlce_pos.y + radius > height) {
+                cirlce_pos.y = height - radius; 
+                circle.velocity.y *= -0.8f; 
+                circle.setPosition(cirlce_pos); 
+            }
+            if (cirlce_pos.y - radius < 0) {
+                cirlce_pos.y = 0 + radius; 
+                circle.velocity.y *= -0.8f; 
+                circle.setPosition(cirlce_pos);
+            }
 
-        // ground collision and bounce 
-        float radius = circle.getRadius(); 
-        sf::Vector2f cirlce_pos = circle.getPosition(); // I KNOW IT'S SPELT WRONG 
-        if (cirlce_pos.y + radius > height) {
-            cirlce_pos.y = height - radius; 
-            circle.velocity.y *= -0.8f; 
-            circle.setPosition(cirlce_pos); 
-        }
-        if (cirlce_pos.y - radius < 0) {
-            cirlce_pos.y = 0 + radius; 
-            circle.velocity.y *= -0.8f; 
-            circle.setPosition(cirlce_pos);
-        }
+            if (cirlce_pos.x + radius > width) {
+                cirlce_pos.x = width - radius; 
+                circle.velocity.x *= -0.8f; 
+                circle.setPosition(cirlce_pos); 
+            } 
+            if (cirlce_pos.x - radius < 0) {
+                cirlce_pos.x = 0 + radius; 
+                circle.velocity.x *= -0.8f; 
+                circle.setPosition(cirlce_pos);  
+            }
 
-        // horizontal force 
-        if (cirlce_pos.x + radius > width) {
-            cirlce_pos.x = width - radius; 
-            circle.velocity.x *= -0.8f; 
-            circle.setPosition(cirlce_pos); 
-        } 
-        if (cirlce_pos.x - radius < 0) {
-            cirlce_pos.x = 0 + radius; 
-            circle.velocity.x *= -0.8f; 
-            circle.setPosition(cirlce_pos);  
-        }
-
-        if (distance <= radius * 2) { // random threshold to start
-
-            circle.velocity -= push; 
-
+            if (distance <= radius * 2) {
+                circle.velocity -= push; 
+            }
         }
 
+        // Move camera AFTER events, BEFORE drawing
+        movement(camera);
 
-        }
-
+        // Set the view before drawing world-space stuff (stars, balls, etc.)
         window.setView(camera); 
 
-        
+        // -------------------- DRAW BACKGROUND --------------------
+        // Commenting out your color-changing background:
+        /*
         sf::Color bg(
             50 + 50 * std::sin(t),
             20,
             100 + 50 * std::cos(t)
         );
-
         window.clear(bg);
-        //window.clear();
-        movement(camera); 
-        //window.draw(circle);
+        */
+        window.clear(sf::Color::Black);
+
+        // Update + draw starfield behind everything
+        starfield.update(dt, camera);
+        starfield.draw(window);
+        // ---------------------------------------------------------
+
         window.draw(line, 5, sf::PrimitiveType::LineStrip);
+
         for(auto& circle : balls) {
             circle.draw(window);  
         }
+
         window.display();
-
     }
-
-
 }

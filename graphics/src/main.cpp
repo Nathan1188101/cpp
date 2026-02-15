@@ -8,6 +8,59 @@
 #include"CircleManager.h"
 #include"EdgeManager.h" 
 #include"SimHUD.h" 
+#include"LLM.h" 
+
+// should move this somewhere else at some point, maybe into edge manager because it has access to the circle manager 
+// but not sure that feels right still, maybe it's own class at some point idk 
+
+/// @brief this will build context to send to the llm along with your message. It will be able to see number of edges, nodes, and more
+/// @param manager ref to circle manager
+/// @param edgeManager ref to edge manager 
+/// @param simStep pass in what step of the sim we are on 
+/// @param simRunning passes info on if sim is paused or running 
+/// @return 
+std::string buildGraphContext(const CircleManager& manager, const EdgeManager& edgeManager, int simStep, bool simRunning) {
+    // string stream than just using a std::string beacuse beacuse it does fewer allocations, uses a buffer (so it appends to buffer) (build with << rather than +)
+    // context could be very large, so building the string like this is more efficient 
+    std::stringstream ss; 
+
+    const auto& nodes = manager.getNodes();  
+    const auto& edges = edgeManager.getEdges(); 
+
+    ss << "Simulation step: " << simStep << (simRunning ? " (running)" : " (paused)") << "\n"; 
+    ss << "Total nodes: " << nodes.size() << "\n"; 
+    ss << "Total edges: " << edges.size() << "\n"; 
+
+    // count node types 
+    int residents = 0;
+    int mutants = 0; 
+    for (const auto& node : nodes) {
+        if (node->getType() == Node::Type::Resident)
+            residents += 1; 
+        else if (node->getType() == Node::Type::Mutant)
+            mutants += 1; 
+    }
+    ss << "Residents: " << residents << "\n"; 
+
+    // getting detailed list about nodes 
+    ss << "Nodes:\n"; 
+    for (const auto& node : nodes) {
+        ss << "Node " << node->getId()
+           << " Fitness: " << node->getFitness()  
+           << " has " << node->getNeighbors().size() << " neighbors\n";
+    } 
+
+    // building edge list 
+    if (!edges.empty()) {
+        ss << "\nEdges:\n";
+        for (const auto& edge : edges) {
+            ss << " - " << edge.start->getId() << " <-> " << edge.end->getId() << "\n"; 
+        }
+    }
+
+    return ss.str(); // returns build string stream 
+
+}
 
 void movement(sf::View& camera) {
 
@@ -43,6 +96,13 @@ int main() {
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
 
+    // camera 
+    sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window 
+
+    // MANAGERS 
+    CircleManager manager;
+    EdgeManager edgeManager(manager);  
+    SimHUD hud; 
 
     // create TGUI instance?  
     tgui::Gui gui{window};
@@ -50,25 +110,34 @@ int main() {
     auto button = tgui::Button::create("LLM"); // make a button 
     button->setPosition({1920.0f - 100.0f, 0.0f});
     button->setSize(100, 50);
+    auto buttonRenderer = button->getSharedRenderer();
+    buttonRenderer->setBackgroundColor(tgui::Color(30, 30, 35));
+    buttonRenderer->setBackgroundColorHover(tgui::Color(40, 40, 50));
+    buttonRenderer->setBackgroundColorDown(tgui::Color(20, 20, 25));
+    buttonRenderer->setBorderColor(tgui::Color(60, 60, 70)); 
+    buttonRenderer->setBorderColorHover(tgui::Color(80, 80, 100));
+    buttonRenderer->setBorderColorDown(tgui::Color(80, 80, 100));
+    buttonRenderer->setTextColor(tgui::Color::White); 
+    buttonRenderer->setTextColorHover(tgui::Color::White); 
+    buttonRenderer->setTextColorDown(tgui::Color::White); 
     gui.add(button); 
 
 
     // Create ChatWindow instance (now draggable)
     ChatWindow chat(gui, 400, 100, 300, 500);
-    chat.addMessage("Welcome to the chat!", "System");
-
-    // Toggle chat window when LLM button is clicked
+    // Toggle visibility of chat window when LLM button is clicked
     button->onPress([&chat]() {
         chat.toggle();
-    });
-
-    // camera 
-    sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window  
+    }); 
     
-    // MANAGERS 
-    CircleManager manager;
-    EdgeManager edgeManager(manager);  
-    SimHUD hud; 
+    // IK THIS IS EXPOSED RIGHT NOW, WILL MAKE A NEW KEY LATER AND FIGURE OUT HOW TO LOAD FROM ENV WITH CUSTOM FUNCTION
+    chat.setAPIKey("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");
+    chat.setSystemPrompt("You are a helpful assistant for an evolutionary dynamics on graphs simulation. "
+                         "The user may ask about the current graph state (nodes, edges, residents, mutants). "
+                         "When a [Current Graph State] section is provided, use it to answer questions about the simulation. "
+                         "The simulation uses Moran process dynamics. Keep responses brief and helpful. Also be sure to offer up other services you can provide, like offer to tell the user more about the properties of the graph structure, like whether it is an amplifier or supressor or neither, etc.");
+
+
 
     // HUD 
     hud.loadFont("assets/arial/ARIAL.TTF"); 
@@ -202,6 +271,11 @@ int main() {
         window.clear(); // clear last framed
 
         gui.draw(); // GUI elements 
+
+        chat.setGraphContext(buildGraphContext(manager, edgeManager, simStep, simRunning)); 
+
+        // check for llm reponse from async call (so non blocking)
+        chat.update();
 
         // ignore camera movement controls while focused on chat box 
         if (!chat.isInputFocused()) {
