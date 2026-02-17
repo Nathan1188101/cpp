@@ -270,11 +270,12 @@ int main() {
                 // once time has accumulated to be greater than or equal to the "capacity of the bucket"
                 // we run the moran process once          
 
-                simAccumulaor -= simStepInterval;       // don't zero the buck but subtract the time we used to execute a step then start from the left over amount (this is more accurate than just 0-ing -> we are carrying that time over)
+                simAccumulaor -= simStepInterval;       // don't zero the bucket but subtract the time we used to execute a step then start from the left over amount (this is more accurate than just 0-ing -> we are carrying that time over)
                 manager.runMoranProcess();              // run a step 
                 simStep++;                              // increment step counter
 
                 // this is known as a fixed timestep accumulator pattern I've learned -> ensures stable behaviour and accurate long running sims 
+                // this prevents the loss of time which in turn prevents the loss of accuracy overtime 
 
             }               
         } else {
