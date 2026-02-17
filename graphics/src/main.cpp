@@ -134,7 +134,9 @@ int main() {
     slider->setPosition(width / 2, 0); // top middle? 
     slider->setSize(200, 20); 
     //slider->set(0, 100);
-    slider->setValue(50); 
+    slider->setValue(1); 
+    slider->setMaximum(2.0f);
+    slider->setMinimum(0.0f); 
     gui.add(slider); 
     
     // IK THIS IS EXPOSED RIGHT NOW, WILL MAKE A NEW KEY LATER AND FIGURE OUT HOW TO LOAD FROM ENV WITH CUSTOM FUNCTION
