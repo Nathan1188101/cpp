@@ -135,16 +135,26 @@ int main() {
     slider->setSize(200, 20); 
     //slider->set(0, 100);
     slider->setValue(1); 
-    slider->setMaximum(2.0f);
+    slider->setMaximum(10.0f);
     slider->setMinimum(0.0f); 
+    slider->setStep(.01f); 
     gui.add(slider); 
+
+    auto sliderLabel = tgui::Label::create("Mutant Fitness"); 
+    auto sliderLabelRenderer = sliderLabel->getSharedRenderer();
+    sliderLabelRenderer->setTextColor(tgui::Color::White); 
+    sliderLabel->setPosition(width / 2, 20);
+    gui.add(sliderLabel); 
     
     // IK THIS IS EXPOSED RIGHT NOW, WILL MAKE A NEW KEY LATER AND FIGURE OUT HOW TO LOAD FROM ENV WITH CUSTOM FUNCTION
     chat.setAPIKey("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");
     chat.setSystemPrompt("You are a helpful assistant for an evolutionary dynamics on graphs simulation. "
                          "The user may ask about the current graph state (nodes, edges, residents, mutants). "
                          "When a [Current Graph State] section is provided, use it to answer questions about the simulation. "
-                         "The simulation uses Moran process dynamics. Keep responses brief and helpful. Also be sure to offer up other services you can provide, like offer to tell the user more about the properties of the graph structure, like whether it is an amplifier or supressor or neither, etc.");
+                         "The simulation uses Moran process dynamics. Keep responses brief and helpful. Also be sure to offer up other services you can provide, like offer to tell the user more about the properties of the graph structure, like whether it is an amplifier or supressor or neither, etc."
+                         "When the user asks you what type of graph they've made, or what the structure is refered to as, use the graph context given to you to tell them what they've made based on nodes and their connections."
+                         "If the user hasn't begun adding edges yet, make sure to mention that they can begin adding nodes by pressed E and connect edges between nodes using right click and dragging to another node."
+                         "Don't offer to calculate anything like the coeficient clustering or fixation probability. These will be left up to the program once implemented, but it hasn't been developed yet so just don't mention it. If it is asked about, saying something about it 'coming soon...'");
 
 
 
@@ -276,6 +286,11 @@ int main() {
         // MOVE CIRCLE WITH MOUSE 
         manager.moveSelectedCircle(window); 
 
+        // change mutant fitness to match whatever the slider value is at 
+        manager.setAllMutantFitness(float(slider->getValue()));
+        slider->onValueChange([sliderLabel, slider] {
+            sliderLabel->setText("Mutant Fitness: " + std::to_string(slider->getValue()));
+        });
 
         window.clear(); // clear last framed
 

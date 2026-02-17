@@ -160,3 +160,20 @@ void CircleManager::placeGrid(const sf::RenderWindow& window) {
     }
 
 }
+
+void CircleManager::setAllMutantFitness(float mutant_fitness) {
+    // loop through all nodes and set mutant fitness to whatever fitness value passed in
+    for (auto& node : nodes) { 
+        // update the mutant fitness default value 
+        node->setMutantFitness(mutant_fitness);
+        if (node->getType() == Node::Type::Mutant){
+           node->setType(Node::Type::Mutant); 
+           // may not look obviosuy from this, however, this will re-apply the mutant fitness for already placed nodes
+           // before this the default value was getting updated, but not apply to already existing mutants
+           // this changes the mutant fitness for already placed nodes as well now by calling the setType() function
+           // on said node again (which inside sets their fitness)
+        }
+        
+    }
+}
+

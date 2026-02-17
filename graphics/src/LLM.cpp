@@ -63,7 +63,7 @@ std::string LLM::makeRequest(const std::string& userMessage) {
         client.set_connection_timeout(30);  // sets connection to timeout after 30 seconds, if the client cannot establish a connection
         client.set_read_timeout(60);        // this sets max time client will wait for server response AFTER connection is established (server reply)
 
-        // json requeset 
+        // build json requeset body using nlohmann 
         nlohmann::json requestBody = {
             {"model", "llama-3.3-70b-versatile"},
             {"messages", {
@@ -77,9 +77,10 @@ std::string LLM::makeRequest(const std::string& userMessage) {
             // high temp = 0.8 - 1.0+ = more creative and varied, can be less accurate 
         };
 
-        // converts requestBody into a string in standard JSON format (needed because HTTP APIs expect a string and not a c++ object)
+        // converts requestBody into a string in standard JSON format, the other end will deserialize it (needed because HTTP APIs expect a string and not a c++ object)
         std::string body = requestBody.dump(); 
 
+        // form that Groq needs 
         httplib::Headers headers = {
             {"Authorization", "Bearer " + apiKey}
         };

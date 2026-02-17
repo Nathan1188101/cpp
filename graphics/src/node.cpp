@@ -185,6 +185,13 @@ void Node::applyStrategy() {
     }
 }
 
+// allows you to change/update the default mutant fitness value (main purpose of this function is for the slider UI so the user can change it to experiment)
+void Node::setMutantFitness(float mutantFitness) {
+
+    defaultMutantFitness = mutantFitness; 
+
+}
+
 // function for setting up initial state of nodes after placing them
 void Node::setNodeStrategy(Strategy strat) {
 
@@ -218,11 +225,11 @@ void Node::setType(Type passed_type) {
     if (type == Type::Resident) {
         // resident 
         node.setFillColor(sf::Color::Blue); 
-        fitness = 1.0f;                     // neutral fitness 
+        fitness = defaultResidentFitness;                     // neutral fitness 
     } else if (type == Type::Mutant) {
         // a mutant
         node.setFillColor(sf::Color::Red);
-        fitness = 1.01f; 
+        fitness = defaultMutantFitness; 
     }
 }
 

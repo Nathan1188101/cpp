@@ -39,6 +39,7 @@ class Node {
         float getFitness() {return fitness;}                                                // return a nodes fitness 
         Type getType() {return type;}                                                       // get node's type 
         void setType(Type type); 
+        void setMutantFitness(float mutantFitness);                                         // for setting mutant fitness, main purpose is to hook this up to the slider UI
 
     private: 
         sf::CircleShape node;                   // node is a circle
@@ -51,7 +52,9 @@ class Node {
         bool cooperate = true;                  // represents nodes current action
         bool nextCooperate = true;              // staged action for next commit
         int totalNodes;                         // keep track of total number of nodes  
-        float fitness = 1.0f;                   // for nodes fitness 
+        float fitness; 
+        float defaultResidentFitness = 1.0f;    // for nodes fitness 
+        float defaultMutantFitness = 1.01; 
         Type type;                              // Store type (Resident or Mutant) of node 
 
 
