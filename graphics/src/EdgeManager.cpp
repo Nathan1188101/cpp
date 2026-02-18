@@ -235,3 +235,8 @@ void EdgeManager::connectGridRange(size_t startIndex, int rows, int cols) {
         }
     }
 }
+
+/// @brief delete all edges currently in the simulation 
+void EdgeManager::deleteAllEdges() {
+    edges.clear(); 
+}

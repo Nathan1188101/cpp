@@ -161,6 +161,18 @@ void CircleManager::placeGrid(const sf::RenderWindow& window) {
 
 }
 
+/// @brief function to place a pre-made star graph (hub and spoke)
+/// @param window 
+void CircleManager::placeStar(const sf::RenderWindow& window) {
+
+}
+
+/// @brief to delete all circles present in the sim so you can start over 
+void CircleManager::deleteAllNodes() {
+    nodes.clear(); // deletes all Node objects and removes null spaces from the vector 
+    nextNodeId = 0; 
+}
+
 void CircleManager::setAllMutantFitness(float mutant_fitness) {
     // loop through all nodes and set mutant fitness to whatever fitness value passed in
     for (auto& node : nodes) { 

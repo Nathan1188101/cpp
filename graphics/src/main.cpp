@@ -13,6 +13,7 @@
 // should move this somewhere else at some point, maybe into edge manager because it has access to the circle manager 
 // but not sure that feels right still, maybe it's own class at some point idk 
 
+//  SHOULD MOVE THIS TO THE LLM CLASS FILES 
 /// @brief this will build context to send to the llm along with your message. It will be able to see number of edges, nodes, and more
 /// @param manager ref to circle manager
 /// @param edgeManager ref to edge manager 
@@ -154,7 +155,8 @@ int main() {
                          "The simulation uses Moran process dynamics. Keep responses brief and helpful. Also be sure to offer up other services you can provide, like offer to tell the user more about the properties of the graph structure, like whether it is an amplifier or supressor or neither, etc."
                          "When the user asks you what type of graph they've made, or what the structure is refered to as, use the graph context given to you to tell them what they've made based on nodes and their connections."
                          "If the user hasn't begun adding edges yet, make sure to mention that they can begin adding nodes by pressed E and connect edges between nodes using right click and dragging to another node."
-                         "Don't offer to calculate anything like the coeficient clustering or fixation probability. These will be left up to the program once implemented, but it hasn't been developed yet so just don't mention it. If it is asked about, saying something about it 'coming soon...'");
+                         "Don't offer to calculate anything like the coeficient clustering or fixation probability. These will be left up to the program once implemented, but it hasn't been developed yet so just don't mention it. If it is asked about, saying something about it 'coming soon...'"
+                         "If the user asks you about the current state of their graph, or any version of this question, feel free to make some predictions based on whether the mutants will take over based on their fitness and numbers. So if they have a super high fitenss above 1.0 which is the resident fitness there is a good chance that they will take over given time, obviously there is always a chance they won't but still talk about it. And if there are more mutants than residents at the time the question is asked it's safe to say something like 'there is a good chance that mutants fixate', stuff like that. Don't be afraid to make predictions/assumptions about the outcome based on the information given to you.");
 
 
 
@@ -230,7 +232,7 @@ int main() {
                 }
             }
    
-            // PLACE NODE(s) 
+            // PLACE NODE(s) & DELETE ALL FUNCTION HERE 
             if (const auto* key_event = ev->getIf<sf::Event::KeyPressed>()) {
 
                 // E = place node 
@@ -244,6 +246,13 @@ int main() {
                     manager.placeGrid(window); 
                     edgeManager.connectGridRange(start_index, 10, 10);
                 }
+
+                if (key_event->code == sf::Keyboard::Key::Backspace) {
+                    std::cout << "delete called " << std::endl; 
+                    manager.deleteAllNodes();
+                    edgeManager.deleteAllEdges(); 
+                }
+
             }
         
             // detecting edge drag release 
@@ -265,6 +274,7 @@ int main() {
         
         // SIMULATION 
         if (simRunning) { // if space pressed 
+            // restart the clock, gives us total time since last frame (this ensures we track and add to the simAccumulator accurately)
             simAccumulaor += simClock.restart().asSeconds(); // adding elapsed time to the "bucket"
             if (simAccumulaor >= simStepInterval) { 
                 // once time has accumulated to be greater than or equal to the "capacity of the bucket"
@@ -275,8 +285,7 @@ int main() {
                 simStep++;                              // increment step counter
 
                 // this is known as a fixed timestep accumulator pattern I've learned -> ensures stable behaviour and accurate long running sims 
-                // this prevents the loss of time which in turn prevents the loss of accuracy overtime 
-
+                // this prevents the loss of time which in turn prevents the loss of accuracy overtime
             }               
         } else {
             // restarting the clock while paused so the time doesn't accumulate (basically keeps zeroing while paused), prevents jumps after resuming 

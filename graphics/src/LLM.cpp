@@ -11,7 +11,7 @@
 
 
 LLM::LLM() 
-: apiEndPoint("end_point_here"), 
+: apiEndPoint("https://api.groq.com"), // THIS ISN'T DOING ANYTHING, I SHOULD SWITCH FROM USING CLIENT BELOW TO THIS, WILL DO IT LATER
   systemPrompt("You are a helpful assistant for a evolutionary dynamics on graphs simulator. Keep responses concise."),
   CLIENT("https://api.groq.com")
 {    

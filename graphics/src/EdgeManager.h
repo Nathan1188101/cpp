@@ -22,6 +22,7 @@ class EdgeManager {
         const std::vector<Edge>& getEdges() const { return edges; }                                        // returns vector of that stores edges (pairs of nodes)
         void makeEdge(Node* a, Node* b);                                                      // function for making edges (used by circle manager for grid making)
         void connectGridRange(size_t startIndex, int rows, int cols);                         // makes edge connections for the grid 
+        void deleteAllEdges(); 
 
     private:
         CircleManager& circleManager;                                                         // make reference to a circle manager private (Don't tell user what we are doing with it)
