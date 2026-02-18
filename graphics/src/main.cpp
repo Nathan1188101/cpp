@@ -4,6 +4,7 @@
 #include<iostream> 
 #include<TGUI/TGUI.hpp> 
 #include<TGUI/Backend/SFML-Graphics.hpp>
+#include<SFML/Window.hpp>
 #include"ChatWindow.h"
 #include"CircleManager.h"
 #include"EdgeManager.h" 
@@ -95,6 +96,10 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({width, height}), "Main");
     window.setFramerateLimit(240); 
     window.setKeyRepeatEnabled(false); // disables key press events from being added to event queue while key held down. One adds event when key is first pressed, and not again until you lift and press again
+    sf::Image icon; 
+    if (icon.loadFromFile("assets/images/icon.png")) {
+        window.setIcon(icon.getSize(), icon.getPixelsPtr());
+    }
 
     // camera 
     sf::View camera({width / 2.0f, height / 2.0f}, {1920.f, 1080.f}); // center at middle of window, and size of window 
@@ -242,7 +247,7 @@ int main() {
                 if (key_event->code == sf::Keyboard::Key::G) {
                     int start_index = manager.getNodes().size(); // get number before placing 100 nodes (so we know start and end nodes for this, all nodes between start and end are the grid)
                     manager.placeGrid(window); 
-                    edgeManager.connectGridRange(start_index, 10, 10);
+                    edgeManager.connectGridRange(start_index, 100, 100);
                 }
             }
         
