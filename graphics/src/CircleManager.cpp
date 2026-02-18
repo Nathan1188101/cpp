@@ -139,13 +139,13 @@ void CircleManager::placeGrid(const sf::RenderWindow& window) {
     int count = 0; 
 
     // can chance count to increase or decrease size of grid (need to also chance for loop inside)
-    while (count < 100) {
+    while (count < 10) {
 
         // reset x position back to mouse x position 
         position.x = start.x; 
 
         // horizontal part of the grid (chance the bound for i (10 right now) to increase or decrease the dimensions of the grid)
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
 
             auto newNode = std::make_unique<Node>(position, 50.0f, nextNodeId++, sf::Color::White); 
             nodes.push_back(std::move(newNode));
