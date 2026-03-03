@@ -5,6 +5,7 @@
 #include<TGUI/TGUI.hpp> 
 #include<TGUI/Backend/SFML-Graphics.hpp>
 #include<SFML/Window.hpp>
+#include<fstream> 
 #include"ChatWindow.h"
 #include"CircleManager.h"
 #include"EdgeManager.h" 
@@ -82,6 +83,18 @@ void movement(sf::View& camera) {
 
 }
 
+std::string loadKey() {
+    std::ifstream file(".env");
+    std::string line; 
+
+    while (std::getline(file, line)) {
+        if (line.find("GROQ_API_KEY=") == 0) {
+            return line.substr(13); 
+        }
+    }
+    return "";
+}
+
 int main() {     
 
     // for sim tick rate 
@@ -114,7 +127,7 @@ int main() {
     tgui::Gui gui{window};
     // TGUI button 
     auto button = tgui::Button::create("LLM"); // make a button 
-    button->setPosition({1920.0f - 100.0f, 0.0f});
+    button->setPosition({width - 100, 0.0f});
     button->setSize(100, 50);
     auto buttonRenderer = button->getSharedRenderer();
     buttonRenderer->setBackgroundColor(tgui::Color(30, 30, 35));
@@ -149,11 +162,22 @@ int main() {
     auto sliderLabel = tgui::Label::create("Mutant Fitness"); 
     auto sliderLabelRenderer = sliderLabel->getSharedRenderer();
     sliderLabelRenderer->setTextColor(tgui::Color::White); 
-    sliderLabel->setPosition(width / 2, 20);
+    auto size = sliderLabel->getSize(); 
+    sliderLabel->setPosition((width / 2) - (size.x / 2), 20);
+    slider->setPosition((width / 2) - (size.x / 2), 0);
     gui.add(sliderLabel); 
     
-    // IK THIS IS EXPOSED RIGHT NOW, WILL MAKE A NEW KEY LATER AND FIGURE OUT HOW TO LOAD FROM ENV WITH CUSTOM FUNCTION
-    chat.setAPIKey("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");
+    
+    std::string apiKey = loadKey();
+    if (apiKey.empty()) {
+        // return error 
+        std::cerr << "API key not found.\n";
+    }
+    else {
+        // set key 
+        chat.setAPIKey(apiKey);  
+    }
+    
     chat.setSystemPrompt("You are a helpful assistant for an evolutionary dynamics on graphs simulation. "
                          "The user may ask about the current graph state (nodes, edges, residents, mutants). "
                          "When a [Current Graph State] section is provided, use it to answer questions about the simulation. "
@@ -180,7 +204,18 @@ int main() {
             }
 
             if (ev->is<sf::Event::Resized>()) {
-                // need to figure out how to handle window resizing 
+                // need to figure out how to handle window resizing
+
+
+                auto size = window.getSize();
+                button->setPosition({float(size.x) - 100, 0.0f});
+                slider->setPosition({float(size.x) / 2.0, 0.0f}); 
+                sliderLabel->setPosition({float(size.x) / 2.0f, 20.0f});
+
+                camera.setSize({float(size.x), float(size.y)});
+                camera.setCenter({float(size.x) / 2.0f, float(size.y) / 2.0f});
+                window.setView(camera); 
+
             }
 
             // ZOOM CAMERA
@@ -305,11 +340,18 @@ int main() {
         // MOVE CIRCLE WITH MOUSE 
         manager.moveSelectedCircle(window); 
 
+        // handle label under slider 
+        float value = slider->getValue();
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << value;
+        std::string str = oss.str();
         // change mutant fitness to match whatever the slider value is at 
         manager.setAllMutantFitness(float(slider->getValue()));
-        slider->onValueChange([sliderLabel, slider] {
-            sliderLabel->setText("Mutant Fitness: " + std::to_string(slider->getValue()));
-        });
+        // Remove trailing zeros and decimal point if not needed
+        str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+        if (str.back() == '.') str.pop_back();
+        sliderLabel->setText("Mutant Fitness: " + str);
+
 
         window.clear(); // clear last framed
 
