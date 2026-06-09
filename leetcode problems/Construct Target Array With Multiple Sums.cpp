@@ -66,7 +66,6 @@ void setNum(int index_i, std::vector<int>& arr) {
 
 }
 
-
 bool isPossible(std::vector<int>& target) {
     std::cout << "running" << std::endl;
 
@@ -75,12 +74,12 @@ bool isPossible(std::vector<int>& target) {
     // instead, we should work backwards from what we already have. The target array. 
     // instead of doing a bunch of guessing by summing and placing in random indexes, we can work back by always targetting the biggest number in the target array and determining what value it use to be before becoming that number
     // The largest number in this sort of context for the problem will always be the num that changed last and we can work all the way back to 1s from that (if it is even possible in the first place)
-    
-    // I need to figure out what the condition is to break out and return false that we should be able to tell from early on.
-    int largest_num = 0; 
+
     bool flag = true; 
 
     while (flag) {
+
+        int largest_num = 0;
 
         // get largest value, this returns an iterator (pointer to the element)
         auto it = std::max_element(target.begin(), target.end());
@@ -108,14 +107,13 @@ bool isPossible(std::vector<int>& target) {
 
         target[idx] = previous_val;
 
+        // check if array is all 1s
         int new_sum = arrSum(target);
         if (new_sum == target.size())
             return true;
 
+        
     }
-
-
-
 
     return true; 
 }
