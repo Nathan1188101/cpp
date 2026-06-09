@@ -34,9 +34,9 @@ Input: target = [8,5]
 Output: true
 */
 
-/// @brief This function will return x, which is the sum of all elements currently in our arr
+/// @brief sum of all elements currently in our arr
 /// @param arr pass in the array
-/// @return return the sum
+/// @return return x, the sum
 int arrSum(std::vector<int>& arr) {
 
     // always start x at 0 before summing
@@ -69,15 +69,10 @@ int setNum(int index_i, std::vector<int>& arr) {
 
 bool isPossible(std::vector<int>& target) {
 
-    // std::vector<int> arr;
-    // for (int i = 0; i < target.size(); i++ ) {
-    //     arr.push_back(1);
-    // }
-
     // I was thinking in the opposite direction of a working solution
     // ask I suspected, my solution was leading down an endless searching sort of path. Just not going to work
     // instead, we should work backwards from what we already have. The target array. 
-    // instead of doing a bunch of guessing by summing and placing in random indexes we can work back by always targetting the biggest number in the target array and determining what value it use to be before becoming that number
+    // instead of doing a bunch of guessing by summing and placing in random indexes, we can work back by always targetting the biggest number in the target array and determining what value it use to be before becoming that number
     // The largest number in this sort of context for the problem will always be the num that changed last and we can work all the way back to 1s from that (if it is even possible in the first place)
     
     // I need to figure out what the condition is to break out and return false that we should be able to tell from early on.
@@ -90,8 +85,14 @@ bool isPossible(std::vector<int>& target) {
     if (it != target.end())
         int largest_num = *it;
         
-    
+    // take largest number, add other remaining nums together and take difference between to see what it was previously
+    int target_sum = arrSum(target); 
+    std::cout << "Target Array Sum: " << target_sum << std::endl;
 
+    int sum_minus_largest = target_sum - largest_num;
+
+    int previous_val = largest_num - sum_minus_largest;
+    std::cout << "Largest number previously: " << previous_val << std::endl; 
 
 
     return true; 
