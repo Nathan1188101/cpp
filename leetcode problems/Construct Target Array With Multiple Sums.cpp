@@ -53,7 +53,7 @@ int arrSum(std::vector<int>& arr) {
 /// @brief choose an index i, that is within the constraints, and then set the value of arr at index i to x (the sum of arr)
 /// @param index_i the index chosen
 /// @return 
-int setNum(int index_i, std::vector<int>& arr) {
+void setNum(int index_i, std::vector<int>& arr) {
 
     int x = arrSum(arr); 
 
@@ -68,6 +68,7 @@ int setNum(int index_i, std::vector<int>& arr) {
 
 
 bool isPossible(std::vector<int>& target) {
+    std::cout << "running" << std::endl;
 
     // I was thinking in the opposite direction of a working solution
     // ask I suspected, my solution was leading down an endless searching sort of path. Just not going to work
@@ -77,22 +78,43 @@ bool isPossible(std::vector<int>& target) {
     
     // I need to figure out what the condition is to break out and return false that we should be able to tell from early on.
     int largest_num = 0; 
+    bool flag = true; 
 
-    // get largest value, this returns an iterator (pointer to the element)
-    auto it = std::max_element(target.begin(), target.end());
+    while (flag) {
 
-    // deref the iterator 
-    if (it != target.end())
-        int largest_num = *it;
+        // get largest value, this returns an iterator (pointer to the element)
+        auto it = std::max_element(target.begin(), target.end());
+
+        // deref the iterator 
+        if (it != target.end())
+            largest_num = *it; 
+        else    
+            std::cout << "couldn't get largest number" << std::endl;
+
+        // get sum of whole array
+        int target_sum = arrSum(target); 
+        std::cout << "Target Array Sum: " << target_sum << std::endl;
         
-    // take largest number, add other remaining nums together and take difference between to see what it was previously
-    int target_sum = arrSum(target); 
-    std::cout << "Target Array Sum: " << target_sum << std::endl;
+        // subtract the largest num from the whole sum
+        int sum_minus_largest = target_sum - largest_num;
 
-    int sum_minus_largest = target_sum - largest_num;
+        // find the difference between to determine what the number was previously
+        int previous_val = largest_num - sum_minus_largest;
+        std::cout << "Largest number previously: " << previous_val << std::endl;
 
-    int previous_val = largest_num - sum_minus_largest;
-    std::cout << "Largest number previously: " << previous_val << std::endl; 
+        // get index of largest num 
+        auto idx = it - target.begin(); 
+        std::cout << "index of largest #: " << idx << std::endl; 
+
+        target[idx] = previous_val;
+
+        int new_sum = arrSum(target);
+        if (new_sum == target.size())
+            return true;
+
+    }
+
+
 
 
     return true; 
@@ -108,6 +130,10 @@ int main() {
         arr.push_back(1);
     }
 
-
+    bool possible = isPossible(target);
+    if (possible)
+        std::cout << "possible" << std::endl;
+    else
+        std::cout << "not possible" << std::endl;
 
 }
